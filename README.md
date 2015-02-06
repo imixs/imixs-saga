@@ -8,3 +8,21 @@ Imixs-Microservice provides an easy to use REST API. Once deployed you can defin
 Imixs-Microservice can be deployed on a JEE6 Web Server like GlassFish or JBoss/Wildfly.
 
 See: http://martinfowler.com/articles/microservices.html
+
+
+
+## Docker
+Imixs-Microservice also provides a docker image. This makes is easy to run Imixs-Microservice in a Docker container.
+
+Run the build with:
+
+```
+docker build --tag=imxis-microservice .
+```
+
+Run the container with :
+
+```
+docker run -it -p 8080:8080 imixs-microservice. 
+```
+Application will be deployed on the container boot.
