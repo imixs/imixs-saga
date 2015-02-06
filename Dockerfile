@@ -15,5 +15,8 @@ ADD src/docker/postgresql-9.3-1102.jdbc41.jar /opt/jboss/wildfly/standalone/depl
 ADD target/imixs-microservice-1.0.0.war /opt/jboss/wildfly/standalone/deployments/
 
 
-
-# run it with: docker run -it -p 9990:9990 imixs-microservice
+########################################################
+# NOTE: 
+# run it with          : docker run -it -p 8080:8080 imixs-microservice
+# run in admin mode use: docker run -it -p 8080:8080 -p 9990:9990 imixs-microservice /opt/jboss/wildfly/bin/standalone.sh -b 0.0.0.0 -bmanagement 0.0.0.0
+########################################################
