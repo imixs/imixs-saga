@@ -13,16 +13,20 @@ See: http://martinfowler.com/articles/microservices.html
 
 ## Docker
 Imixs-Microservice also provides a docker image. This makes is easy to run Imixs-Microservice in a Docker container.
+To build the docker file follow these steps:
 
-Run the build with:
+  1) checkout the source from github https://github.com/imixs/imixs-microservice
 
-```
-docker build --tag=imxis-microservice .
-```
+  2) run the maven build
 
-Run the container with :
+>mvn clean install
 
-```
-docker run -it -p 8080:8080 imixs-microservice. 
-```
+3) run the docker build with:
+
+> docker build --tag=imixs-microservice .
+
+4) finally start the docker container with :
+
+>docker run -it -p 8080:8080 imixs-microservice. 
+
 Application will be deployed on the container boot.
