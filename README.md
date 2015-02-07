@@ -28,9 +28,9 @@ First checkout the source from
 
 >github https://github.com/imixs/imixs-microservice
 
-next run the maven to build the war file: 
+next run the maven to build the war file for JBoss/Wildfly: 
 
->mvn clean install
+>mvn clean install -Pwildfly
 
 ## 2. Build the Docker container
 Next you can create the Docker container proivded by the imixs-microservice project.
@@ -58,7 +58,7 @@ Thats It!
 #Background:
 
 In the installation example before we are first starting a docker container providing a postgres database.
-Next we are linking the docker container 'imixs-postgres'  with the imixs-microservice container.
+We are linking the docker container 'imixs-postgres'  with the imixs-microservice container.
 So wildfly can access the postgres server by the hostame 'imixs-imixs-database-host'. This
 hostname is used in the wildfly configuration to connect to the postgres database. 
  
@@ -66,15 +66,25 @@ To find the IP address of the imixs-postgres container:
 
 >sudo docker inspect -f '{{ .NetworkSettings.IPAddress }}' imixs-postgres
  
-If you want to exame the postgres database you can also run the imixs-posgres container with the following 
+###Run postgres container 
+If you want to test the postgres database you can also run the imixs-posgres container with the following 
 command which binds postgres to the default port 5432 of your host:
 
 >docker run --name imixs-postgres -p 5432:5432 -e POSTGRES_PASSWORD=imixs -d postgres
  
- 
-To check out only the wildfyl server without postgres start the imixs-microservice container with:
+### Run wildfly container 
+To check out only the wildfly server without postgres start the imixs-microservice container with:
 
 >docker run -it -p 8080:8080 imixs-microservice. 
 
 This will start Wildfly without the deployed service. See the next section to run Wildfly togher
 with a PostgreSQL Database.
+
+
+###Stop imixs-postgres container
+
+To stop the running imixs-postgres container use:
+
+>docker stop imixs-postgres 
+
+>docker rm imixs-postgres 
