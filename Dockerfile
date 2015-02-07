@@ -9,17 +9,18 @@ USER jboss
 RUN /opt/jboss/wildfly/bin/add-user.sh admin imixs --silent
 
 # wildfly configuration 
-ADD src/docker/eclipselink.jar /opt/jboss/wildfly/modules/system/layers/base/org/eclipse/persistence/main/
-ADD src/docker/module.xml /opt/jboss/wildfly/modules/system/layers/base/org/eclipse/persistence/main/
-ADD src/docker/standalone.xml /opt/jboss/wildfly/standalone/configuration/
+COPY src/docker/eclipselink.jar /opt/jboss/wildfly/modules/system/layers/base/org/eclipse/persistence/main/
+COPY src/docker/module.xml /opt/jboss/wildfly/modules/system/layers/base/org/eclipse/persistence/main/
+COPY src/docker/standalone.xml /opt/jboss/wildfly/standalone/configuration/
+COPY src/docker/imixsrealm.properties /opt/jboss/wildfly/standalone/configuration/
 
 # deploy postgres jdbc
-ADD src/docker/postgresql-9.3-1102.jdbc41.jar /opt/jboss/wildfly/standalone/deployments/
+COPY src/docker/postgresql-9.3-1102.jdbc41.jar /opt/jboss/wildfly/standalone/deployments/
 
 # deploy imixs-microservice.war
-ADD target/imixs-microservice-1.0.0.war /opt/jboss/wildfly/standalone/deployments/
+COPY target/imixs-microservice-1.0.0.war /opt/jboss/wildfly/standalone/deployments/
 
-# use to start bash
+#  use to start bash
 #CMD ["bash"]
 
 ########################################################

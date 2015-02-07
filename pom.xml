@@ -11,6 +11,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<org.imixs.workflow.version>3.1.9</org.imixs.workflow.version>
+		<org.imixs.marty.version>2.1.1</org.imixs.marty.version>
 		<custom.webResources>src/main/webapp</custom.webResources>
 	</properties>
 
@@ -148,6 +149,11 @@
 		</dependency>
 
 
+		<dependency>
+			<groupId>org.imixs.marty</groupId>
+			<artifactId>imixs-marty-ejb</artifactId>
+			<version>${org.imixs.marty.version}</version>
+		</dependency>
 
 	</dependencies>
 </project>
