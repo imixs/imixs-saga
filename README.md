@@ -24,9 +24,9 @@ To build the docker file follow these steps:
 
 ### 1. Build imixs-microservice
 
-First checkout the source from 
+First checkout the source from the git repository
 
->github https://github.com/imixs/imixs-microservice
+>git@github.com:imixs/imixs-microservice.git
 
 next switch into your local git workspace and run the following maven command
 to build the war file for JBoss/Wildfly: 
