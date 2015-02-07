@@ -1,12 +1,17 @@
 FROM jboss/wildfly
 
-# Install Maven and postgres
-USER root
-RUN yum -y install postgresql maven && yum clean all
-USER jboss
+MAINTAINER ralph.soika@imixs.com
 
 # add admin account for wildfly console
-RUN /opt/jboss/wildfly/bin/add-user.sh admin admin --silent
+
+USER jboss
+
+RUN /opt/jboss/wildfly/bin/add-user.sh admin imixs --silent
+
+# wildfly configuration 
+ADD src/docker/eclipselink.jar /opt/jboss/wildfly/modules/system/layers/base/org/eclipse/persistence/main/
+ADD src/docker/module.xml /opt/jboss/wildfly/modules/system/layers/base/org/eclipse/persistence/main/
+ADD src/docker/standalone.xml /opt/jboss/wildfly/standalone/configuration/
 
 # deploy postgres jdbc
 ADD src/docker/postgresql-9.3-1102.jdbc41.jar /opt/jboss/wildfly/standalone/deployments/
@@ -14,6 +19,8 @@ ADD src/docker/postgresql-9.3-1102.jdbc41.jar /opt/jboss/wildfly/standalone/depl
 # deploy imixs-microservice.war
 ADD target/imixs-microservice-1.0.0.war /opt/jboss/wildfly/standalone/deployments/
 
+# use to start bash
+#CMD ["bash"]
 
 ########################################################
 # NOTE: 

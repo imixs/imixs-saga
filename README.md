@@ -30,3 +30,28 @@ To build the docker file follow these steps:
 >docker run -it -p 8080:8080 imixs-microservice. 
 
 Application will be deployed on the container boot.
+
+
+
+
+### Linking Containers
+
+1) Run the Postgres container as:
+ 
+>docker run --name imixs-postgres -e POSTGRES_PASSWORD=imixs -d postgres
+
+or use the following to access postgress throug port from your host system:
+
+>docker run --name imixs-postgres -p 5432:5432 -e POSTGRES_PASSWORD=imixs -d postgres
+ 
+2) Run the WildFly container, with linking Postgres
+
+>docker run --name mywildfly --link mysqldb:db -p 8080:8080 -d arungupta/wildfly-mysql-javaee7
+
+>docker run --link imixs-postgres:db -it -p 8080:8080 -p 9990:9990 imixs-microservice /opt/jboss/wildfly/bin/standalone.sh -b 0.0.0.0 -bmanagement 0.0.0.0
+
+ 
+3) Find the IP address of the WildFly container:
+
+>sudo docker inspect -f '{{ .NetworkSettings.IPAddress }}' mywildfly
+ 
