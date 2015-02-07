@@ -9,12 +9,13 @@ See also: http://martinfowler.com/articles/microservices.html
 
  
 ## Installation
-Imixs-Microservice can be deployed on a JEE6 Web Server like GlassFish or JBoss/Wildfly.
-
+Imixs-Microservice is a Java Enterprise Web Module which can be deployed on any JEE6 Web Server like GlassFish or JBoss/Wildfly.
+The Web Modul includes the Imxis-Workflow Rest API. You can run the web module as a single application, or you can bundle the module which your own JEE application in a EAR file. 
+To find detailed information about how to deploy Imixs-Workflow in a JEE Environment see: http://www.imixs.org
 
 
 # Docker
-Imixs-Microservice also provides a docker image. This makes is easy to run Imixs-Microservice in a Docker container.
+Imixs-Microservice provides a docker image. This makes is easy to run Imixs-Microservice in a Docker container.
 To build the docker file follow these steps:
 
 1. Build imixs-microservice with maven 
