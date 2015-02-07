@@ -38,12 +38,7 @@ Therefor run the docker build with:
 
 > docker build --tag=imixs-microservice .
 
-To check your new container run:
 
->docker run -it -p 8080:8080 imixs-microservice. 
-
-Note: this will start WIldfly without the deployed service. See the next section to run Wildfly togher
-with a PostgreSQL Database.
 
 ## 3. Start the imixs-microservice
 
@@ -67,7 +62,6 @@ Next we are linking the docker container 'imixs-postgres'  with the imixs-micros
 So wildfly can access the postgres server by the hostame 'imixs-imixs-database-host'. This
 hostname is used in the wildfly configuration to connect to the postgres database. 
  
- 
 To find the IP address of the imixs-postgres container:
 
 >sudo docker inspect -f '{{ .NetworkSettings.IPAddress }}' imixs-postgres
@@ -77,3 +71,10 @@ command which binds postgres to the default port 5432 of your host:
 
 >docker run --name imixs-postgres -p 5432:5432 -e POSTGRES_PASSWORD=imixs -d postgres
  
+ 
+To check out only the wildfyl server without postgres start the imixs-microservice container with:
+
+>docker run -it -p 8080:8080 imixs-microservice. 
+
+This will start Wildfly without the deployed service. See the next section to run Wildfly togher
+with a PostgreSQL Database.
