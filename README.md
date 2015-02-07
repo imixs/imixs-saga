@@ -3,55 +3,77 @@ The Imixs-Microservice project encapsulates the Imixs-Workflow Engine into a mic
 
 Imixs-Microservice provides an easy to use REST API. Once deployed you can define your workflow Model within the Eclipse based Imixs-Workflow-Modelling Tool. Through the WebService interface you can create and access process instances through the JSON and XML based WebService inferface.
 
+
+See also: http://martinfowler.com/articles/microservices.html
+
+
  
 ## Installation
 Imixs-Microservice can be deployed on a JEE6 Web Server like GlassFish or JBoss/Wildfly.
 
-See: http://martinfowler.com/articles/microservices.html
 
 
-
-## Docker
+# Docker
 Imixs-Microservice also provides a docker image. This makes is easy to run Imixs-Microservice in a Docker container.
 To build the docker file follow these steps:
 
-  1) checkout the source from github https://github.com/imixs/imixs-microservice
+1. Build imixs-microservice thrugh maven build tool
+2. install the Docker container locally
+3. start the microservice
 
-  2) run the maven build
+
+## 1. Build imixs-microservice
+
+First checkout the source from 
+
+>github https://github.com/imixs/imixs-microservice
+
+next run the maven to build the war file: 
 
 >mvn clean install
 
-3) run the docker build with:
+## 2. Build the Docker container
+Next you can create the Docker container proivded by the imixs-microservice project.
+Therefor run the docker build with:
 
 > docker build --tag=imixs-microservice .
 
-4) finally start the docker container with :
+To check your new container run:
 
 >docker run -it -p 8080:8080 imixs-microservice. 
 
-Application will be deployed on the container boot.
+Note: this will start WIldfly without the deployed service. See the next section to run Wildfly togher
+with a PostgreSQL Database.
 
+## 3. Start the imixs-microservice
 
+Finally start the docker container. You need to start a database and the JBoss/Wildfly Applicaiton server.
+We use postgreSQL as a database and link this docker container with the imixs-microservice:
 
-
-### Linking Containers
-
-1) Run the Postgres container as:
+First run the Postgres container as:
  
 >docker run --name imixs-postgres -e POSTGRES_PASSWORD=imixs -d postgres
+ 
+Next run the imixs-microservice with linking to Postgres
 
-or use the following to access postgress throug port from your host system:
+>docker run --link imixs-postgres:imixs-database-host -it -p 8080:8080 -p 9990:9990 imixs-microservice /opt/jboss/wildfly/bin/standalone.sh -b 0.0.0.0 -bmanagement 0.0.0.0
+
+Thats It!
+
+#Background:
+
+In the installation example before we are first starting a docker container providing a postgres database.
+Next we are linking the docker container 'imixs-postgres'  with the imixs-microservice container.
+So wildfly can access the postgres server by the hostame 'imixs-imixs-database-host'. This
+hostname is used in the wildfly configuration to connect to the postgres database. 
+ 
+ 
+To find the IP address of the imixs-postgres container:
+
+>sudo docker inspect -f '{{ .NetworkSettings.IPAddress }}' imixs-postgres
+ 
+If you want to exame the postgres database you can also run the imixs-posgres container with the following 
+command which binds postgres to the default port 5432 of your host:
 
 >docker run --name imixs-postgres -p 5432:5432 -e POSTGRES_PASSWORD=imixs -d postgres
- 
-2) Run the WildFly container, with linking Postgres
-
->docker run --name mywildfly --link mysqldb:db -p 8080:8080 -d arungupta/wildfly-mysql-javaee7
-
->docker run --link imixs-postgres:db -it -p 8080:8080 -p 9990:9990 imixs-microservice /opt/jboss/wildfly/bin/standalone.sh -b 0.0.0.0 -bmanagement 0.0.0.0
-
- 
-3) Find the IP address of the WildFly container:
-
->sudo docker inspect -f '{{ .NetworkSettings.IPAddress }}' mywildfly
  
