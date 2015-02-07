@@ -23,14 +23,12 @@
 				<env-entry-value>java:/mail/org.imixs.workflow.mail</env-entry-value>
 			</env-entry>
 			
-			
 			<ejb-ref>
 				<ejb-ref-name>ejb/PropertyService</ejb-ref-name>
 				<ejb-ref-type>Session</ejb-ref-type>
 				<remote>org.imixs.workflow.jee.util.PropertyService</remote>
 			</ejb-ref>
 			
-		
 			
 			<!-- Mail resource -->
 			<resource-ref>

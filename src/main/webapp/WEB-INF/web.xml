@@ -21,7 +21,10 @@
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>ImixsRestService</servlet-name>
-		<url-pattern>/rest-service/*</url-pattern>
+		<url-pattern>/model/*</url-pattern>
+		<url-pattern>/workflow/*</url-pattern>
+		<url-pattern>/report/*</url-pattern>
+		<url-pattern>/user/*</url-pattern>
 	</servlet-mapping>
 	<login-config>
 		<auth-method>BASIC</auth-method>
@@ -30,10 +33,14 @@
 	<security-constraint>
 		<web-resource-collection>
 			<web-resource-name>restricted</web-resource-name>
-			<url-pattern>/pages/*</url-pattern>
-			<url-pattern>/rest-service/*</url-pattern>
+			<url-pattern>/model/*</url-pattern>
+			<url-pattern>/workflow/*</url-pattern>
+			<url-pattern>/report/*</url-pattern>
+			<url-pattern>/user/*</url-pattern>
 			<http-method>GET</http-method>
 			<http-method>POST</http-method>
+			<http-method>DELETE</http-method>
+			<http-method>PUT</http-method>
 		</web-resource-collection>
 		<auth-constraint>
 			<role-name>org.imixs.ACCESSLEVEL.READERACCESS</role-name>

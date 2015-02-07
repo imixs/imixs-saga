@@ -17,9 +17,9 @@ Imixs-Microservice can be deployed on a JEE6 Web Server like GlassFish or JBoss/
 Imixs-Microservice also provides a docker image. This makes is easy to run Imixs-Microservice in a Docker container.
 To build the docker file follow these steps:
 
-1. Build imixs-microservice thrugh maven build tool
-2. install the Docker container locally
-3. start the microservice
+1. Build imixs-microservice with maven 
+2. Build the Docker container 
+3. Start the microservice
 
 
 ### 1. Build imixs-microservice
@@ -28,9 +28,10 @@ First checkout the source from
 
 >github https://github.com/imixs/imixs-microservice
 
-next switch into your local git workspace and run the maven to build the war file for JBoss/Wildfly: 
+next switch into your local git workspace and run the following maven command
+to build the war file for JBoss/Wildfly: 
 
->mvn clean install -Pwildfly
+>mvn clean install -Pwildfly -DskipTests
 
 ### 2. Build the Docker container
 Next you can create the Docker container provided by the imixs-microservice project.
@@ -47,11 +48,11 @@ Imixs-Microservice runs with PostgreSQL. So you need to start two docker contain
 One for the database and one for the JBoss/Wildfly Applicaiton server.
 We link the postgres docker container with the imixs-microservice:
 
-...run the Postgres container:
+... run the Postgres container:
  
 >docker run --name imixs-postgres -e POSTGRES_PASSWORD=imixs -d postgres
  
-... and now run the imixs-microservice with linking to Postgres
+... and now run the imixs-microservice Container with linking to Postgres
 
 >docker run --link imixs-postgres:imixs-database-host -it -p 8080:8080 -p 9990:9990 imixs-microservice /opt/jboss/wildfly/bin/standalone.sh -b 0.0.0.0 -bmanagement 0.0.0.0
 

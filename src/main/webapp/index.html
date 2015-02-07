@@ -21,10 +21,19 @@
 	<div id="header">
 		<div id="navbar">
 			<div class="nav-title">
-				<a href="#section1">Imixs-Microservice</a>
+				<a href="#">Imixs-Microservice</a>
+				
+				
 			</div>
+				<ul>
+				<li><a href="http://www.imixs.org/microservice/" target="_blank">Project</a></li>
+				<li><a href="https://github.com/imixs/imixs-microservice" target="_blank">GitHub</a></li>
+				</ul>
 		</div>
+		
+	
 	</div>
+	
 
 	<div id="container">
 
@@ -32,58 +41,39 @@
 
 		<div class="row section  text-left" id="section4">
 
-
-
 			<div class="col-12">
-
-
 				<h2>Welcome</h2>
-
-
 				<p>Imixs-Microservice provides a WebService Interface which is
 					used to interact with the Imixs-Workflow-Engine. You can submit and
 					request process instances of your business objects based on a JSON
 					or XML structure.</p>
 
+				<h3>Verifiy Model</h3>
+
+				<p>
+					First you need to check if a Model is available: <br /> <a
+						href="./model" class="sample-url">http://[YOURSERVER]/rest-service/model</a>
+					<br /> If no model version is shown you can create and upload a
+					new Model using the <a href="http://www.imixs.org/modeler/"
+						target="_blank">Imixs-Workflow-Modeller</a>.
 
 
-<h3>Verifiy Model</h3>
-
-<p>
-First you need to check if a Model is still uploaded:
-
-<br />
-<a href="./rest-service/model" class="sample-url">http://[YOURSERVER]/rest-service/model</a>
-<br />
-
-If the XML is empty you need first to create a new model and updload it. 
-
-You can upload the model with the following URL:
-
-<pre>
-http://[YOURSERVER]/rest-service/model
-</pre>
+				</p>
 
 
-</p>
+				<h3>Worklist</h3>
 
+				<p>
 
-<h3>Worklist</h3>
+					You can request the task list for the current user with the
+					following URL: <br /> <a
+						href="./workflow/worklist.json" class="sample-url">http://[YOURSERVER]/rest-service/workflow/worklist</a>
+					<br /> The result will include all workitems for the current user.
+				</p>
 
-<p>
+				<h3>Create a new Process Instance</h3>
 
-You can request the task list for the current user with the following URL:
-
-<br />
-<a href="./rest-service/workflow/worklist.json" class="sample-url">http://[YOURSERVER]/rest-service/workflow/worklist</a>
-<br />
-
-The result will include all workitems for the current user.
-</p>
-
-<h3>Create a new Process Instance</h3>
-
-	<p>To create a new process instance you can POST a JSON Object
+				<p>To create a new process instance you can POST a JSON Object
 					to the Imixs-Microservice in the following way</p>
 				<pre>
 POST = http://localhost/workflow/rest-service/workflow/workitem
@@ -107,9 +97,9 @@ POST = http://localhost/workflow/rest-service/workflow/workitem
 </pre>
 
 				<p>Once you created a new process instance based on a predefined
-					model you got a set of data back form the workflow engine describing the
-					state of your new business object which is now controlled by the
-					workflow engine. This is called the workitem:</p>
+					model you got a set of data back form the workflow engine
+					describing the state of your new business object which is now
+					controlled by the workflow engine. This is called the workitem:</p>
 				<pre>
 {"item":[
    {"name":"$uniqueid","value":{"@type":"xs:string","$":"141cb98aecc-18544f1b"}},
@@ -124,22 +114,23 @@ POST = http://localhost/workflow/rest-service/workflow/workitem
    {"name":"txtworkflowresultmessage","value":{"@type":"xs:string","$":""}}
   ]}
 </pre>
-				<p>The workitem includes the attribute '$uniqueid' wich is used ot
-					identify the process instance later. Also workflow information like the
-					current status or the owner is returend by the service.</p>
+				<p>The workitem includes the attribute '$uniqueid' wich is used
+					ot identify the process instance later. Also workflow information
+					like the current status or the owner is returend by the service.</p>
 				<p>There are serveral Resouce URIs to request the state of a
 					process instance. Using the $uniqueid returned by the POST method
 					you can request the current status of a single process instance:</p>
 				<pre>
 GET = http://localhost/workflow/rest-service/workflow/workitem/[UNIQUEID].json
 </pre>
-			
-
-<p>To change the status of a process instance you simply need ot post uniqueid together with the next workflow activity defined by your workflow model
-</p>
 
 
-			<pre>
+				<p>To change the status of a process instance you simply need ot
+					post uniqueid together with the next workflow activity defined by
+					your workflow model</p>
+
+
+				<pre>
 POST = http://localhost/workflow/rest-service/workflow/workitem/[UNIQUEID]
 </pre>
 				<pre>
@@ -151,8 +142,22 @@ POST = http://localhost/workflow/rest-service/workflow/workitem/[UNIQUEID]
    ]}  
 </pre>
 
-<p>
-Within the object you can define any kind of data to be stored together with the process instance.</p>
+				<p>Within the object you can define any kind of data to be
+					stored together with the process instance.</p>
+
+
+
+
+
+
+
+
+				<h2>JUnit Tests</h2>
+				<p>Imixs-Microservice provide a set of JUnit Tests. These test
+					can be used also as a starting point to see how the RestService API
+					works.</p>
+
+
 
 			</div>
 
