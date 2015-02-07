@@ -60,36 +60,34 @@ We link the postgres docker container with the imixs-microservice:
 
 
 
-#Background:
+#Using 'curl' for testing:
 
-In the installation example before we are first starting a docker container providing a postgres database.
-We are linking the docker container 'imixs-postgres'  with the imixs-microservice container.
-So wildfly can access the postgres server by the hostame 'imixs-imixs-database-host'. This
-hostname is used in the wildfly configuration to connect to the postgres database. 
- 
-To find the IP address of the imixs-postgres container run:
+You can use the commandline tool curl to test the Imixs-Microservice.
+Here are some examples. 
 
->sudo docker inspect -f '{{ .NetworkSettings.IPAddress }}' imixs-postgres
- 
-###Run postgres container 
-If you want to test the postgres database you can also run the imixs-posgres container alone. 
+NOTE: you need to authenticate against the rest service. Use the default user 'admin' and
+the default password 'adminadmin' to test:
 
->docker run --name imixs-postgres -p 5432:5432 -e POSTGRES_PASSWORD=imixs -d postgres
- 
-The command binds postgres to the default port 5432 of your host. So 
-you can connect with your prefered sql-tool:
- 
-### Run wildfly container 
-To run only the wildfly server without postgres start the imixs-microservice container with:
+Request the deployed Model Version
 
->docker run -it -p 8080:8080 imixs-microservice. 
+>curl --user admin:adminadmin http://localhost:8080/imixs-microservice/model
 
-This will start Wildfly without the deployed service. 
+To request the current Worklist for the user 'admin' use:
 
-###Stop imixs-postgres container
+>curl --user admin:adminadmin http://localhost:8080/imixs-microservice/workflow/worklist
 
-To stop the running imixs-postgres container use:
+to get the same result in JSON format:
 
->docker stop imixs-postgres 
 
->docker rm imixs-postgres 
+>curl --user admin:adminadmin -H "Accept: application/json"  http://localhost:8080/imixs-microservice/workflow/worklist
+
+
+The next example shows how to post a new Workitem in JSON Format. The request post a JSON structure for a new workitem with the $modelVerson 1.0.0 , ProcessID 10 and ActivityID 10. 
+The result is the new process instance controlled by Imixs-Workflow
+
+>curl --user admin:adminadmin -H "Content-Type: application/json" -d '{"item":[ {"name":"type","value":{"@type":"xs:string","$":"workitem"}}, {"name":"$modelversion","value":{"@type":"xs:string","$":"1.0.0"}}, {"name":"$processid","value":{"@type":"xs:int","$":"10"}}, {"name":"$activityid","value":{"@type":"xs:int","$":"10"}}, {"name":"txtname","value":{"@type":"xs:string","$":"test-json"}}]}' http://localhost:8080/imixs-microservice/workflow/workitem.json
+
+
+
+
+Find more examples in the wiki: https://github.com/imixs/imixs-microservice/wiki/curl
