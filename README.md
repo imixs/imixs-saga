@@ -57,7 +57,9 @@ We link the postgres docker container with the imixs-microservice:
 
 >docker run --link imixs-postgres:imixs-database-host -it -p 8080:8080 -p 9990:9990 imixs-microservice /opt/jboss/wildfly/bin/standalone.sh -b 0.0.0.0 -bmanagement 0.0.0.0
 
-Run Imixs-Microservice from your browser: http://localhost:8080/imixs-microservice/
+Run Imixs-Microservice from your browser: 
+
+>http://localhost:8080/imixs-microservice
 
 *Thats It!*
 
