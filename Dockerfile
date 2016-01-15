@@ -1,5 +1,7 @@
 FROM jboss/wildfly
 
+# Version 1.1.0
+
 MAINTAINER ralph.soika@imixs.com
 
 # add admin account for wildfly console
