@@ -44,20 +44,13 @@ There for run the docker build command again from your git workspace with:
 
 ### 3. Start the imixs-microservice
 
-Finally start the docker container. 
-Imixs-Microservice runs with PostgreSQL. So you need to start two docker containers.
-One for the database and one for the JBoss/Wildfly Applicaiton server.
-We link the postgres docker container with the imixs-microservice:
+Finally you can start the docker container. 
+The Docker container provided with Imixs-Microservice runs with WildFly 9.0.2 and PostgreSQL. To start the container use the Docker run command: 
 
-... run the Postgres container:
+
+>docker run --rm -ti -p 8080:8080 -p 9990:9990 imixs-microservice
  
->docker run --name imixs-postgres -e POSTGRES_PASSWORD=imixs -d postgres
- 
-... and now run the imixs-microservice Container with linking to Postgres
-
->docker run --link imixs-postgres:imixs-database-host -it -p 8080:8080 -p 9990:9990 imixs-microservice /opt/jboss/wildfly/bin/standalone.sh -b 0.0.0.0 -bmanagement 0.0.0.0
-
-Run Imixs-Microservice from your browser: 
+After the server was started, you can run Imixs-Microservice from your web browser: 
 
 >http://localhost:8080/imixs-microservice
 
@@ -73,16 +66,19 @@ Here are some examples.
 NOTE: you need to authenticate against the rest service. Use the default user 'admin' and
 the default password 'adminadmin' to test:
 
+Deploy a new BPMN model 
+
+>curl --user admin:adminadmin --request POST -Tticket.bpmn http://localhost:8080/imixs-microservice/model/bpmn
+
 Request the deployed Model Version
 
->curl --user admin:adminadmin http://localhost:8080/imixs-microservice/model
+>curl --user admin:adminadmin -H "Accept: application/xml" http://localhost:8080/imixs-microservice/model/
 
 To request the current Worklist for the user 'admin' use:
 
->curl --user admin:adminadmin http://localhost:8080/imixs-microservice/workflow/worklist
+>curl --user admin:adminadmin  http://localhost:8080/imixs-microservice/workflow/worklist
 
 to get the same result in JSON format:
-
 
 >curl --user admin:adminadmin -H "Accept: application/json"  http://localhost:8080/imixs-microservice/workflow/worklist
 
