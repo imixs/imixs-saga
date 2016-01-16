@@ -146,11 +146,11 @@
                     </security>
                 </datasource>
                 <datasource jta="false" jndi-name="java:/jdbc/workflow-db" pool-name="workflow-db" enabled="true" use-ccm="false">
-                    <connection-url>jdbc:postgresql://imixs-database-host/postgres</connection-url>                   
+                    <connection-url>jdbc:postgresql://localhost/imixs01</connection-url>                   
                     <driver-class>org.postgresql.Driver</driver-class>
                     <driver>postgresql-9.3-1102.jdbc41.jar</driver>
                     <security>
-                        <user-name>postgres</user-name>
+                        <user-name>imixs</user-name>
                         <password>imixs</password>
                     </security>
                     <validation>
