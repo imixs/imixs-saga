@@ -91,4 +91,4 @@ The result is the new process instance controlled by Imixs-Workflow
 
 
 
-Find more examples in the wiki: https://github.com/imixs/imixs-microservice/wiki/curl
+Find more information see the Imixs-Docker doc: http://www.imixs.org/doc/docker.html
