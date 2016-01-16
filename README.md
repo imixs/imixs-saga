@@ -56,9 +56,8 @@ After the server was started, you can run Imixs-Microservice from your web brows
 
 *Thats It!*
 
-Find more about Docker in the wiki: https://github.com/imixs/imixs-microservice/wiki/docker
 
-#Using 'curl' for testing:
+#How To Test the Imixs-Microservice
 
 You can use the commandline tool curl to test the Imixs-Microservice.
 Here are some examples. 
