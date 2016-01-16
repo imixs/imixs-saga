@@ -92,11 +92,11 @@ public class SetupServlet extends HttpServlet {
 	}
 
 	private void setup() {
-		logger.info("Imixs-Office-Workflow - setup...");
+		logger.info("Imixs-Microservice - setup...");
 
 		// init userIDs for user db
 		try {
-			logger.info("Imixs-Office-Workflow - check default user...");
+			logger.info("Imixs-Microservice - checking default user...");
 			if (userGroupService != null) {
 				userGroupService.initUserIDs();
 			}
@@ -108,7 +108,7 @@ public class SetupServlet extends HttpServlet {
 
 		// try to init system indizies and load default models
 		try {
-			logger.info("Imixs-Office-Workflow - check default model...");
+			logger.info("Imixs-Microservice - checking default model...");
 			setupService.init();
 		} catch (AccessDeniedException e1) {
 			logger.severe("SetupServlet - unable to init system "

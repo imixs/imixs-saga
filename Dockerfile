@@ -20,7 +20,7 @@ COPY src/docker/imixsrealm.properties /opt/jboss/wildfly/standalone/configuratio
 COPY src/docker/postgresql-9.3-1102.jdbc41.jar /opt/jboss/wildfly/standalone/deployments/
 
 # deploy imixs-microservice.war
-COPY target/imixs-microservice-1.0.0.war /opt/jboss/wildfly/standalone/deployments/
+COPY target/imixs-microservice-*.war /opt/jboss/wildfly/standalone/deployments/
 
 #  use to start bash
 #CMD ["bash"]
