@@ -32,6 +32,7 @@
 		<servlet-name>ImixsRestService</servlet-name>
 		<url-pattern>/model/*</url-pattern>
 		<url-pattern>/workflow/*</url-pattern>
+		<url-pattern>/entity/*</url-pattern>
 		<url-pattern>/report/*</url-pattern>
 		<url-pattern>/user/*</url-pattern>
 	</servlet-mapping>
@@ -45,6 +46,7 @@
 			<url-pattern>/model/*</url-pattern>
 			<url-pattern>/workflow/*</url-pattern>
 			<url-pattern>/report/*</url-pattern>
+			<url-pattern>/entity/*</url-pattern>
 			<url-pattern>/user/*</url-pattern>
 			<http-method>GET</http-method>
 			<http-method>POST</http-method>

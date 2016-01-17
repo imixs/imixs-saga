@@ -45,14 +45,17 @@ import javax.ws.rs.core.Response;
 
 import org.imixs.marty.ejb.security.UserGroupService;
 import org.imixs.workflow.ItemCollection;
+import org.imixs.workflow.jee.ejb.EntityService;
 import org.imixs.workflow.util.JSONParser;
 import org.imixs.workflow.xml.XMLItemCollection;
 import org.imixs.workflow.xml.XMLItemCollectionAdapter;
 
 /**
- * The WorkflowService Handler supports methods to process different kind of
- * request URIs
+ * The WorkflowService Handler supports methods to manage user accounts to
+ * access the Imixs-Microservice platform. This service is based on the Marty
+ * UserGroupService.
  * 
+ * @see org.imixs.marty.ejb.security.UserGroupService
  * @author rsoika
  * 
  */
@@ -61,21 +64,32 @@ import org.imixs.workflow.xml.XMLItemCollectionAdapter;
 @Stateless
 public class UserRestService {
 
-	   @EJB
-		UserGroupService userGroupService;
+	@EJB
+	UserGroupService userGroupService;
+	
+	@EJB
+	EntityService entityService;
 
 	@javax.ws.rs.core.Context
 	private static HttpServletRequest servletRequest;
 
-	private static Logger logger = Logger.getLogger(UserRestService.class
-			.getName());
+	private static Logger logger = Logger.getLogger(UserRestService.class.getName());
 
 	/**
-	 * This method expects a form post and processes the WorkItem by the
-	 * WorkflowService EJB.
+	 * This method expects a JSON request object and creates or updates a corresponding
+	 * user prifle by calling the  the WorkItem by the userGroupService.
 	 * 
 	 * The Method returns a JSON object with the new data. If a processException
 	 * Occurs the method returns a JSON object with the error code
+	 * 
+	 * <code>
+	 * {"item":[    
+	 * 		{"name":"type","value":{"@type":"xs:string","$":"profile"}},     
+	 * 		{"name":"txtname","value":{"@type":"xs:string","$":"eddy"}},     
+	 * 		{"name":"txtpassword","value":{"@type":"xs:string","$":"imixs"}},     
+	 * 		{"name":"txtgroups","value":{"@type":"xs:string","$":"IMIXS-WORKFLOW-Author"}}
+	 * ]}
+	 * </code>
 	 * 
 	 * 
 	 * @param requestBodyStream
@@ -87,30 +101,28 @@ public class UserRestService {
 	@Path("/")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response postWorkitemJSON(InputStream requestBodyStream,
-			@QueryParam("encoding") String encoding) {
+	public Response postWorkitemJSON(InputStream requestBodyStream, @QueryParam("encoding") String encoding) {
 
 		logger.fine("[UserRestService] @PUT /workitem  method:putWorkitemJSON....");
 
-		
 		// determine encoding from servlet request ....
-		if (encoding==null || encoding.isEmpty()) {
-			encoding=servletRequest.getCharacterEncoding();
+		if (encoding == null || encoding.isEmpty()) {
+			encoding = servletRequest.getCharacterEncoding();
 			logger.fine("[UserRestService] postWorkitemJSON using request econding=" + encoding);
 		} else {
 			logger.fine("[UserRestService] postWorkitemJSON set econding=" + encoding);
 		}
 		// set defautl encoding UTF-8
-		if (encoding==null || encoding.isEmpty()) {
-			encoding="UTF-8";
+		if (encoding == null || encoding.isEmpty()) {
+			encoding = "UTF-8";
 			logger.fine("[UserRestService] postWorkitemJSON no encoding defined, set default econding to" + encoding);
 		}
-		
+
 		ItemCollection workitem = null;
 		XMLItemCollection responseWorkitem = null;
 		try {
-			workitem = JSONParser.parseWorkitem(requestBodyStream,encoding);
-			responseWorkitem=XMLItemCollectionAdapter.putItemCollection(workitem);
+			workitem = JSONParser.parseWorkitem(requestBodyStream, encoding);
+			responseWorkitem = XMLItemCollectionAdapter.putItemCollection(workitem);
 		} catch (ParseException e) {
 			logger.severe("postWorkitemJSON wrong json format!");
 			e.printStackTrace();
@@ -122,7 +134,7 @@ public class UserRestService {
 		} catch (Exception e) {
 			e.printStackTrace();
 			return Response.status(Response.Status.NOT_ACCEPTABLE).build();
-			
+
 		}
 
 		if (workitem != null) {
@@ -131,12 +143,9 @@ public class UserRestService {
 			return Response.status(Response.Status.NOT_ACCEPTABLE).build();
 		}
 
-		
 		// success HTTP 200
-		return Response.ok(responseWorkitem, MediaType.APPLICATION_JSON)
-				.build();
+		return Response.ok(responseWorkitem, MediaType.APPLICATION_JSON).build();
 
 	}
 
-	
 }

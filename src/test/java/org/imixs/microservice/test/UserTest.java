@@ -1,14 +1,14 @@
 package org.imixs.microservice.test;
 
-import junit.framework.Assert;
-
 import org.imixs.workflow.services.rest.RestClient;
 import org.junit.Before;
 import org.junit.Test;
 
+import junit.framework.Assert;
 
 /**
- * This test class contains an example how to create a new User Object trough the RestService API.
+ * This test class contains an example how to create a new User Object trough
+ * the RestService API.
  * 
  * @author rsoika
  *
@@ -39,24 +39,21 @@ public class UserTest {
 	 * 
 	 * txtgroups= "IMIXS-WORKFLOW-Author"
 	 * 
+	 * 
+	 * The user is !not! stored in the entity list but in the userId list!
 	 * @throws Exception
 	 */
 	@Test
-	public void addUser()  {
+	public void addUser() {
 
 		String uri = BASE_URL + "user";
 		String user = "eddy";
 		String password = "imixs";
-
+ 
 		// create a json test string
-		String json = "{\"item\":["
-				+ "     {\"name\":\"type\",\"value\":{\"@type\":\"xs:string\",\"$\":\"profile\"}},"
-				+ "     {\"name\":\"txtname\",\"value\":{\"@type\":\"xs:string\",\"$\":\""
-				+ user
-				+ "\"}},"
-				+ "     {\"name\":\"txtpassword\",\"value\":{\"@type\":\"xs:string\",\"$\":\""
-				+ password
-				+ "\"}},"
+		String json = "{\"item\":[" + "     {\"name\":\"type\",\"value\":{\"@type\":\"xs:string\",\"$\":\"profile\"}},"
+				+ "     {\"name\":\"txtname\",\"value\":{\"@type\":\"xs:string\",\"$\":\"" + user + "\"}},"
+				+ "     {\"name\":\"txtpassword\",\"value\":{\"@type\":\"xs:string\",\"$\":\"" + password + "\"}},"
 				+ "     {\"name\":\"txtgroups\",\"value\":{\"@type\":\"xs:string\",\"$\":\"IMIXS-WORKFLOW-Author\"}}"
 				+ "]}";
 
@@ -74,4 +71,5 @@ public class UserTest {
 		}
 
 	}
+
 }
