@@ -9,6 +9,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.logging.Level;
 
 import org.imixs.workflow.ItemCollection;
@@ -77,6 +78,7 @@ public class WorkflowTest {
 		ticket.replaceItemValue("$processid", 1000);
 		ticket.replaceItemValue("$activityid", 10);
 		ticket.replaceItemValue("txtName", "Test");
+		ticket.replaceItemValue("namTeam",Arrays.asList(new String[] { "admin", "anna", "eddy" }));
 
 		ticket = testSuite.processWorkitem(ticket, "admin");
 
@@ -104,6 +106,8 @@ public class WorkflowTest {
 				+ "     {\"name\":\"$modelversion\",\"value\":{\"@type\":\"xs:string\",\"$\":\"1.2.0\"}},"
 				+ "     {\"name\":\"$processid\",\"value\":{\"@type\":\"xs:int\",\"$\":\"1000\"}},"
 				+ "     {\"name\":\"$activityid\",\"value\":{\"@type\":\"xs:int\",\"$\":\"10\"}},"
+			    + "     {\"name\":\"namteam\",\"value\":[{\"@type\":\"xs:string\",\"$\":\"admin\"},"
+			    + "	{\"@type\":\"xs:string\",\"$\":\"eddy\"},{\"@type\":\"xs:string\",\"$\":\"john\"}]},"
 				+ "     {\"name\":\"txtname\",\"value\":{\"@type\":\"xs:string\",\"$\":\"test-json\"}}" + "]}";
 
 		try {
