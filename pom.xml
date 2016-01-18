@@ -16,6 +16,18 @@
 	</properties>
 
 	<profiles>
+        <profile>
+            <id>default</id>
+             <repositories>          
+             <!-- Imixs Maven Repository -->
+                <repository>
+                    <id>imixs-repository</id>
+                    <name>Imixs Maven Repository</name>
+                    <url>http://www.imixs.org/maven/</url>
+                    <layout>default</layout>
+                </repository>
+            </repositories>
+        </profile>
 		<!-- wildfly profile -->
 		<profile>
 			<id>wildfly</id>
@@ -23,7 +35,15 @@
 				<custom.webResources>src/main/webapp_wildfly</custom.webResources>
 				<custom.unpackTypes>war</custom.unpackTypes>
 			</properties>
-
+             <repositories>          
+             <!-- Imixs Maven Repository -->
+                <repository>
+                    <id>imixs-repository</id>
+                    <name>Imixs Maven Repository</name>
+                    <url>http://www.imixs.org/maven/</url>
+                    <layout>default</layout>
+                </repository>
+            </repositories>
 		</profile>
 	</profiles>
 
