@@ -29,6 +29,11 @@
 				<ejb-ref-type>Session</ejb-ref-type>
 				<remote>org.imixs.workflow.jee.util.PropertyService</remote>
 			</ejb-ref>
+			<ejb-ref>
+				<ejb-ref-name>ejb/LuceneUpdateService</ejb-ref-name>
+				<ejb-ref-type>Session</ejb-ref-type>
+				<remote>org.imixs.workflow.lucene.LuceneUpdateService</remote>
+			</ejb-ref>
 			
 		
 			
