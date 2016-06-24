@@ -78,14 +78,14 @@
 	</developers>
 
 	<scm>
-		<connection>scm:git:https://github.com/imixs/imixs-jsf-example.git</connection>
-		<developerConnection>scm:git:https://github.com/imixs/imixs-jsf-example.git</developerConnection>
-		<url>https://github.com/imixs/imixs-jsf-example/</url>
+		<connection>scm:git:https://github.com/imixs/imixs-microservice.git</connection>
+		<developerConnection>scm:git:https://github.com/imixs/imixs-microservice.git</developerConnection>
+		<url>https://github.com/imixs/imixs-microservice/</url>
 	</scm>
 
 	<issueManagement>
 		<system>GitHub</system>
-		<url>https://github.com/imixs/imixs-jsf-example/issues</url>
+		<url>https://github.com/imixs/imixs-microservice/issues</url>
 	</issueManagement>
 
 	<build>
