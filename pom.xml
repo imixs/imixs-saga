@@ -11,7 +11,7 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<org.imixs.workflow.version>3.8.1</org.imixs.workflow.version>
+		<org.imixs.workflow.version>3.8.2-SNAPSHOT</org.imixs.workflow.version>
 		<org.imixs.marty.version>2.8.0</org.imixs.marty.version>
 		<org.imixs.adapters.version>1.4.0</org.imixs.adapters.version>
 		<lucene.version>4.10.4</lucene.version>
@@ -19,11 +19,19 @@
 	</properties>
 
 	<profiles>
-		<!-- wildfly profile -->
+		<!-- wildfly profile (development - unpacking war) -->
 		<profile>
 			<id>wildfly</id>
 			<properties>
-				<custom.webResources>src/main/webapp_wildfly</custom.webResources>
+				<custom.unpackTypes>war</custom.unpackTypes>
+			</properties>
+		</profile>
+		
+		<!-- glassfish profile -->
+		<profile>
+			<id>glassfish</id>
+			<properties>
+				<custom.webResources>src/main/webapp_glassfish</custom.webResources>
 				<custom.unpackTypes>war</custom.unpackTypes>
 			</properties>
 		</profile>
@@ -118,6 +126,7 @@
 							<directory>${custom.webResources}</directory>
 						</resource>
 					</webResources>
+					<failOnMissingWebXml>false</failOnMissingWebXml>
 				</configuration>
 			</plugin>
 		</plugins>

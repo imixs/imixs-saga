@@ -45,46 +45,48 @@
 
 			<div class="col-12">
 				<h2>Welcome</h2>
-				<p>Imixs-Microservice provides a WebService Interface which can be
-					used to interact with the Imixs-Workflow-Engine. 
-					<a href="http://www.imixs.org/doc/restapi/index.html">Details about the Imixs-Rest API 
-					can be found here</a>.</p>
+				<p>
+					Imixs-Microservice provides a WebService Interface which can be
+					used to interact with the Imixs-Workflow-Engine. <a
+						href="http://www.imixs.org/doc/restapi/index.html">Details
+						about the Imixs-Rest API can be found here</a>.
+				</p>
 
 				<h3>How to Deploy a BPMN Model</h3>
 				<p>
-					After you have created a Imixs BPMN model with the <a href="http://www.imixs.org/doc/modelling/index.html" target="_blank">
-					Imixs-BPMN moddeling tool</a>, you can deploy the model into the Imixs-Microservice. 
-					This can be done
-					by uploading the BPMN file via the Rest API using the curl command: <br />
+					After you have created a Imixs BPMN model with the <a
+						href="http://www.imixs.org/doc/modelling/index.html"
+						target="_blank"> Imixs-BPMN modeling tool</a>, you can deploy the
+					model into the Imixs-Microservice. This can be done by uploading
+					the BPMN file via the Rest API using the curl command: <br />
 
 				</p>
-					<pre>curl --user admin:adminadmin --request POST -Tticket.bpmn http://localhost:8080/imixs-microservice/model/bpmn</pre>
-				<p>
-					You will find an example model in the Imixs-Microservice project at:
-					/src/main/resources/ticket.bpmn
-				</p>
+				<pre>curl --user admin:adminadmin --request POST -Tticket.bpmn http://localhost:8080/imixs-microservice/model/bpmn</pre>
+				<p>You will find an example model in the Imixs-Microservice
+					project at: /src/main/resources/ticket.bpmn</p>
 
 
 				<h3>Verify Model</h3>
 
 				<p>
-					To verify if the model was deployed successfully you can check
-					the deployed model version with the Rest API: <br /> <a href="./model"
-						class="sample-url">http://[YOURSERVER]/rest-service/model</a> <br />
-					If no model version is yet deployed, you can create and upload a new BPMN Model
-					using the <a href="http://www.imixs.org/modeler/" target="_blank">Imixs-BPMN-Modeller</a>.
+					To verify if the model was deployed successfully you can check the
+					deployed model version with the Rest API: <br /> <a href="./model" 
+						target="_blank" class="sample-url">http://[YOURSERVER]/rest-service/model</a>
+					<br /> If no model version is yet deployed, you can create and
+					upload a new BPMN Model using the <a
+						href="http://www.imixs.org/modeler/" target="_blank">Imixs-BPMN-Modeller</a>.
 
 
 				</p>
 
 
-				<h3>Open the Tasklist</h3>
+				<h3>Open the Task List</h3>
 
 				<p>
-					Each user involved in a business process has a personal task list (called the 'worklist').
-					You can request the task list for the current user by the
-					following Rest API URL: <br /> <a href="./workflow/worklist.json"
-						class="sample-url">http://[YOURSERVER]/rest-service/workflow/worklist</a>
+					Each user involved in a business process has a personal task list
+					(called the 'worklist'). You can request the task list for the
+					current user by the following Rest API URL: <br /> <a
+						href="./workflow/tasklist" target="_blank" class="sample-url">http://[YOURSERVER]/rest-service/workflow/worklist</a>
 					<br /> The result will include all workitems for the current user.
 				</p>
 
@@ -94,7 +96,9 @@
 					to the Imixs-Microservice in the following way</p>
 				<pre>
 POST = http://localhost/workflow/rest-service/workflow/workitem
-</pre>
+				</pre>
+				
+				
 				<p>To create a valid workitem the following attributes are
 					mandatory:</p>
 				<ul>
@@ -166,9 +170,9 @@ POST = http://localhost/workflow/rest-service/workflow/workitem/[UNIQUEID]
 
 
 				<h2>JUnit Tests</h2>
-				<p>The Imixs-Microservice project provide a set of JUnit Tests. These tests
-					can be used also as a starting point to see how the RestService API
-					works.</p>
+				<p>The Imixs-Microservice project provide a set of JUnit Tests.
+					These tests can be used also as a starting point to see how the
+					RestService API works.</p>
 			</div>
 
 

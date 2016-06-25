@@ -45,7 +45,7 @@ public class WorkflowTest {
 	 * The setup method deploys the ticket workflow into the running workflow
 	 * instance.
 	 * 
-	 * @throws Exception
+	 * @throws Exception 
 	 */
 	@Before
 	public void setup() throws Exception {
