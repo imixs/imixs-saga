@@ -1,93 +1,142 @@
 # imixs-microservice
-The Imixs-Microservice project encapsulates the Imixs-Workflow Engine into a microservice architecture. This service can be bound to any business application, independent from the technology behind. This allows you to change the business logic without changing a single line of your code. You can control the state of your business process based on a workflow model. Imixs-Microservice sends notifications, logs business transactions and secures your business data.
 
-Imixs-Microservice provides an easy to use REST API. Once deployed you can define your workflow Model within the Eclipse based Imixs-Workflow-Modelling Tool. Through the WebService interface you can create and access process instances through the JSON and XML based WebService inferface.
+Imixs-Workflow is an open source workflow engine for human-centric business process management (BPM). Human-centric BPM means to support human skills and activities by a task orientated workflow-engine.
+
+The Imixs-Microservice project encapsulates the [Imixs-Workflow Engine](http://www.imixs.org) into a RESTful web service interface. The Imixs-Microservice can be bound to any business application, independent from the technology behind. In this architectural style the business logic can be changed without changing a single line of code. 
+
+A business process can be described by a BPMN Model using the Eclipse based [Imixs-Workflow-Modelling Tool](http://www.imixs.org/doc/modelling/index.html). Business data can be created, published and processed either in XML or JSON format.
 
 
-See also: http://martinfowler.com/articles/microservices.html
-
+See also [Marin Fowlers Blog)(http://martinfowler.com/articles/microservices.html) for further information about the concepts of microservices.
 
  
 ## Installation
-Imixs-Microservice is a Java Enterprise Web Module which can be deployed on any JEE6 Web Server like GlassFish or JBoss/Wildfly.
-The Web Modul includes the Imxis-Workflow Rest API. You can run the web module as a single application, or you can bundle the module which your own JEE application in a EAR file. 
-To find detailed information about how to deploy Imixs-Workflow in a JEE Environment see: http://www.imixs.org
+
+Imixs-Workflow is based on the Java EE specification and can be deployed into any Java EE compatible application server like GlassFish or JBoss/Wildfly. See the [deployment guide](http://www.imixs.org/doc/deployment/index.html) for further information.
 
 
-# Docker
-Imixs-Microservice provides a docker image. This makes is easy to run Imixs-Microservice in a Docker container.
-To build the docker file follow these steps:
 
-1. Build imixs-microservice with maven 
-2. Build the Docker container 
-3. Start the microservice
+## Docker
+Imixs-Microservice provides also a docker image. This makes is easy to run the Imixs-Microservice in a Docker container.
+See the [Imixs Docker Project](https://hub.docker.com/r/imixs/workflow/) for further information.
 
 
-### 1. Build imixs-microservice
 
-First checkout the source from the git repository
+## Initalize User DB
+After the first deployment you should initialize the internal UserDB. There for first call the setup URL
 
->git@github.com:imixs/imixs-microservice.git
+[http://[YOURSERVER]/imixs-microservice/setup](http://localhost/imixs-microservice/setup)
 
-next switch into your local git workspace and run the following maven command
-to build the war file for JBoss/Wildfly: 
+This call will initialize the default user 'admin' with the default password 'adminadmin'. You can add additional accounts or can change the default account later using the 'User-REST service' interface.
 
->mvn clean install -Pwildfly -DskipTests
+### How to Deploy a BPMN Model
+After you have setup the Imixs-Workfow Microservice you can deploy a workflow Model. A workflow model can be created using the [Imixs-BPMN eclipse Plugin](http://www.imixs.org/doc/modelling/index.html). A workflow Model can be deployed into the Imixs-Microservice using the 'Model-REST service' interface. You can deploy the default 'Ticket Workflow' using the following curl command: 
 
-### 2. Build the Docker container
-Next you can create the Docker container provided by the imixs-microservice project.
-There for run the docker build command again from your git workspace with:
+    curl --user admin:adminadmin --request POST -Tticket.bpmn http://localhost:8080/imixs-microservice/model/bpmn
 
-> docker build --tag=imixs-microservice .
+The example model is included in the Imixs-Microservice project located at: /src/main/resources/ticket.bpmn
 
-(be carefull about the ending '.')
+### Verify Model
 
-### 3. Start the imixs-microservice
+To verify if the model was deployed successfully you can check the deployed model version with the Rest API:
 
-Finally you can start the docker container. 
-The Docker container provided with Imixs-Microservice runs with WildFly 9.0.2 and PostgreSQL. To start the container use the Docker run command: 
+    http://[YOURSERVER]/imixs-microservice/model
+
+If no model version is yet deployed, you can create and upload a new BPMN Model using the Imixs-BPMN-Modeller.
+
+## How to Manage a Process Instance
+
+The following section includes some short examples how to create, process and verify a workflow instance managed by the Imxis-Workflow Microservicve. See the [Imixs-Workflow Project](http://www.imixs.org/doc/restapi/index.html) for more information.
+
+**NOTE:** you need to authenticate against the rest service. Use the default user 'admin' and
+the default password 'adminadmin' to test
+
+###Open the Task List
+Each user involved in a business process has a personal task list (called the 'worklist'). You can request the task list for the current user by the following Rest API URL: 
+
+    http://[YOURSERVER]/rest-service/workflow/worklist
+
+The result will include all workitems for the current user.
+
+### Create a new Process Instance
+To create a new process instance you can POST a JSON Object to the Imixs-Microservice in the following way
+
+    POST = http://localhost/workflow/rest-service/workflow/workitem
+				
+To create a valid workitem the following attributes are mandatory:
+
+* $modelversion = the version of your model
+* $processid = the start process
+* $activityid = the activity to be processed
+
+See the following Example:
+
+    {"item":[
+     {"name":"$modelversion","value":{"@type":"xs:string","$":"my-model-definition-0.0.2"}},
+     {"name":"$processid","value":{"@type":"xs:int","$":"2000"}}, 
+     {"name":"$activityid","value":{"@type":"xs:int","$":"1"}}, 
+     {"name":"_subject","value":{"@type":"xs:string","$":"Some usefull data.."}}
+    ]}  
+    
+    
+The example below shows how to post a new Workitem in JSON Format using the curl command. The request post a JSON structure for a new workitem with the $modelVerson 1.0.0 , ProcessID 10 and ActivityID 10. 
+
+	curl --user admin:adminadmin -H "Content-Type: application/json" -d \
+	       '{"item":[ \
+	                 {"name":"type","value":{"@type":"xs:string","$":"workitem"}}, \
+	                 {"name":"$modelversion","value":{"@type":"xs:string","$":"1.0.0"}}, \
+	                 {"name":"$processid","value":{"@type":"xs:int","$":"10"}}, \
+	                 {"name":"$activityid","value":{"@type":"xs:int","$":"10"}}, \
+	                 {"name":"txtname","value":{"@type":"xs:string","$":"test-json"}}\
+	         ]}' \
+	         http://localhost:8080/imixs-microservice/workflow/workitem.json
 
 
->docker run --rm -ti -p 8080:8080 -p 9990:9990 imixs-microservice
+Once you created a new process instance based on a predefined model you got a set of data back form the workflow engine describing the state of your new business object which is now controlled by the workflow engine. This is called the workitem:
+
+    {"item":[
+	   {"name":"$uniqueid","value":{"@type":"xs:string","$":"141cb98aecc-18544f1b"}},
+	   {"name":"$modelversion","value":{"@type":"xs:string","$":"my-model-definition-0.0.2"}},
+	   {"name":"$processid","value":{"@type":"xs:int","$":"2000"}},
+	   {"name":"namcreator","value":{"@type":"xs:string","$":"admin"}}, 
+	   {"name":"namcurrenteditor","value":{"@type":"xs:string","$":"admin"}}, 
+	   {"name":"namowner","value":{"@type":"xs:string","$":"admin"}}, 
+	   {"name":"$isauthor","value":{"@type":"xs:boolean","$":"true"}},
+	   {"name":"_subject","value":{"@type":"xs:string","$":"JUnit Test-6476"}}, 
+	   {"name":"txtworkflowstatus","value":{"@type":"xs:string","$":"Vorlauf"}}, 
+	   {"name":"txtworkflowresultmessage","value":{"@type":"xs:string","$":""}}
+	  ]}
+
+The workitem includes the attribute '$uniqueid' wich is used ot identify the process instance later. Also workflow information like the current status or the owner is returend by the service.
+
+There are serveral Resouce URIs to request the state of a process instance. Using the $uniqueid returned by the POST method you can request the current status of a single process instance:
+
+    GET = http://localhost/workflow/rest-service/workflow/workitem/[UNIQUEID]
+
+To change the status of a process instance you simply need ot post uniqueid together with the next workflow activity defined by your workflow model
+
+    POST = http://localhost/workflow/rest-service/workflow/workitem/[UNIQUEID]
  
-After the server was started, you can run Imixs-Microservice from your web browser: 
+	 {"item":[
+	     {"name":"$uniqueid","value":{"@type":"xs:string","$":"141cb98aecc-18544f1b"}},
+	     {"name":"$activityid","value":{"@type":"xs:int","$":"1"}}, 
+	     {"name":"_subject","value":{"@type":"xs:string","$":"Some usefull data.."}}
+	     {"name":"_customdata","value":{"@type":"xs:string","$":"Some more data.."}}
+	   ]}  
 
->http://localhost:8080/imixs-microservice
+Within the object you can define any kind of data to be stored together with the process instance.
 
-*Thats It!*
+### Task Lists
 
+Imixs-Workflow provides several resources to request the task list for specific users or object types. 
 
-#How To Test the Imixs-Microservice
+To request the Worklist for the current user 'admin' user you can call:
 
-You can use the commandline tool curl to test the Imixs-Microservice.
-Here are some examples. 
-
-NOTE: you need to authenticate against the rest service. Use the default user 'admin' and
-the default password 'adminadmin' to test:
-
-Deploy a new BPMN model 
-
->curl --user admin:adminadmin --request POST -Tticket.bpmn http://localhost:8080/imixs-microservice/model/bpmn
-
-Request the deployed Model Version
-
->curl --user admin:adminadmin -H "Accept: application/xml" http://localhost:8080/imixs-microservice/model/
-
-To request the current Worklist for the user 'admin' use:
-
->curl --user admin:adminadmin  http://localhost:8080/imixs-microservice/workflow/worklist
-
-to get the same result in JSON format:
-
->curl --user admin:adminadmin -H "Accept: application/json"  http://localhost:8080/imixs-microservice/workflow/worklist
+    curl --user admin:adminadmin -H "Accept: application/json"  http://localhost:8080/imixs-microservice/workflow/worklist
 
 
-The next example shows how to post a new Workitem in JSON Format. The request post a JSON structure for a new workitem with the $modelVerson 1.0.0 , ProcessID 10 and ActivityID 10. 
-The result is the new process instance controlled by Imixs-Workflow
+### JUnit Tests
 
->curl --user admin:adminadmin -H "Content-Type: application/json" -d '{"item":[ {"name":"type","value":{"@type":"xs:string","$":"workitem"}}, {"name":"$modelversion","value":{"@type":"xs:string","$":"1.0.0"}}, {"name":"$processid","value":{"@type":"xs:int","$":"10"}}, {"name":"$activityid","value":{"@type":"xs:int","$":"10"}}, {"name":"txtname","value":{"@type":"xs:string","$":"test-json"}}]}' http://localhost:8080/imixs-microservice/workflow/workitem.json
-
+The Imixs-Microservice project provide a set of JUnit Tests. These tests can be used also as a starting point to see how the RestService API works.
 
 
-
-Find more information see the Imixs-Docker doc: http://www.imixs.org/doc/docker.html
