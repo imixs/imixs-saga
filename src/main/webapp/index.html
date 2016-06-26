@@ -12,28 +12,51 @@
 	href="creatix-basic.css" />
 <link type="text/css;charset=UTF-8" rel="stylesheet" media="all"
 	href="creatix-layout.css" />
+<link rel="stylesheet" href="./font/typicons.min.css" />
+
 <link type="text/css;charset=UTF-8" rel="stylesheet" media="all"
 	href="imixs-microservice.css" />
+	
+
 <style>
 </style>
 </head>
 <body>
+
 	<div id="header">
-		<div id="navbar">
-			<div class="nav-title">
-				<a href="#">Imixs-Microservice</a>
+		<div class="row">
 
+			<div id="imixs-servicenav">
+				<ul>
+					<li><a href="./index.html"><span
+							class="typcn typcn-home-outline"></span>Home</a></li>
 
+					<li><a href="https://github.com/imixs/imixs-microservice"
+						target="_blank"><span class="typcn typcn-social-github"></span>Source
+							Code</a></li>
+
+					<li><a href="http://www.imixs.org" target="_blank"><span
+							class="typcn typcn-world"></span>imixs-workflow</a></li>
+
+				</ul>
 			</div>
-			<ul>
-				<li><a href="http://www.imixs.org/" target="_blank">Project</a></li>
-				<li><a href="https://github.com/imixs/imixs-microservice"
-					target="_blank">GitHub</a></li>
-			</ul>
+
+			<div id="imixs-header">
+				<div id="imixs-logo"></div>
+				<div id="imixs-branding">
+					<span class="imixs-brandingtext1">Imixs Workflow</span> <span
+						class="imixs-brandingtext3">...the open source workflow
+						technology for business applications</span>
+					<p>
+						<span class="imixs-brandingtext2">Microservice</span>
+					</p>
+				</div>
+			</div>
+
 		</div>
-
-
 	</div>
+
+
 
 
 	<div id="container">
@@ -45,30 +68,19 @@
 			<div class="col-12">
 				<h1>Welcome to Imixs-Workflow</h1>
 				<p>
-					Imixs-Workflow is an open source workflow engine for human-centric
-					business process management (BPM). Human-centric BPM means to
-					support human skills and activities by a task orientated
-					workflow-engine. The Imixs-Microservice project provides the
-					Imixs-Workflow engine as a web-service to be embedded in any
-					microservice architecture. <a
-						href="http://www.imixs.org/doc/restapi/index.html">Details
-						about the Imixs-Rest API can be found here</a>.
+
+					The <a href="https://github.com/imixs/imixs-microservice"
+						target="_blank">Imixs-Microservice project</a> encapsulates the <a
+						href="http://www.imixs.org" target="_blank">Imixs-Workflow
+						Engine</a> into a RESTful web service interface. The
+					Imixs-Microservice can be bound to any business application,
+					independent from the technology behind. In this architectural style
+					the business logic can be changed without changing a single line of
+					code.
 				</p>
 
-				<h2>How to Setup</h2>
-				<p>
-					Imixs-Workflow is based on the Java EE specification and can be
-					deplyoed into any Java EE complient application server. See the <a
-						href="http://www.imixs.org/doc/deployment/index.html"
-						target="_blank">deployment guide</a> for further information.
-				</p>
-				<h3>Docker</h3>
-				<p>
-					Alternatively you can run Imixs-Workflow in a Docker container. See
-					the <a href="https://hub.docker.com/r/imixs/workflow/"
-						target="_blank">Imixs Docker Project</a> for further information.
-				</p>
-				<h3>Initalize User DB</h3>
+
+				<h2>Initalize User DB</h2>
 				<p>
 					After the first deployment you should initialize the internal
 					UserDB. There for first call the setup URL <a
@@ -81,7 +93,7 @@
 					interface.
 				</p>
 
-				<h3>How to Deploy a BPMN Model</h3>
+				<h2>How to Deploy a BPMN Model</h2>
 				<p>
 					After you have setup the Imixs-Workfow Microservice you can deploy
 					a workflow Model. A workflow model can be created using the <a
@@ -97,118 +109,18 @@
 					project located at: /src/main/resources/ticket.bpmn</p>
 
 
-				<h3>Verify Model</h3>
+				<h2>Verify Model</h2>
 
 				<p>
 					To verify if the model was deployed successfully you can check the
 					deployed model version with the Rest API: <a href="./model"
 						target="_blank" class="sample-url">http://[YOURSERVER]/imixs-microservice/model</a>
-					<br /> If no model version is yet deployed, you can create and
-					upload a new BPMN Model using the <a
-						href="http://www.imixs.org/modeler/" target="_blank">Imixs-BPMN-Modeller</a>.
-
+					<br /> <a href="https://github.com/imixs/imixs-microservice">See
+						the Imixs-Microservice Project on GitHub for further Information.</a>
 
 				</p>
 
-				<h2>How to Manage a Process Instance</h2>
-				The following section includes some short examples how to create,
-				process and verify a workflow instance managed by the Imxis-Workflow
-				Microservicve. See the <a href="http://www.imixs.org">Imixs-Workflow
-					Project</a> for more information.
 
-				<h3>Open the Task List</h3>
-
-				<p>
-					Each user involved in a business process has a personal task list
-					(called the 'worklist'). You can request the task list for the
-					current user by the following Rest API URL: <br /> <a
-						href="./workflow/worklist" target="_blank" class="sample-url">http://[YOURSERVER]/rest-service/workflow/worklist</a>
-					<br /> The result will include all workitems for the current user.
-				</p>
-
-				<h3>Create a new Process Instance</h3>
-
-				<p>To create a new process instance you can POST a JSON Object
-					to the Imixs-Microservice in the following way</p>
-				<pre>
-POST = http://localhost/workflow/rest-service/workflow/workitem
-				</pre>
-
-
-				<p>To create a valid workitem the following attributes are
-					mandatory:</p>
-				<ul>
-
-					<li>$modelversion = the version of your model</li>
-					<li>$processid = the start process</li>
-					<li>$activityid = the activity to be processed</li>
-				</ul>
-				<p>See the following Example:</p>
-				<pre>
- {"item":[
-     {"name":"$modelversion","value":{"@type":"xs:string","$":"my-model-definition-0.0.2"}},
-     {"name":"$processid","value":{"@type":"xs:int","$":"2000"}}, 
-     {"name":"$activityid","value":{"@type":"xs:int","$":"1"}}, 
-     {"name":"_subject","value":{"@type":"xs:string","$":"Some usefull data.."}}
-   ]}  
-</pre>
-
-				<p>Once you created a new process instance based on a predefined
-					model you got a set of data back form the workflow engine
-					describing the state of your new business object which is now
-					controlled by the workflow engine. This is called the workitem:</p>
-				<pre>
-{"item":[
-   {"name":"$uniqueid","value":{"@type":"xs:string","$":"141cb98aecc-18544f1b"}},
-   {"name":"$modelversion","value":{"@type":"xs:string","$":"my-model-definition-0.0.2"}},
-   {"name":"$processid","value":{"@type":"xs:int","$":"2000"}},
-   {"name":"namcreator","value":{"@type":"xs:string","$":"admin"}}, 
-   {"name":"namcurrenteditor","value":{"@type":"xs:string","$":"admin"}}, 
-   {"name":"namowner","value":{"@type":"xs:string","$":"admin"}}, 
-   {"name":"$isauthor","value":{"@type":"xs:boolean","$":"true"}},
-   {"name":"_subject","value":{"@type":"xs:string","$":"JUnit Test-6476"}}, 
-   {"name":"txtworkflowstatus","value":{"@type":"xs:string","$":"Vorlauf"}}, 
-   {"name":"txtworkflowresultmessage","value":{"@type":"xs:string","$":""}}
-  ]}
-</pre>
-				<p>The workitem includes the attribute '$uniqueid' wich is used
-					ot identify the process instance later. Also workflow information
-					like the current status or the owner is returend by the service.</p>
-				<p>There are serveral Resouce URIs to request the state of a
-					process instance. Using the $uniqueid returned by the POST method
-					you can request the current status of a single process instance:</p>
-				<pre>
-GET = http://localhost/workflow/rest-service/workflow/workitem/[UNIQUEID].json
-</pre>
-
-
-				<p>To change the status of a process instance you simply need ot
-					post uniqueid together with the next workflow activity defined by
-					your workflow model</p>
-
-
-				<pre>
-POST = http://localhost/workflow/rest-service/workflow/workitem/[UNIQUEID]
-</pre>
-				<pre>
- {"item":[
-     {"name":"$uniqueid","value":{"@type":"xs:string","$":"141cb98aecc-18544f1b"}},
-     {"name":"$activityid","value":{"@type":"xs:int","$":"1"}}, 
-     {"name":"_subject","value":{"@type":"xs:string","$":"Some usefull data.."}}
-     {"name":"_customdata","value":{"@type":"xs:string","$":"Some more data.."}}
-   ]}  
-</pre>
-
-				<p>Within the object you can define any kind of data to be
-					stored together with the process instance.</p>
-
-
-
-
-				<h2>JUnit Tests</h2>
-				<p>The Imixs-Microservice project provide a set of JUnit Tests.
-					These tests can be used also as a starting point to see how the
-					RestService API works.</p>
 			</div>
 
 

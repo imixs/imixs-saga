@@ -132,7 +132,9 @@ Imixs-Workflow provides several resources to request the task list for specific 
 
 To request the Worklist for the current user 'admin' user you can call:
 
-    curl --user admin:adminadmin -H "Accept: application/json"  http://localhost:8080/imixs-microservice/workflow/worklist
+    curl --user admin:adminadmin -H \
+         "Accept: application/json" \
+         http://localhost:8080/imixs-microservice/workflow/worklist
 
 
 ### JUnit Tests
