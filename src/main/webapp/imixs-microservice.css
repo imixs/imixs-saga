@@ -67,6 +67,7 @@ pre {
 }
 
 .sample-url {
+	display: block;
 	margin: 10px;
 	border-left: 2px solid #FFCC00;
 	padding-left: 10px;
@@ -107,11 +108,7 @@ pre {
 
 .section h1 {
 	color: #444;
-	padding-top: 10%;
-	font-size: 70px;
-	text-align: center;
-	padding-top: 10%;
-	margin-bottom: 0;
+	font-size: 54px;
 }
 
 .section-blue {

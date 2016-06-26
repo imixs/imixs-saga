@@ -26,8 +26,7 @@
 
 			</div>
 			<ul>
-				<li><a href="http://www.imixs.org/microservice/"
-					target="_blank">Project</a></li>
+				<li><a href="http://www.imixs.org/" target="_blank">Project</a></li>
 				<li><a href="https://github.com/imixs/imixs-microservice"
 					target="_blank">GitHub</a></li>
 			</ul>
@@ -44,34 +43,66 @@
 		<div class="row section  text-left" id="section4">
 
 			<div class="col-12">
-				<h2>Welcome</h2>
+				<h1>Welcome to Imixs-Workflow</h1>
 				<p>
-					Imixs-Microservice provides a WebService Interface which can be
-					used to interact with the Imixs-Workflow-Engine. <a
+					Imixs-Workflow is an open source workflow engine for human-centric
+					business process management (BPM). Human-centric BPM means to
+					support human skills and activities by a task orientated
+					workflow-engine. The Imixs-Microservice project provides the
+					Imixs-Workflow engine as a web-service to be embedded in any
+					microservice architecture. <a
 						href="http://www.imixs.org/doc/restapi/index.html">Details
 						about the Imixs-Rest API can be found here</a>.
 				</p>
 
+				<h2>How to Setup</h2>
+				<p>
+					Imixs-Workflow is based on the Java EE specification and can be
+					deplyoed into any Java EE complient application server. See the <a
+						href="http://www.imixs.org/doc/deployment/index.html"
+						target="_blank">deployment guide</a> for further information.
+				</p>
+				<h3>Docker</h3>
+				<p>
+					Alternatively you can run Imixs-Workflow in a Docker container. See
+					the <a href="https://hub.docker.com/r/imixs/workflow/"
+						target="_blank">Imixs Docker Project</a> for further information.
+				</p>
+				<h3>Initalize User DB</h3>
+				<p>
+					After the first deployment you should initialize the internal
+					UserDB. There for first call the setup URL <a
+						href="http://localhost/imixs-microservice/setup" target="_blank"
+						class="sample-url">http://[YOURSERVER]/imixs-microservice/setup</a>
+
+					This call will intialze the default user 'admin' with the default
+					password 'adminadmin'. You can add additional accounts or can
+					change the default account later using the 'User-REST service'
+					interface.
+				</p>
+
 				<h3>How to Deploy a BPMN Model</h3>
 				<p>
-					After you have created a Imixs BPMN model with the <a
+					After you have setup the Imixs-Workfow Microservice you can deploy
+					a workflow Model. A workflow model can be created using the <a
 						href="http://www.imixs.org/doc/modelling/index.html"
-						target="_blank"> Imixs-BPMN modeling tool</a>, you can deploy the
-					model into the Imixs-Microservice. This can be done by uploading
-					the BPMN file via the Rest API using the curl command: <br />
+						target="_blank">Imixs-BPMN eclipse Plugin</a>. A workflow Model
+					can be deployed into the Imixs-Workflow using the 'Model-REST
+					service' interface. You can deploy the default 'Ticket Workflow'
+					using the curl command: <br />
 
 				</p>
 				<pre>curl --user admin:adminadmin --request POST -Tticket.bpmn http://localhost:8080/imixs-microservice/model/bpmn</pre>
-				<p>You will find an example model in the Imixs-Microservice
-					project at: /src/main/resources/ticket.bpmn</p>
+				<p>You will find the example model in the Imixs-Microservice
+					project located at: /src/main/resources/ticket.bpmn</p>
 
 
 				<h3>Verify Model</h3>
 
 				<p>
 					To verify if the model was deployed successfully you can check the
-					deployed model version with the Rest API: <br /> <a href="./model" 
-						target="_blank" class="sample-url">http://[YOURSERVER]/rest-service/model</a>
+					deployed model version with the Rest API: <a href="./model"
+						target="_blank" class="sample-url">http://[YOURSERVER]/imixs-microservice/model</a>
 					<br /> If no model version is yet deployed, you can create and
 					upload a new BPMN Model using the <a
 						href="http://www.imixs.org/modeler/" target="_blank">Imixs-BPMN-Modeller</a>.
@@ -79,6 +110,11 @@
 
 				</p>
 
+				<h2>How to Manage a Process Instance</h2>
+				The following section includes some short examples how to create,
+				process and verify a workflow instance managed by the Imxis-Workflow
+				Microservicve. See the <a href="http://www.imixs.org">Imixs-Workflow
+					Project</a> for more information.
 
 				<h3>Open the Task List</h3>
 
@@ -86,7 +122,7 @@
 					Each user involved in a business process has a personal task list
 					(called the 'worklist'). You can request the task list for the
 					current user by the following Rest API URL: <br /> <a
-						href="./workflow/tasklist" target="_blank" class="sample-url">http://[YOURSERVER]/rest-service/workflow/worklist</a>
+						href="./workflow/worklist" target="_blank" class="sample-url">http://[YOURSERVER]/rest-service/workflow/worklist</a>
 					<br /> The result will include all workitems for the current user.
 				</p>
 
@@ -97,8 +133,8 @@
 				<pre>
 POST = http://localhost/workflow/rest-service/workflow/workitem
 				</pre>
-				
-				
+
+
 				<p>To create a valid workitem the following attributes are
 					mandatory:</p>
 				<ul>
