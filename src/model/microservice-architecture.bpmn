@@ -32,14 +32,28 @@
     <bpmn2:participant id="Participant_2" name="Order" processRef="Process_2"/>
     <bpmn2:participant id="Participant_3" name="Invoice" processRef="Process_3"/>
     <bpmn2:participant id="Participant_4" name="Logistic" processRef="Process_4"/>
+    <bpmn2:participant id="Participant_5" name="Default Pool" processRef="Process_5"/>
     <bpmn2:messageFlow id="MessageFlow_1" sourceRef="IntermediateCatchEvent_3" targetRef="IntermediateCatchEvent_5"/>
     <bpmn2:messageFlow id="MessageFlow_5" sourceRef="IntermediateCatchEvent_4" targetRef="IntermediateCatchEvent_1"/>
     <bpmn2:messageFlow id="MessageFlow_6" sourceRef="IntermediateCatchEvent_8" targetRef="IntermediateCatchEvent_6"/>
     <bpmn2:messageFlow id="MessageFlow_7" sourceRef="IntermediateCatchEvent_7" targetRef="IntermediateCatchEvent_2"/>
     <bpmn2:messageFlow id="MessageFlow_8" sourceRef="IntermediateCatchEvent_11" targetRef="IntermediateCatchEvent_9"/>
     <bpmn2:messageFlow id="MessageFlow_9" sourceRef="IntermediateCatchEvent_10" targetRef="IntermediateCatchEvent_12"/>
+    <bpmn2:group id="Group_2"/>
+    <bpmn2:group id="Group_3"/>
+    <bpmn2:group id="Group_4"/>
   </bpmn2:collaboration>
   <bpmn2:process id="Process_1" name="Profil" definitionalCollaborationRef="Collaboration_1" isExecutable="false">
+    <bpmn2:ioSpecification id="InputOutputSpecification_1">
+      <bpmn2:dataInput id="DataInput_2" name="Call Order Service"/>
+      <bpmn2:dataInput id="DataInput_3" name="Call Invoice Service"/>
+      <bpmn2:dataInput id="DataInput_4" name="Call Logistic Service"/>
+      <bpmn2:dataOutput id="DataOutput_3" name="Call Workflow Service"/>
+      <bpmn2:dataOutput id="DataOutput_4" name="Call Workflow Service"/>
+      <bpmn2:dataOutput id="DataOutput_5" name="Call Workflow Service"/>
+      <bpmn2:inputSet id="InputSet_1" name="Input Set 1"/>
+      <bpmn2:outputSet id="OutputSet_1" name="Output Set 1"/>
+    </bpmn2:ioSpecification>
     <bpmn2:startEvent id="StartEvent_6" name="Start">
       <bpmn2:outgoing>SequenceFlow_12</bpmn2:outgoing>
     </bpmn2:startEvent>
@@ -123,9 +137,15 @@
     <bpmn2:intermediateCatchEvent id="IntermediateCatchEvent_5" imixs:activityid="20" name="created">
       <bpmn2:incoming>SequenceFlow_14</bpmn2:incoming>
       <bpmn2:outgoing>SequenceFlow_15</bpmn2:outgoing>
+      <bpmn2:dataOutput id="DataOutput_2" name="output1"/>
+      <bpmn2:outputSet id="OutputSet_2" name="Output Set 2">
+        <bpmn2:dataOutputRefs>DataOutput_2</bpmn2:dataOutputRefs>
+      </bpmn2:outputSet>
     </bpmn2:intermediateCatchEvent>
     <bpmn2:sequenceFlow id="SequenceFlow_14" sourceRef="StartEvent_4" targetRef="IntermediateCatchEvent_5"/>
     <bpmn2:sequenceFlow id="SequenceFlow_15" sourceRef="IntermediateCatchEvent_5" targetRef="Task_4"/>
+    <bpmn2:association id="Association_2" sourceRef="DataOutput_3" targetRef="IntermediateCatchEvent_4"/>
+    <bpmn2:association id="Association_3" sourceRef="DataInput_2" targetRef="IntermediateCatchEvent_5"/>
   </bpmn2:process>
   <bpmn2:process id="Process_3" name="Invoice" definitionalCollaborationRef="Collaboration_1" isExecutable="false">
     <bpmn2:startEvent id="StartEvent_5" name="Start">
@@ -155,6 +175,8 @@
     <bpmn2:sequenceFlow id="SequenceFlow_18" sourceRef="IntermediateCatchEvent_7" targetRef="Task_7"/>
     <bpmn2:sequenceFlow id="SequenceFlow_19" sourceRef="StartEvent_5" targetRef="IntermediateCatchEvent_6"/>
     <bpmn2:sequenceFlow id="SequenceFlow_20" sourceRef="Task_7" targetRef="EndEvent_3"/>
+    <bpmn2:association id="Association_4" sourceRef="DataInput_3" targetRef="IntermediateCatchEvent_6"/>
+    <bpmn2:association id="Association_5" sourceRef="DataOutput_4" targetRef="IntermediateCatchEvent_7"/>
   </bpmn2:process>
   <bpmn2:process id="Process_4" name="Logistic" definitionalCollaborationRef="Collaboration_1" isExecutable="false">
     <bpmn2:intermediateCatchEvent id="IntermediateCatchEvent_9" imixs:activityid="20" name="created">
@@ -184,7 +206,10 @@
     <bpmn2:sequenceFlow id="SequenceFlow_25" sourceRef="Task_8" targetRef="IntermediateCatchEvent_10"/>
     <bpmn2:sequenceFlow id="SequenceFlow_26" sourceRef="IntermediateCatchEvent_10" targetRef="Task_9"/>
     <bpmn2:sequenceFlow id="SequenceFlow_27" sourceRef="Task_9" targetRef="EndEvent_4"/>
+    <bpmn2:association id="Association_6" sourceRef="DataInput_4" targetRef="IntermediateCatchEvent_9"/>
+    <bpmn2:association id="Association_7" sourceRef="DataOutput_5" targetRef="IntermediateCatchEvent_10"/>
   </bpmn2:process>
+  <bpmn2:process id="Process_5" name="Default Pool Process" definitionalCollaborationRef="Collaboration_1" isExecutable="false"/>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1" name="Default Collaboration Diagram">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_1">
       <bpmndi:BPMNShape id="BPMNShape_1" bpmnElement="Participant_1" isHorizontal="true">
@@ -391,6 +416,54 @@
           <dc:Bounds height="14.0" width="22.0" x="1657.0" y="151.0"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_DataInput_2" bpmnElement="DataInput_2">
+        <dc:Bounds height="50.0" width="36.0" x="250.0" y="540.0"/>
+        <bpmndi:BPMNLabel id="BPMNLabel_19">
+          <dc:Bounds height="28.0" width="65.0" x="235.0" y="590.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_DataOutput_2" bpmnElement="DataOutput_3">
+        <dc:Bounds height="50.0" width="36.0" x="351.0" y="540.0"/>
+        <bpmndi:BPMNLabel id="BPMNLabel_22">
+          <dc:Bounds height="42.0" width="56.0" x="332.0" y="590.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_Group_2" bpmnElement="Group_2">
+        <dc:Bounds height="111.0" width="191.0" x="220.0" y="530.0"/>
+        <bpmndi:BPMNLabel id="BPMNLabel_75"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_DataInput_3" bpmnElement="DataInput_3">
+        <dc:Bounds height="50.0" width="36.0" x="900.0" y="540.0"/>
+        <bpmndi:BPMNLabel id="BPMNLabel_76">
+          <dc:Bounds height="28.0" width="72.0" x="885.0" y="590.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_DataOutput_3" bpmnElement="DataOutput_4">
+        <dc:Bounds height="50.0" width="36.0" x="993.0" y="540.0"/>
+        <bpmndi:BPMNLabel id="BPMNLabel_77">
+          <dc:Bounds height="42.0" width="56.0" x="974.0" y="590.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_DataInput_4" bpmnElement="DataInput_4">
+        <dc:Bounds height="50.0" width="36.0" x="1546.0" y="540.0"/>
+        <bpmndi:BPMNLabel id="BPMNLabel_78">
+          <dc:Bounds height="28.0" width="77.0" x="1531.0" y="590.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_DataOutput_4" bpmnElement="DataOutput_5">
+        <dc:Bounds height="50.0" width="36.0" x="1634.0" y="540.0"/>
+        <bpmndi:BPMNLabel id="BPMNLabel_79">
+          <dc:Bounds height="42.0" width="56.0" x="1615.0" y="590.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_Group_3" bpmnElement="Group_3">
+        <dc:Bounds height="114.0" width="182.0" x="870.0" y="530.0"/>
+        <bpmndi:BPMNLabel id="BPMNLabel_84"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_Group_4" bpmnElement="Group_4">
+        <dc:Bounds height="114.0" width="172.0" x="1520.0" y="530.0"/>
+        <bpmndi:BPMNLabel id="BPMNLabel_85"/>
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_2" bpmnElement="SequenceFlow_2" sourceElement="BPMNShape_Task_1" targetElement="BPMNShape_IntermediateCatchEvent_1">
         <di:waypoint xsi:type="dc:Point" x="488.0" y="133.0"/>
         <di:waypoint xsi:type="dc:Point" x="507.0" y="133.0"/>
@@ -586,6 +659,42 @@
         <di:waypoint xsi:type="dc:Point" x="1668.0" y="268.0"/>
         <di:waypoint xsi:type="dc:Point" x="1668.0" y="151.0"/>
         <bpmndi:BPMNLabel id="BPMNLabel_73"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_Association_2" bpmnElement="Association_2" sourceElement="BPMNShape_DataOutput_2" targetElement="BPMNShape_IntermediateCatchEvent_4">
+        <di:waypoint xsi:type="dc:Point" x="387.0" y="565.0"/>
+        <di:waypoint xsi:type="dc:Point" x="428.0" y="565.0"/>
+        <di:waypoint xsi:type="dc:Point" x="428.0" y="422.0"/>
+        <bpmndi:BPMNLabel id="BPMNLabel_29"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_Association_3" bpmnElement="Association_3" sourceElement="BPMNShape_DataInput_2" targetElement="BPMNShape_IntermediateCatchEvent_5">
+        <di:waypoint xsi:type="dc:Point" x="250.0" y="565.0"/>
+        <di:waypoint xsi:type="dc:Point" x="198.0" y="565.0"/>
+        <di:waypoint xsi:type="dc:Point" x="198.0" y="422.0"/>
+        <bpmndi:BPMNLabel id="BPMNLabel_74"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_Association_4" bpmnElement="Association_4" sourceElement="BPMNShape_DataInput_3" targetElement="BPMNShape_IntermediateCatchEvent_6">
+        <di:waypoint xsi:type="dc:Point" x="900.0" y="565.0"/>
+        <di:waypoint xsi:type="dc:Point" x="848.0" y="565.0"/>
+        <di:waypoint xsi:type="dc:Point" x="848.0" y="418.0"/>
+        <bpmndi:BPMNLabel id="BPMNLabel_80"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_Association_5" bpmnElement="Association_5" sourceElement="BPMNShape_DataOutput_3" targetElement="BPMNShape_IntermediateCatchEvent_7">
+        <di:waypoint xsi:type="dc:Point" x="1029.0" y="565.0"/>
+        <di:waypoint xsi:type="dc:Point" x="1072.0" y="565.0"/>
+        <di:waypoint xsi:type="dc:Point" x="1072.0" y="418.0"/>
+        <bpmndi:BPMNLabel id="BPMNLabel_81"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_Association_6" bpmnElement="Association_6" sourceElement="BPMNShape_DataInput_4" targetElement="BPMNShape_IntermediateCatchEvent_9">
+        <di:waypoint xsi:type="dc:Point" x="1546.0" y="565.0"/>
+        <di:waypoint xsi:type="dc:Point" x="1496.0" y="565.0"/>
+        <di:waypoint xsi:type="dc:Point" x="1496.0" y="421.0"/>
+        <bpmndi:BPMNLabel id="BPMNLabel_82"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_Association_7" bpmnElement="Association_7" sourceElement="BPMNShape_DataOutput_4" targetElement="BPMNShape_IntermediateCatchEvent_10">
+        <di:waypoint xsi:type="dc:Point" x="1670.0" y="565.0"/>
+        <di:waypoint xsi:type="dc:Point" x="1726.0" y="565.0"/>
+        <di:waypoint xsi:type="dc:Point" x="1726.0" y="421.0"/>
+        <bpmndi:BPMNLabel id="BPMNLabel_83"/>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
