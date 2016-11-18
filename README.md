@@ -23,11 +23,13 @@ See the [Imixs Docker Project](https://hub.docker.com/r/imixs/workflow/) for fur
 
 
 ## Initalize User DB
-After the first deployment you should initialize the internal UserDB. There for first call the setup URL
+After the first deployment the database is initialized automatically with a default model (ticket.bpmn) and the default user 'admin' with the default password 'adminadmin'. 
+
+You can initialize the internal UserDB manually by calling the setup URL
 
 [http://[YOURSERVER]/imixs-microservice/setup](http://localhost/imixs-microservice/setup)
 
-This call will initialize the default user 'admin' with the default password 'adminadmin'. You can add additional accounts or can change the default account later using the 'User-REST service' interface.
+You can add additional accounts or change the default account later using the 'User-REST service' interface.
 
 ### How to Deploy a BPMN Model
 After you have setup the Imixs-Workfow Microservice you can deploy a workflow Model. A workflow model can be created using the [Imixs-BPMN eclipse Plugin](http://www.imixs.org/doc/modelling/index.html). A workflow Model can be deployed into the Imixs-Microservice using the 'Model-REST service' interface. You can deploy the default 'Ticket Workflow' using the following curl command: 
@@ -135,7 +137,7 @@ To request the Worklist for the current user 'admin' user you can call:
 
     curl --user admin:adminadmin -H \
          "Accept: application/json" \
-         http://localhost:8080/imixs-microservice/workflow/tasklist/admin
+         http://localhost:8080/imixs-microservice/workflow/tasklist/creator/admin
 
 Find more details about the Imixs-Rest API [here](http://www.imixs.org/doc/restapi/workflowservice.html)
 
