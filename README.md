@@ -84,7 +84,7 @@ The example below shows how to post a new Workitem in JSON Format using the curl
 	curl --user admin:adminadmin -H "Content-Type: application/json" -d \
 	       '{"item":[ \
 	                 {"name":"type","value":{"@type":"xs:string","$":"workitem"}}, \
-	                 {"name":"$modelversion","value":{"@type":"xs:string","$":"1.0.0"}}, \
+	                 {"name":"$modelversion","value":{"@type":"xs:string","$":"1.0.1"}}, \
 	                 {"name":"txtworkflowgroup","value":{"@type":"xs:string","$":"Ticket"}}, \
 	                 {"name":"$processid","value":{"@type":"xs:int","$":"1000"}}, \
 	                 {"name":"$activityid","value":{"@type":"xs:int","$":"10"}}, \

@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.imixs.workflow</groupId>
 	<artifactId>imixs-microservice</artifactId>
-	<version>1.4.1</version>
+	<version>1.5.0</version>
 	<packaging>war</packaging>
 	<name>Imixs-Workflow Microservice</name>
 
@@ -11,10 +11,9 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<org.imixs.workflow.version>3.8.2</org.imixs.workflow.version>
-		<org.imixs.marty.version>2.8.0</org.imixs.marty.version>
-		<org.imixs.adapters.version>1.4.0</org.imixs.adapters.version>
-		<lucene.version>4.10.4</lucene.version>
+		<org.imixs.workflow.version>4.0.1</org.imixs.workflow.version>
+		<org.imixs.marty.version>3.0.1-SNAPSHOT</org.imixs.marty.version>
+		<lucene.version>6.2.1</lucene.version>
 		<custom.webResources>src/main/webapp</custom.webResources>
 	</properties>
 
@@ -110,8 +109,8 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>2.3.2</version>
 				<configuration>
-					<source>1.7</source>
-					<target>1.7</target>
+					<source>1.8</source>
+					<target>1.8</target>
 				</configuration>
 			</plugin>
 
@@ -168,12 +167,6 @@
 			<version>${org.imixs.workflow.version}</version>
 		</dependency>
 
-
-		<dependency>
-			<groupId>org.imixs.workflow</groupId>
-			<artifactId>imixs-adapters-lucene-ejb</artifactId>
-			<version>${org.imixs.adapters.version}</version>
-		</dependency>
 		<dependency>
 			<groupId>org.imixs.marty</groupId>
 			<artifactId>imixs-marty-ejb</artifactId>

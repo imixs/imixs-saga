@@ -109,7 +109,7 @@ public class SetupServlet extends HttpServlet {
 		// try to init system indizies and load default models
 		try {
 			logger.info("Imixs-Microservice - update index list...");
-			setupService.updateIndexList();;
+			setupService.init();;
 		} catch (AccessDeniedException e1) {
 			logger.severe("SetupServlet - unable to init system "
 					+ e1.getMessage());
