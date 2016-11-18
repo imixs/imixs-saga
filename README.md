@@ -114,7 +114,7 @@ There are serveral Resouce URIs to request the state of a process instance. Usin
 
     GET = http://localhost/workflow/rest-service/workflow/workitem/[UNIQUEID]
 
-To change the status of a process instance you simply need ot post uniqueid together with the next workflow activity defined by your workflow model
+To change the status of a process instance you simply need to post uniqueid together with the next workflow activity defined by your workflow model
 
     POST = http://localhost/workflow/rest-service/workflow/workitem/[UNIQUEID]
  
@@ -135,8 +135,9 @@ To request the Worklist for the current user 'admin' user you can call:
 
     curl --user admin:adminadmin -H \
          "Accept: application/json" \
-         http://localhost:8080/imixs-microservice/workflow/worklist
+         http://localhost:8080/imixs-microservice/workflow/tasklist/admin
 
+Find more details about the Imixs-Rest API [here](http://www.imixs.org/doc/restapi/workflowservice.html)
 
 ### JUnit Tests
 
