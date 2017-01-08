@@ -8,7 +8,7 @@
 		<welcome-file>index.html</welcome-file>
 	</welcome-file-list>
 
-	<!-- RESTfull Service - Wildfly configuration for resteasy -->
+	<!-- RESTfull Service - Wildfly configuration for resteasy 
 	<context-param>
 		<param-name>resteasy.scan</param-name>
 		<param-value>true</param-value>
@@ -26,8 +26,10 @@
 		<servlet-class>
 			org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher</servlet-class>
 	</servlet>
+	-->
 	<!-- END Wilfly -->
 
+<!-- 
 	<servlet-mapping>
 		<servlet-name>ImixsRestService</servlet-name>
 		<url-pattern>/model/*</url-pattern>
@@ -36,6 +38,7 @@
 		<url-pattern>/report/*</url-pattern>
 		<url-pattern>/user/*</url-pattern>
 	</servlet-mapping>
+ -->
 	<login-config>
 		<auth-method>BASIC</auth-method>
 		<realm-name>ApplicationRealm</realm-name>
