@@ -45,7 +45,7 @@ import javax.ws.rs.core.Response;
 
 import org.imixs.marty.ejb.security.UserGroupService;
 import org.imixs.workflow.ItemCollection;
-import org.imixs.workflow.jee.ejb.EntityService;
+import org.imixs.workflow.engine.DocumentService;
 import org.imixs.workflow.util.JSONParser;
 import org.imixs.workflow.xml.XMLItemCollection;
 import org.imixs.workflow.xml.XMLItemCollectionAdapter;
@@ -68,8 +68,8 @@ public class UserRestService {
 	UserGroupService userGroupService;
 	
 	@EJB
-	EntityService entityService;
-
+	DocumentService documentService;
+	
 	@javax.ws.rs.core.Context
 	private static HttpServletRequest servletRequest;
 
@@ -77,7 +77,7 @@ public class UserRestService {
 
 	/**
 	 * This method expects a JSON request object and creates or updates a corresponding
-	 * user prifle by calling the  the WorkItem by the userGroupService.
+	 * user profile by calling the  the WorkItem by the userGroupService.
 	 * 
 	 * The Method returns a JSON object with the new data. If a processException
 	 * Occurs the method returns a JSON object with the error code
@@ -147,5 +147,6 @@ public class UserRestService {
 		return Response.ok(responseWorkitem, MediaType.APPLICATION_JSON).build();
 
 	}
+	
 
 }
