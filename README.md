@@ -56,14 +56,14 @@ the default password 'adminadmin' to test
 ###Open the Task List
 Each user involved in a business process has a personal task list (called the 'worklist'). You can request the task list for the current user by the following Rest API URL: 
 
-    http://[YOURSERVER]/rest-service/workflow/worklist
+    http://[YOURSERVER]/imixs-microservice/workflow/worklist
 
 The result will include all workitems for the current user.
 
 ### Create a new Process Instance
 To create a new process instance you can POST a JSON Object to the Imixs-Microservice in the following way
 
-    POST = http://localhost/workflow/rest-service/workflow/workitem
+    POST = http://localhost/imixs-microservice/workflow/workitem
 				
 To create a valid workitem the following attributes are mandatory:
 
@@ -115,6 +115,14 @@ The workitem includes the attribute '$uniqueid' wich is used ot identify the pro
 There are serveral Resouce URIs to request the state of a process instance. Using the $uniqueid returned by the POST method you can request the current status of a single process instance:
 
     GET = http://localhost/workflow/rest-service/workflow/workitem/[UNIQUEID]
+
+curl command: 
+
+	curl --user admin:adminadmin \
+	      -H "Accept: application/json"  \
+	       http://localhost:8080/imixs-microservice/workflow/workitem/[UNIQUEID]
+
+
 
 To change the status of a process instance you simply need to post uniqueid together with the next workflow activity defined by your workflow model
 
