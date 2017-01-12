@@ -206,7 +206,7 @@ Note: this command will start a postgreSQL server and the Imixs-Microserivce.
 For further details see the [imixs/wildfly docker image](https://hub.docker.com/r/imixs/wildfly/).
 
 
-# Development
+## 3. Development
 
 During development the imixs/imixs-archive docker container can be used with mounting an external deployments/ folder:
 
@@ -215,7 +215,7 @@ During development the imixs/imixs-archive docker container can be used with mou
          -v ~/git/imixs-microservice/deployments:/opt/wildfly/standalone/deployments/:rw \
          imixs/imixs-microservice
 
-## Docker-Compose
+### Docker-Compose
 
 Imixs-Microservice needs a postgreSQL database to be run. To start both containers a docker-compose script is provided to simplify the startup. 
 The following example shows the docker-compose.yml for imixs-microservice. You can customize this .yml file to your needs:
