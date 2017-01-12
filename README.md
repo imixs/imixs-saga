@@ -12,13 +12,13 @@ See also [Marin Fowlers Blog)(http://martinfowler.com/articles/microservices.htm
  
 ## Installation
 
-Imixs-Workflow is based on the Java EE specification and can be deployed into any Java EE compatible application server like GlassFish or JBoss/Wildfly. See the [deployment guide](http://www.imixs.org/doc/deployment/index.html) for further information.
+Imixs-Workflow is based on the Java EE specification and can be deployed into any Java EE compatible application server like GlassFish 
+or JBoss/Wildfly. See the [deployment guide](http://www.imixs.org/doc/deployment/index.html) for further information.
 
 
 
-## Docker
-Imixs-Microservice provides also a docker image. This makes is easy to run the Imixs-Microservice in a Docker container.
-See the [Imixs Docker Project](https://hub.docker.com/r/imixs/workflow/) for further information.
+### Docker
+Imixs-Microservice provides also a docker image. This makes is easy to run the Imixs-Microservice in a Docker container. See the docker section below.
 
 
 
@@ -27,7 +27,7 @@ After the first deployment the database is initialized automatically with a defa
 
 You can initialize the internal UserDB manually by calling the setup URL
 
-[http://[YOURSERVER]/imixs-microservice/setup](http://localhost/imixs-microservice/setup)
+[http://[YOURSERVER]/imixs-microservice/setup](http://localhost:8080/imixs-microservice/setup)
 
 You can add additional accounts or change the default account later using the 'User-REST service' interface.
 
@@ -187,17 +187,38 @@ Example curl command:
 <br /><br /><img src="small_h-trans.png" />
 
 
-The Imixs Docker Container '[imixs/imixs-microservice](https://github.com/imixs-docker/imixs-archive)' can be used to run a Imixs-Microservice on a Docker host. The image is based on the docker image [imixs/wildfly](https://hub.docker.com/r/imixs/wildfly/).
-
-
+Imixs-Microservice provides a Docker Container to be used to run the service on a Docker host. 
+The docker image is based on the docker image [imixs/wildfly](https://hub.docker.com/r/imixs/wildfly/).
 
 ## 1. Build the image
+
+To build the docker image run:
 
 	docker build --tag=imixs/imixs-microservice .
 
 ## 2. Run with docker-compose
-You can run Imixs-Microservice on docker-compose to simplify the startup. 
-The following example shows a docker-compose.yml for imixs-office-workflow:
+You can start the Imixs-Microservice docker container with the docker-compose command:
+
+	docker-compose up
+
+Note: this command will start a postgreSQL server and the Imixs-Microserivce. 
+
+For further details see the [imixs/wildfly docker image](https://hub.docker.com/r/imixs/wildfly/).
+
+
+# Development
+
+During development the imixs/imixs-archive docker container can be used with mounting an external deployments/ folder:
+
+	docker run --name="imixs-archive" -d -p 8080:8080 -p 9990:9990 \
+         -e WILDFLY_PASS="admin_password" \
+         -v ~/git/imixs-microservice/deployments:/opt/wildfly/standalone/deployments/:rw \
+         imixs/imixs-microservice
+
+## Docker-Compose
+
+Imixs-Microservice needs a postgreSQL database to be run. To start both containers a docker-compose script is provided to simplify the startup. 
+The following example shows the docker-compose.yml for imixs-microservice. You can customize this .yml file to your needs:
 
 	postgres:
 	  image: postgres
@@ -215,38 +236,7 @@ The following example shows a docker-compose.yml for imixs-office-workflow:
 	  links: 
 	    - postgres:postgres
  
-Take care about the link to the postgres container. The host 'postgres' name need to be used in the standalone.xml configuration file in wildfly to access the postgres server.
-
-Run 
-
-	docker-compose up
-	
-
-## 2. Running and stopping a container
-
-
-The container includes a start script which allows to start Wildfly with an admin password to grant access to the web admin console. You can start an instance of wildfly with the Docker run command:
-
-    docker run --name="imixs-microservice" -d -p 8080:8080 -p 9990:9990 -e WILDFLY_PASS="admin_password" imixs/imixs-microservice
-    
-For further details see the [imixs/wildfly docker image](https://hub.docker.com/r/imixs/wildfly/).
-
-
-
-## 3. Development
-
-During development the imixs/imixs-archive docker container can be used with mounting an external deployments/ folder:
-
-	docker run --name="imixs-archive" -d -p 8080:8080 -p 9990:9990 \
-         -e WILDFLY_PASS="admin_password" \
-         -v ~/git/imixs-microservice/deployments:/opt/wildfly/standalone/deployments/:rw \
-         imixs/imixs-microservice
-
-Logfiles can be monitored with 
-
-	docker logs -f imixs-microservice
-
-
+Take care about the link to the postgres container. The host name 'postgres' is needed to be used in the standalone.xml configuration file in wildfly to access the postgres server for the database pool configuration.
 
 
 
