@@ -129,6 +129,8 @@
 				</configuration>
 			</plugin>
 		</plugins>
+		
+		<finalName>imixs-microservice</finalName>
 	</build>
 
 	<dependencies>

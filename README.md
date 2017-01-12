@@ -154,3 +154,99 @@ Find more details about the Imixs-Rest API [here](http://www.imixs.org/doc/resta
 The Imixs-Microservice project provide a set of JUnit Tests. These tests can be used also as a starting point to see how the RestService API works.
 
 
+## User Management
+
+The Imixs-Microservice provides a user managemetn service to store user credentials into the existing database connection (jdbc/imixs-microservice). This service is recommended for test and development only. 
+
+The userManagement service provides a rest API to create a new user or update an existing account. 
+The service expects a JSON structure with the user id, groups and password:
+
+	{"item":[    
+		  		{"name":"type","value":{"@type":"xs:string","$":"profile"}},     
+		  		{"name":"txtname","value":{"@type":"xs:string","$":"USER_NAME"}},     
+		  		{"name":"txtpassword","value":{"@type":"xs:string","$":"USER_PASSWORD"}},     
+		  		{"name":"txtgroups","value":{"@type":"xs:string","$":"IMIXS-WORKFLOW-Author"}}
+		  ]}
+
+Example curl command:
+
+	curl --user admin:adminadmin -H "Content-Type: application/json" -d \
+	       '{"item":[  \
+	       	    {"name":"type","value":{"@type":"xs:string","$":"profile"}}, \
+	       	    {"name":"txtname","value":{"@type":"xs:string","$":"USER_NAME"}}, \
+	       	    {"name":"txtpassword","value":{"@type":"xs:string","$":"USER_PASSWORD"}}, \
+	       	    {"name":"txtgroups","value":{"@type":"xs:string","$":"IMIXS-WORKFLOW-Author"}} \
+	       	 ]}' \
+	       	 http://localhost:8080/imixs-microservice/user
+
+
+
+
+
+
+<br /><br /><img src="small_h-trans.png" />
+
+
+The Imixs Docker Container '[imixs/imixs-microservice](https://github.com/imixs-docker/imixs-archive)' can be used to run a Imixs-Microservice on a Docker host. The image is based on the docker image [imixs/wildfly](https://hub.docker.com/r/imixs/wildfly/).
+
+
+
+## 1. Build the image
+
+	docker build --tag=imixs/imixs-microservice .
+
+## 2. Run with docker-compose
+You can run Imixs-Microservice on docker-compose to simplify the startup. 
+The following example shows a docker-compose.yml for imixs-office-workflow:
+
+	postgres:
+	  image: postgres
+	  environment:
+	    POSTGRES_PASSWORD: adminadmin
+	    POSTGRES_DB: imixs01
+	
+	office:
+	  image: imixs/imixs-microservice
+	  environment:
+	    WILDFLY_PASS: adminadmin
+	  ports:
+	    - "8080:8080"
+	    - "9990:9990"
+	  links: 
+	    - postgres:postgres
+ 
+Take care about the link to the postgres container. The host 'postgres' name need to be used in the standalone.xml configuration file in wildfly to access the postgres server.
+
+Run 
+
+	docker-compose up
+	
+
+## 2. Running and stopping a container
+
+
+The container includes a start script which allows to start Wildfly with an admin password to grant access to the web admin console. You can start an instance of wildfly with the Docker run command:
+
+    docker run --name="imixs-microservice" -d -p 8080:8080 -p 9990:9990 -e WILDFLY_PASS="admin_password" imixs/imixs-microservice
+    
+For further details see the [imixs/wildfly docker image](https://hub.docker.com/r/imixs/wildfly/).
+
+
+
+## 3. Development
+
+During development the imixs/imixs-archive docker container can be used with mounting an external deployments/ folder:
+
+	docker run --name="imixs-archive" -d -p 8080:8080 -p 9990:9990 \
+         -e WILDFLY_PASS="admin_password" \
+         -v ~/git/imixs-microservice/deployments:/opt/wildfly/standalone/deployments/:rw \
+         imixs/imixs-microservice
+
+Logfiles can be monitored with 
+
+	docker logs -f imixs-microservice
+
+
+
+
+
