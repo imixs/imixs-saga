@@ -96,19 +96,17 @@ public class SetupServlet extends HttpServlet {
 
 		// init userIDs for user db
 		try {
-			logger.info("Imixs-Microservice - checking default user...");
 			if (userGroupService != null) {
 				userGroupService.initUserIDs();
 			}
 
 		} catch (Exception e) {
-			logger.warning("SetupServlet - unable to initUserIds "
+			logger.warning("userGroupService - unable to initUserIds "
 					+ e.getMessage());
 		}
 
 		// try to init system indizies and load default models
 		try {
-			logger.info("Imixs-Microservice - update index list...");
 			setupService.init();;
 		} catch (AccessDeniedException e1) {
 			logger.severe("SetupServlet - unable to init system "
