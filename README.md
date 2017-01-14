@@ -21,8 +21,14 @@ or JBoss/Wildfly. See the [deployment guide](http://www.imixs.org/doc/deployment
 Imixs-Microservice provides also a docker image. This makes is easy to run the Imixs-Microservice in a Docker container. See the docker section below.
 
 
+### Imixs-Admin Client
 
-## Initalize User DB
+The Imixs/Imixs-Microservice image contains the latest version of the [Imixs-Admin Client](http://www.imixs.org/doc/administration.html). The Imixs-Admin Client can be used to administrate a Imixs-Workflow instance
+
+<img src="imixs-admin-client-01.png" width="800" /> 
+
+
+### Initalize User DB
 After the first deployment the database is initialized automatically with a default model (ticket.bpmn) and the default user 'admin' with the default password 'adminadmin'. 
 
 You can initialize the internal UserDB manually by calling the setup URL
@@ -74,9 +80,9 @@ To create a valid workitem the following attributes are mandatory:
 See the following Example:
 
     {"item":[
-     {"name":"$modelversion","value":{"@type":"xs:string","$":"my-model-definition-0.0.2"}},
-     {"name":"$processid","value":{"@type":"xs:int","$":"2000"}}, 
-     {"name":"$activityid","value":{"@type":"xs:int","$":"1"}}, 
+     {"name":"$modelversion","value":{"@type":"xs:string","$":"1.0.1"}},
+     {"name":"$processid","value":{"@type":"xs:int","$":"1000"}}, 
+     {"name":"$activityid","value":{"@type":"xs:int","$":"10"}}, 
      {"name":"_subject","value":{"@type":"xs:string","$":"Some usefull data.."}}
     ]}  
     
@@ -87,7 +93,6 @@ The example below shows how to post a new Workitem in JSON Format using the curl
 	       '{"item":[ \
 	                 {"name":"type","value":{"@type":"xs:string","$":"workitem"}}, \
 	                 {"name":"$modelversion","value":{"@type":"xs:string","$":"1.0.1"}}, \
-	                 {"name":"txtworkflowgroup","value":{"@type":"xs:string","$":"Ticket"}}, \
 	                 {"name":"$processid","value":{"@type":"xs:int","$":"1000"}}, \
 	                 {"name":"$activityid","value":{"@type":"xs:int","$":"10"}}, \
 	                 {"name":"txtname","value":{"@type":"xs:string","$":"test-json"}}\
@@ -100,7 +105,7 @@ Once you created a new process instance based on a predefined model you got a se
     {"item":[
 	   {"name":"$uniqueid","value":{"@type":"xs:string","$":"141cb98aecc-18544f1b"}},
 	   {"name":"$modelversion","value":{"@type":"xs:string","$":"my-model-definition-0.0.2"}},
-	   {"name":"$processid","value":{"@type":"xs:int","$":"2000"}},
+	   {"name":"$processid","value":{"@type":"xs:int","$":"1000"}},
 	   {"name":"namcreator","value":{"@type":"xs:string","$":"admin"}}, 
 	   {"name":"namcurrenteditor","value":{"@type":"xs:string","$":"admin"}}, 
 	   {"name":"namowner","value":{"@type":"xs:string","$":"admin"}}, 
