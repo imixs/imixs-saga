@@ -197,8 +197,12 @@ The docker image is based on the docker image [imixs/wildfly](https://hub.docker
 
 ## 1. Build the image
 
-To build the docker image run:
+To build the artifact run the maven command:
 
+    mvn clean install -DskipTests
+    
+To build the docker image run:
+    
 	docker build --tag=imixs/imixs-microservice .
 
 ## 2. Run with docker-compose
