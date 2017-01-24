@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.imixs.workflow</groupId>
 	<artifactId>imixs-microservice</artifactId>
-	<version>1.5.0</version>
+	<version>1.5.1</version>
 	<packaging>war</packaging>
 	<name>Imixs-Workflow Microservice</name>
 
@@ -11,7 +11,7 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<org.imixs.workflow.version>4.0.4</org.imixs.workflow.version>
+		<org.imixs.workflow.version>4.0.5-SNAPSHOT</org.imixs.workflow.version>
 		<org.imixs.marty.version>3.0.1</org.imixs.marty.version>
 		<lucene.version>6.3.0</lucene.version>
 		<custom.webResources>src/main/webapp</custom.webResources>
