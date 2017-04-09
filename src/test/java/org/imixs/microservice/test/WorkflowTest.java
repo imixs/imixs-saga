@@ -38,6 +38,7 @@ public class WorkflowTest {
 	static String BASE_URL = "http://localhost:8080/imixs-microservice/";
 	static String USERID = "admin";
 	static String PASSWORD = "adminadmin";
+	static String MODEL_VERSION="1.0.1";
 	RestClient restClient = null;
 	WorkflowTestSuite testSuite = null;
 
@@ -74,7 +75,7 @@ public class WorkflowTest {
 
 		ItemCollection ticket = new ItemCollection();
 		ticket.replaceItemValue("type", "workitem");
-		ticket.replaceItemValue("$ModelVersion", "1.2.0");
+		ticket.replaceItemValue("$ModelVersion",MODEL_VERSION);
 		ticket.replaceItemValue("$processid", 1000);
 		ticket.replaceItemValue("$activityid", 10);
 		ticket.replaceItemValue("txtName", "Test");
@@ -82,6 +83,7 @@ public class WorkflowTest {
 
 		ticket = testSuite.processWorkitem(ticket, "admin");
 
+		// TODO: bug need to be fixed- see issue #259
 		Assert.assertNotNull(ticket);
 		String uid = ticket.getItemValueString("$UniqueID");
 		WorkflowTestSuite.log(Level.INFO, "UID=" + uid);
@@ -103,7 +105,7 @@ public class WorkflowTest {
 
 		// create a json test string
 		String json = "{\"item\":[" + "     {\"name\":\"type\",\"value\":{\"@type\":\"xs:string\",\"$\":\"workitem\"}},"
-				+ "     {\"name\":\"$modelversion\",\"value\":{\"@type\":\"xs:string\",\"$\":\"1.2.0\"}},"
+				+ "     {\"name\":\"$modelversion\",\"value\":{\"@type\":\"xs:string\",\"$\":\"" + MODEL_VERSION + "\"}},"
 				+ "     {\"name\":\"$processid\",\"value\":{\"@type\":\"xs:int\",\"$\":\"1000\"}},"
 				+ "     {\"name\":\"$activityid\",\"value\":{\"@type\":\"xs:int\",\"$\":\"10\"}},"
 			    + "     {\"name\":\"namteam\",\"value\":[{\"@type\":\"xs:string\",\"$\":\"admin\"},"
