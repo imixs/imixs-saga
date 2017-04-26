@@ -235,7 +235,7 @@ The following example shows the docker-compose.yml for imixs-microservice. You c
 	    POSTGRES_PASSWORD: adminadmin
 	    POSTGRES_DB: imixs01
 	
-	office:
+	workflow:
 	  image: imixs/imixs-microservice
 	  environment:
 	    WILDFLY_PASS: adminadmin
