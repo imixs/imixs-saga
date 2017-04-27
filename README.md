@@ -7,7 +7,7 @@ The Imixs-Microservice project encapsulates the [Imixs-Workflow Engine](http://w
 A business process can be described by a BPMN Model using the Eclipse based [Imixs-Workflow-Modelling Tool](http://www.imixs.org/doc/modelling/index.html). Business data can be created, published and processed either in XML or JSON format.
 
 
-See also [Marin Fowlers Blog)(http://martinfowler.com/articles/microservices.html) for further information about the concepts of microservices.
+See also [Marin Fowlers Blog](http://martinfowler.com/articles/microservices.html) for further information about the concepts of microservices.
 
 
  
@@ -22,14 +22,15 @@ If you do not want to install the Imixs-Microservice by yourself you can skip th
 
 ### Imixs-Admin Client
 
-The [Imixs-Admin Client](http://www.imixs.org/doc/administration.html) is a web tool to administrate a running instance of the Imixs-Worklfow engine. The Imixs-Admin tool can be deployed in addition to the Imixs-Microservce. 
-The Docker Image already contains the latest version of the [Imixs-Admin Client](http://www.imixs.org/doc/administration.html). 
+The [Imixs-Admin Client](http://www.imixs.org/doc/administration.html) is a web tool to administrate a running instance of the Imixs-Worklfow engine. The Imixs-Admin tool can be deployed in addition to the Imixs-Microservice. 
 
 <img src="imixs-admin-client-01.png" width="800" /> 
 
+The Docker Image already contains the latest version of the [Imixs-Admin Client](http://www.imixs.org/doc/administration.html). 
 
-### Initalize User DB
-Imixs-Microservice expects a database pool with the JNDI name 'imixs-microservice'. You can use any database vendor but you need to configure the JDBC database pool in your application server befor your start the deployment. 
+### Initalize Database Connection
+Imixs-Microservice expects a database pool with the JNDI name 'imixs-microservice'. You can use any database vendor, but you need to configure the JDBC database pool in your application server before your start the deployment. 
+
 After the first deployment the database is initialized automatically with a default model (ticket.bpmn) and the default user 'admin' with the default password 'adminadmin'. 
 
 You can initialize the internal UserDB manually by calling the setup URL
@@ -39,7 +40,7 @@ You can initialize the internal UserDB manually by calling the setup URL
 You can add additional accounts or change the default account later using the 'User-REST service' interface.
 
 ### How to Deploy a BPMN Model
-After you Imixs-Workfow Microservice is up and running you can deploy your own BPMN Model. A workflow model can be created using the [Imixs-BPMN eclipse Plugin](http://www.imixs.org/doc/modelling/index.html). A workflow Model can be deployed into the Imixs-Microservice using the 'Model-REST service' interface. You can deploy the default 'Ticket Workflow' using the following curl command: 
+After your Imixs-Microservice is up and running you can deploy your own BPMN Model. A workflow model can be created using the [Imixs-BPMN eclipse Plugin](http://www.imixs.org/doc/modelling/index.html). A workflow Model can be deployed into the Imixs-Microservice using the 'Model-REST service' interface. You can deploy the default 'Ticket Workflow' using the following curl command: 
 
     curl --user admin:adminadmin --request POST -Tticket.bpmn http://localhost:8080/imixs-microservice/model/bpmn
 
@@ -51,16 +52,16 @@ To verify if the model was deployed successfully you can check the deployed mode
 
     http://[YOURSERVER]/imixs-microservice/model
 
-If no model version is yet deployed, you can create and upload a new BPMN Model using the Imixs-BPMN-Modeller.
+If no model version is yet deployed, you can create and upload a new BPMN Model using the [Imixs-BPMN-Modeller](http://www.imixs.org/doc/modelling/index.html).
 
 ## How to Manage a Process Instance
 
-The following section includes some short examples how to create, process and verify a workflow instance managed by the Imxis-Workflow Microservicve. See the [Imixs-Workflow Project](http://www.imixs.org/doc/restapi/index.html) for more information.
+The following section includes some short examples how to create, process and verify a workflow instance managed by the Imxis-Workflow Microservice. See the [Imixs-Workflow Rest API](http://www.imixs.org/doc/restapi/index.html) for more information.
 
 **NOTE:** you need to authenticate against the rest service. Use the default user 'admin' and
-the default password 'adminadmin' to test
+the default password 'adminadmin' for testing.
 
-###Open the Task List
+### Open the Task List
 Each user involved in a business process has a personal task list (called the 'worklist'). You can request the task list for the current user by the following Rest API URL: 
 
     http://[YOURSERVER]/imixs-microservice/workflow/worklist
@@ -278,11 +279,13 @@ To build the docker image run:
 	docker build --tag=imixs/imixs-microservice .
 	
 
-## 3. Development
+## 2. The Debug Mode
 
-During development the docker container can be used with mounting an external deployments/ folder:
+During development the docker container can be used with mounting an external deployments/ folder in debug mode:
 
-	docker run --name="imixs-microservice" -d -p 8080:8080 -p 9990:9990 \
-         -e WILDFLY_PASS="admin_password" \
-         -v ~/git/imixs-microservice/deployments:/opt/wildfly/standalone/deployments/:rw \
-         imixs/imixs-microservice
+	docker run --name="imixs-microservice" -d \
+		-p 8080:8080 -p 8787:8787 -p 9990:9990 \
+		-e WILDFLY_PASS="admin_password" \
+		-e DEBUG=true \
+		-v ~/git/imixs-microservice/deployments:/opt/wildfly/standalone/deployments/ \
+		imixs/imixs-microservice
