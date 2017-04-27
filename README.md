@@ -186,7 +186,7 @@ Example curl command:
 	       	 http://localhost:8080/imixs-microservice/user
 
 
-
+Note that you can also configure you own security domain within you application sever. 
 
 
 
