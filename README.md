@@ -13,11 +13,11 @@ See also [Marin Fowlers Blog](http://martinfowler.com/articles/microservices.htm
  
 ## Installation
 
-Imixs-Microservice is based on the Java EE specification and can be deployed into any Java EE compatible application server like [JBoss/Wildfly](http://wildfly.org/), GlassFish or [Payara](http://www.payara.fish/). See the [Imixs-Workflow deployment guide](http://www.imixs.org/doc/deployment/index.html) for further information.
+Imixs-Microservice is based on the Java EE specification and can be deployed into any Java EE application server like [JBoss/Wildfly](http://wildfly.org/), GlassFish or [Payara](http://www.payara.fish/). See the [Imixs-Workflow deployment guide](http://www.imixs.org/doc/deployment/index.html) for further information about deployment and configuration.
 
 ### Docker
 Imixs-Microservice provides also a docker image. This makes is easy to run the Imixs-Microservice in a Docker container.
-If you do not want to install the Imixs-Microservice by yourself you can skip this chapter and jump directly to the Docker section below.
+If you do not want to install the Imixs-Microservice by yourself, you can skip this chapter and jump directly to the Docker section below.
 
 
 ### Imixs-Admin Client
@@ -29,18 +29,18 @@ The [Imixs-Admin Client](http://www.imixs.org/doc/administration.html) is a web 
 The Docker Image already contains the latest version of the [Imixs-Admin Client](http://www.imixs.org/doc/administration.html). 
 
 ### Initalize Database Connection
-Imixs-Microservice expects a database pool with the JNDI name 'imixs-microservice'. You can use any database vendor, but you need to configure the JDBC database pool in your application server before your start the deployment. 
+The Imixs-Microservice expects a database pool with the JNDI name 'imixs-microservice'. You can use any database vendor, but you need to configure the JDBC database pool in your application server before your start the deployment. 
 
-After the first deployment the database is initialized automatically with a default model (ticket.bpmn) and the default user 'admin' with the default password 'adminadmin'. 
+After the first deployment, the schema is created and the database is initialized automatically with a default model (ticket.bpmn) and the default user 'admin' with the default password 'adminadmin'. 
 
 You can initialize the internal UserDB manually by calling the setup URL
 
 [http://[YOURSERVER]/imixs-microservice/setup](http://localhost:8080/imixs-microservice/setup)
 
-You can add additional accounts or change the default account later using the 'User-REST service' interface.
+You can add additional accounts or change the default account later, using the 'User-REST service' interface.
 
 ### How to Deploy a BPMN Model
-After your Imixs-Microservice is up and running you can deploy your own BPMN Model. A workflow model can be created using the [Imixs-BPMN eclipse Plugin](http://www.imixs.org/doc/modelling/index.html). A workflow Model can be deployed into the Imixs-Microservice using the 'Model-REST service' interface. You can deploy the default 'Ticket Workflow' using the following curl command: 
+After the Imixs-Microservice is up and running, you can deploy your own BPMN Model. A workflow model can be created using the [Imixs-BPMN eclipse Plugin](http://www.imixs.org/doc/modelling/index.html). The Model can be deployed into the Imixs-Microservice using the 'Model-REST service' interface. You can deploy the default 'Ticket Workflow' using the following curl command: 
 
     curl --user admin:adminadmin --request POST -Tticket.bpmn http://localhost:8080/imixs-microservice/model/bpmn
 
@@ -52,7 +52,6 @@ To verify if the model was deployed successfully you can check the deployed mode
 
     http://[YOURSERVER]/imixs-microservice/model
 
-If no model version is yet deployed, you can create and upload a new BPMN Model using the [Imixs-BPMN-Modeller](http://www.imixs.org/doc/modelling/index.html).
 
 ## How to Manage a Process Instance
 
@@ -158,12 +157,12 @@ Find more details about the Imixs-Rest API [here](http://www.imixs.org/doc/resta
 
 ### JUnit Tests
 
-The Imixs-Microservice project provide a set of JUnit Tests. These tests can be used also as a starting point to see how the RestService API works.
+The Imixs-Microservice project provide a set of JUnit Tests. These tests can be used also as a starting point to learn how the RestService API works.
 
 
 ## User Management
 
-The Imixs-Microservice provides a user managemetn service to store user credentials into the existing database connection (jdbc/imixs-microservice). This service is recommended for test and development only. 
+The Imixs-Microservice provides a user management service to store user credentials into the existing database connection (jdbc/imixs-microservice). This service is recommended for test and development only. 
 
 The userManagement service provides a rest API to create a new user or update an existing account. 
 The service expects a JSON structure with the user id, groups and password:
@@ -191,7 +190,7 @@ Example curl command:
 
 
 
-<br /><br /><img src="small_h-trans.png" />
+<br><br><img src="small_h-trans.png">
 
 
 Imixs-Microservice provides a Docker Container to be used to run the service on a Docker host. 
@@ -199,7 +198,7 @@ The docker image is based on the docker image [imixs/wildfly](https://hub.docker
 
 To run Imixs-Microservice in a Docker container, the container need to be linked to a postgreSQL database container. The database connection is configured in the Wildfly standalone.xml file and can be customized to any other database system. 
 
-### 1. Starting a Postgress Container
+### 1. Starting a Postgres Container
 To start a postgreSQL container run the following command:
 	
 	docker run --name imixs-workflow-postgres -d \
@@ -209,17 +208,17 @@ To start a postgreSQL container run the following command:
 This command will start a [Postgres container](https://hub.docker.com/_/postgres/) with a database named 'imixs-microservice'. This container can be liked to the Imixs-Microservice Container.
 
  
-### 2. Starting Imixs-Workflow
+### 2. Starting the Imixs-Microservice
 
 After the postgres database container started, you can run the imixs/imixs-microservice container with a link to the postgres container using the following command:    
 
-	docker run --name="imixs-workflow" \
+	docker run --name="imixs-microservice" \
 			-p 8080:8080 -p 9990:9990 \
            -e WILDFLY_PASS="adminadmin" \
            --link imixs-workflow-postgres:postgres \
            imixs/imixs-microservice
 
-The link to the postgres container allows the wildfly server to access the postgress database via the host name 'postgres' which is mapped by the --link parameter.  This host name is used for the data-pool configuration in the standalone.xml file of wildfly.  
+The link to the postgres container allows the wildfly server to access the postgres database via the host name 'postgres' which is mapped by the --link parameter.  This host name is used for the data-pool configuration in the standalone.xml file of wildfly.  
 
 You can access the Imixs-Microservice from you web browser at the following url:
 
