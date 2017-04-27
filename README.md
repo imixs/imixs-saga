@@ -9,26 +9,27 @@ A business process can be described by a BPMN Model using the Eclipse based [Imi
 
 See also [Marin Fowlers Blog)(http://martinfowler.com/articles/microservices.html) for further information about the concepts of microservices.
 
+
  
 ## Installation
 
-Imixs-Workflow is based on the Java EE specification and can be deployed into any Java EE compatible application server like GlassFish 
-or JBoss/Wildfly. See the [deployment guide](http://www.imixs.org/doc/deployment/index.html) for further information.
-
-
+Imixs-Microservice is based on the Java EE specification and can be deployed into any Java EE compatible application server like [JBoss/Wildfly](http://wildfly.org/), GlassFish or [Payara](http://www.payara.fish/). See the [Imixs-Workflow deployment guide](http://www.imixs.org/doc/deployment/index.html) for further information.
 
 ### Docker
-Imixs-Microservice provides also a docker image. This makes is easy to run the Imixs-Microservice in a Docker container. See the docker section below.
+Imixs-Microservice provides also a docker image. This makes is easy to run the Imixs-Microservice in a Docker container.
+If you do not want to install the Imixs-Microservice by yourself you can skip this chapter and jump directly to the Docker section below.
 
 
 ### Imixs-Admin Client
 
-The Imixs/Imixs-Microservice image contains the latest version of the [Imixs-Admin Client](http://www.imixs.org/doc/administration.html). The Imixs-Admin Client can be used to administrate a Imixs-Workflow instance
+The [Imixs-Admin Client](http://www.imixs.org/doc/administration.html) is a web tool to administrate a running instance of the Imixs-Worklfow engine. The Imixs-Admin tool can be deployed in addition to the Imixs-Microservce. 
+The Docker Image already contains the latest version of the [Imixs-Admin Client](http://www.imixs.org/doc/administration.html). 
 
 <img src="imixs-admin-client-01.png" width="800" /> 
 
 
 ### Initalize User DB
+Imixs-Microservice expects a database pool with the JNDI name 'imixs-microservice'. You can use any database vendor but you need to configure the JDBC database pool in your application server befor your start the deployment. 
 After the first deployment the database is initialized automatically with a default model (ticket.bpmn) and the default user 'admin' with the default password 'adminadmin'. 
 
 You can initialize the internal UserDB manually by calling the setup URL
@@ -38,7 +39,7 @@ You can initialize the internal UserDB manually by calling the setup URL
 You can add additional accounts or change the default account later using the 'User-REST service' interface.
 
 ### How to Deploy a BPMN Model
-After you have setup the Imixs-Workfow Microservice you can deploy a workflow Model. A workflow model can be created using the [Imixs-BPMN eclipse Plugin](http://www.imixs.org/doc/modelling/index.html). A workflow Model can be deployed into the Imixs-Microservice using the 'Model-REST service' interface. You can deploy the default 'Ticket Workflow' using the following curl command: 
+After you Imixs-Workfow Microservice is up and running you can deploy your own BPMN Model. A workflow model can be created using the [Imixs-BPMN eclipse Plugin](http://www.imixs.org/doc/modelling/index.html). A workflow Model can be deployed into the Imixs-Microservice using the 'Model-REST service' interface. You can deploy the default 'Ticket Workflow' using the following curl command: 
 
     curl --user admin:adminadmin --request POST -Tticket.bpmn http://localhost:8080/imixs-microservice/model/bpmn
 
@@ -195,6 +196,77 @@ Example curl command:
 Imixs-Microservice provides a Docker Container to be used to run the service on a Docker host. 
 The docker image is based on the docker image [imixs/wildfly](https://hub.docker.com/r/imixs/wildfly/).
 
+To run Imixs-Microservice in a Docker container, the container need to be linked to a postgreSQL database container. The database connection is configured in the Wildfly standalone.xml file and can be customized to any other database system. 
+
+### 1. Starting a Postgress Container
+To start a postgreSQL container run the following command:
+	
+	docker run --name imixs-workflow-postgres -d \
+	       -e POSTGRES_DB=imixs-microservice \
+	       -e POSTGRES_PASSWORD=adminadmin postgres:9.6.1
+ 
+This command will start a [Postgres container](https://hub.docker.com/_/postgres/) with a database named 'imixs-microservice'. This container can be liked to the Imixs-Microservice Container.
+
+ 
+### 2. Starting Imixs-Workflow
+
+After the postgres database container started, you can run the imixs/imixs-microservice container with a link to the postgres container using the following command:    
+
+	docker run --name="imixs-workflow" \
+			-p 8080:8080 -p 9990:9990 \
+           -e WILDFLY_PASS="adminadmin" \
+           --link imixs-workflow-postgres:postgres \
+           imixs/imixs-microservice
+
+The link to the postgres container allows the wildfly server to access the postgress database via the host name 'postgres' which is mapped by the --link parameter.  This host name is used for the data-pool configuration in the standalone.xml file of wildfly.  
+
+You can access the Imixs-Microservice from you web browser at the following url:
+
+http://localhost:8080/imixs-microservice
+
+  
+More details about the imixs/wildfly image, which is the base image for Imixs-Workflow, can be found [here](https://hub.docker.com/r/imixs/wildfly/).
+
+
+
+# docker-compose
+You can simplify the start process of Imixs-Workflow by using 'docker-compose'. 
+The following example shows a docker-compose.yml file for imixs-workflow:
+
+	postgres:
+	  image: postgres:9.6.1
+	  environment:
+	    POSTGRES_PASSWORD: adminadmin
+	    POSTGRES_DB: imixs-microservice
+	
+	imixsworkflow:
+	  image: imixs/imixs-microservice
+	  environment:
+	    WILDFLY_PASS: adminadmin
+	  ports:
+	    - "8080:8080"
+	    - "9990:9990"
+	  links: 
+	    - postgres:postgres
+
+
+Run start imixs-wokflow with docker-compose run:
+
+	docker-compose up
+
+Take care about the link to the postgres container. The host name 'postgres' is needed to be used in the standalone.xml configuration file in wildfly to access the postgres server for the database pool configuration.
+
+# Contribute
+General information about Imixs-Workflow can be found the the [project home](http://www.imixs.org). The sources for this docker image are available on [Github](https://github.com/imixs-docker/imixs-workflow). Please report any issues.
+
+
+If you have any questions concerning the Imixs-Microservice please see the [Imixs-Microservice Project on GitHub](https://github.com/imixs/imixs-microservice)
+
+
+
+
+# Development
+
 ## 1. Build the image
 
 To build the artifact run the maven command:
@@ -204,16 +276,7 @@ To build the artifact run the maven command:
 To build the docker image run:
     
 	docker build --tag=imixs/imixs-microservice .
-
-## 2. Run with docker-compose
-You can start the Imixs-Microservice docker container with the docker-compose command:
-
-	docker-compose up
-
-Note: this command will start two container, a postgreSQL server and a Wildfly Server. 
-
-For further details see the [imixs/wildfly docker image](https://hub.docker.com/r/imixs/wildfly/).
-
+	
 
 ## 3. Development
 
@@ -223,29 +286,3 @@ During development the docker container can be used with mounting an external de
          -e WILDFLY_PASS="admin_password" \
          -v ~/git/imixs-microservice/deployments:/opt/wildfly/standalone/deployments/:rw \
          imixs/imixs-microservice
-
-### Docker-Compose
-
-Imixs-Microservice needs a postgreSQL database to be run. To start both containers a docker-compose script is provided to simplify the startup. 
-The following example shows the docker-compose.yml for imixs-microservice. You can customize this .yml file to your needs:
-
-	postgres:
-	  image: postgres
-	  environment:
-	    POSTGRES_PASSWORD: adminadmin
-	    POSTGRES_DB: imixs01
-	
-	workflow:
-	  image: imixs/imixs-microservice
-	  environment:
-	    WILDFLY_PASS: adminadmin
-	  ports:
-	    - "8080:8080"
-	    - "9990:9990"
-	  links: 
-	    - postgres:postgres
- 
-Take care about the link to the postgres container. The host name 'postgres' is needed to be used in the standalone.xml configuration file in wildfly to access the postgres server for the database pool configuration.
-
-
-
