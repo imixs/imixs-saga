@@ -18,6 +18,7 @@ import org.imixs.workflow.services.rest.RestClient;
 import org.imixs.workflow.test.WorkflowTestSuite;
 import org.imixs.workflow.util.Base64;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import junit.framework.Assert;
@@ -65,6 +66,7 @@ public class WorkflowTest {
 	 * WorkflowTestSuite.
 	 * 
 	 */
+	@Ignore
 	@Test
 	public void createNewWorkitemTest() {
 
