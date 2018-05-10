@@ -198,29 +198,23 @@ The docker image is based on the docker image [imixs/wildfly](https://hub.docker
 
 To run Imixs-Microservice in a Docker container, the container need to be linked to a postgreSQL database container. The database connection is configured in the Wildfly standalone.xml file and can be customized to any other database system. 
 
-### 1. Starting a Postgres Container
-To start a postgreSQL container run the following command:
+
+
+### 1. Build a local Docker Image
+To run the build of a local Docker image:
 	
-	docker run --name imixs-workflow-postgres -d \
-	       -e POSTGRES_DB=imixs-microservice \
-	       -e POSTGRES_PASSWORD=adminadmin postgres:9.6.1
- 
-This command will start a [Postgres container](https://hub.docker.com/_/postgres/) with a database named 'imixs-microservice'. This container can be liked to the Imixs-Microservice Container.
+	mvn clean install -Pdocker
+
 
  
 ### 2. Starting the Imixs-Microservice
 
-After the postgres database container started, you can run the imixs/imixs-microservice container with a link to the postgres container using the following command:    
+After the local docker container is build Imixs-Micorservice can be started with a PostgreSQL storage container:
 
-	docker run --name="imixs-microservice" \
-			-p 8080:8080 -p 9990:9990 \
-           -e WILDFLY_PASS="adminadmin" \
-           --link imixs-workflow-postgres:postgres \
-           imixs/imixs-microservice
+	docker-compose up
 
-The link to the postgres container allows the wildfly server to access the postgres database via the host name 'postgres' which is mapped by the --link parameter.  This host name is used for the data-pool configuration in the standalone.xml file of wildfly.  
 
-You can access the Imixs-Microservice from you web browser at the following url:
+The application can be accessed from a web browser at the following url:
 
 http://localhost:8080/imixs-microservice
 
@@ -228,33 +222,6 @@ http://localhost:8080/imixs-microservice
 More details about the imixs/wildfly image, which is the base image for Imixs-Workflow, can be found [here](https://hub.docker.com/r/imixs/wildfly/).
 
 
-
-# docker-compose
-You can simplify the start process of Imixs-Workflow by using 'docker-compose'. 
-The following example shows a docker-compose.yml file for imixs-workflow:
-
-	postgres:
-	  image: postgres:9.6.1
-	  environment:
-	    POSTGRES_PASSWORD: adminadmin
-	    POSTGRES_DB: imixs-microservice
-	
-	imixsworkflow:
-	  image: imixs/imixs-microservice
-	  environment:
-	    WILDFLY_PASS: adminadmin
-	  ports:
-	    - "8080:8080"
-	    - "9990:9990"
-	  links: 
-	    - postgres:postgres
-
-
-Run start imixs-wokflow with docker-compose run:
-
-	docker-compose up
-
-Take care about the link to the postgres container. The host name 'postgres' is needed to be used in the standalone.xml configuration file in wildfly to access the postgres server for the database pool configuration.
 
 # Contribute
 General information about Imixs-Workflow can be found the the [project home](http://www.imixs.org). The sources for this docker image are available on [Github](https://github.com/imixs-docker/imixs-workflow). Please report any issues.
@@ -275,16 +242,35 @@ To build the artifact run the maven command:
     
 To build the docker image run:
     
-	docker build --tag=imixs/imixs-microservice .
+	mvn clean install -DskipTests -Pdocker
 	
 
 ## 2. The Debug Mode
 
-During development the docker container can be used with mounting an external deployments/ folder in debug mode:
+During development the docker container evnironment variable 'DEBUG=true'  can be used.
+		
 
-	docker run --name="imixs-microservice" -d \
-		-p 8080:8080 -p 8787:8787 -p 9990:9990 \
-		-e WILDFLY_PASS="admin_password" \
-		-e DEBUG=true \
-		-v ~/git/imixs-microservice/deployments:/opt/wildfly/standalone/deployments/ \
-		imixs/imixs-microservice
+## Docker for Production
+
+To run the Imixs-Microservice in a Docker production environment the project provides several additional maven profiles:
+
+
+### docker-build
+
+With the profile '_docker-build_' a docker container based on the current version of Imixs-Microservice is created locally
+ 
+	mvn clean install -Pdocker-build
+
+
+### docker-push
+
+With the '_docker-push_' profile the current version of Imixs-Microservice can be pushed to a private remote repository:
+
+	mvn clean install -Pdocker-push -Dorg.imixs.docker.registry=localhost:5000
+
+where 'localhost:5000' need to be replaced with the host of a private registry. See the [docker-push command](https://docs.docker.com/docker-cloud/builds/push-images/) for more details.
+
+### docker-hub
+
+Imixs-Microservice is also available on [Docker-Hub](https://hub.docker.com/r/imixs/imixs-microservice/). The public docker images can be used for development and production. If you need technical support please contact [imixs.com](http://www.imixs.com) 
+

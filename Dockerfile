@@ -8,10 +8,9 @@ COPY ./src/docker/imixsrealm.properties ${WILDFLY_CONFIG}/
 COPY ./src/docker/standalone.xml ${WILDFLY_CONFIG}/
 
 # Install Imixs-Admin Client
-RUN wget https://github.com/imixs/imixs-admin/releases/download/4.2.1/imixs-admin-4.2.1.war \
- && mv imixs-admin-4.2.1.war $WILDFLY_DEPLOYMENT  
+RUN wget https://github.com/imixs/imixs-admin/releases/download/4.2.9/imixs-admin-4.2.9.war \
+ && mv imixs-admin-4.2.9.war $WILDFLY_DEPLOYMENT  
 
 # Install Imixs-Microservice
-RUN wget https://github.com/imixs/imixs-microservice/releases/download/imixs-workflow-microservice-1.5.2/imixs-microservice.war \
- && mv imixs-microservice.war $WILDFLY_DEPLOYMENT  
+COPY ./target/imixs-microservice.war $WILDFLY_DEPLOYMENT   
 

@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.imixs.workflow</groupId>
@@ -15,9 +16,153 @@
 		<org.imixs.marty.version>3.0.3</org.imixs.marty.version>
 		<lucene.version>6.3.0</lucene.version>
 		<custom.webResources>src/main/webapp</custom.webResources>
+		<imixs-workflow.applicationname>imixs-microservice</imixs-workflow.applicationname>
 	</properties>
 
 	<profiles>
+
+		<profile>
+			<id>docker</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-antrun-plugin</artifactId>
+						<version>1.8</version>
+						<executions>
+							<execution>
+								<phase>install</phase>
+								<configuration>
+									<target>
+										<exec executable="docker">
+											<arg value="build" />
+											<arg value="-t" />
+											<arg value="imixs/${imixs-workflow.applicationname}" />
+											<arg value="." />
+										</exec>
+									</target>
+								</configuration>
+								<goals>
+									<goal>run</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<profile>
+			<id>docker-build</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-antrun-plugin</artifactId>
+						<version>1.8</version>
+						<executions>
+							<execution>
+								<phase>install</phase>
+								<configuration>
+									<target>
+										<exec executable="docker">
+											<arg value="build" />
+											<arg value="-t" />
+											<arg
+												value="imixs/${imixs-workflow.applicationname}:${project.version}" />
+											<arg value="." />
+										</exec>
+									</target>
+								</configuration>
+								<goals>
+									<goal>run</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<profile>
+			<id>docker-push</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-antrun-plugin</artifactId>
+						<version>1.8</version>
+						<executions>
+							<execution>
+								<phase>install</phase>
+								<configuration>
+									<target>
+										<exec executable="docker">
+											<arg value="build" />
+											<arg value="-t" />
+											<arg
+												value="imixs/${imixs-workflow.applicationname}:${project.version}" />
+											<arg value="." />
+										</exec>
+										<exec executable="docker">
+											<arg value="tag" />
+											<arg
+												value="imixs/${imixs-workflow.applicationname}:${project.version}" />
+											<arg
+												value="${org.imixs.docker.registry}/imixs/${imixs-workflow.applicationname}:${project.version}" />
+										</exec>
+										<exec executable="docker">
+											<arg value="push" />
+											<arg
+												value="${org.imixs.docker.registry}/imixs/${imixs-workflow.applicationname}:${project.version}" />
+										</exec>
+									</target>
+								</configuration>
+								<goals>
+									<goal>run</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<profile>
+			<id>docker-hub</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-antrun-plugin</artifactId>
+						<version>1.8</version>
+						<executions>
+							<execution>
+								<phase>install</phase>
+								<configuration>
+									<target>
+										<exec executable="docker">
+											<arg value="build" />
+											<arg value="-t" />
+											<arg
+												value="imixs/${imixs-office.applicationname}:${project.version}" />
+											<arg value="." />
+										</exec>
+										<exec executable="docker">
+											<arg value="push" />
+											<arg
+												value="imixs/${imixs-office.applicationname}:${project.version}" />
+										</exec>
+									</target>
+								</configuration>
+								<goals>
+									<goal>run</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
+
 		<!-- wildfly profile (development - unpacking war) -->
 		<profile>
 			<id>wildfly</id>
@@ -25,7 +170,7 @@
 				<custom.unpackTypes>war</custom.unpackTypes>
 			</properties>
 		</profile>
-		
+
 		<!-- glassfish profile -->
 		<profile>
 			<id>glassfish</id>
@@ -37,6 +182,11 @@
 	</profiles>
 
 	<repositories>
+		<repository>
+			<id>sonatype-snaptshots</id>
+			<name>Sonatype Snapshot repository</name>
+			<url>http://oss.sonatype.org/content/repositories/snapshots</url>
+		</repository>
 		<repository>
 			<id>imixs-mvn-repo</id>
 			<url>https://raw.githubusercontent.com/imixs/imixs-mvn-repo/master/</url>
@@ -129,7 +279,7 @@
 				</configuration>
 			</plugin>
 		</plugins>
-		
+
 		<finalName>imixs-microservice</finalName>
 	</build>
 
@@ -174,24 +324,24 @@
 			<artifactId>imixs-marty-ejb</artifactId>
 			<version>${org.imixs.marty.version}</version>
 		</dependency>
-		
-		
+
+
 		<!-- Apache Lucene -->
-			<dependency>
-				<groupId>org.apache.lucene</groupId>
-				<artifactId>lucene-core</artifactId>
-				<version>${lucene.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.lucene</groupId>
-				<artifactId>lucene-analyzers-common</artifactId>
-				<version>${lucene.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.lucene</groupId>
-				<artifactId>lucene-queryparser</artifactId>
-				<version>${lucene.version}</version>
-			</dependency>
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-core</artifactId>
+			<version>${lucene.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-analyzers-common</artifactId>
+			<version>${lucene.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-queryparser</artifactId>
+			<version>${lucene.version}</version>
+		</dependency>
 
 
 		<!-- JUnit Tests -->
