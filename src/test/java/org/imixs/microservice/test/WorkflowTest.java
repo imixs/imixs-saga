@@ -79,7 +79,7 @@ public class WorkflowTest {
 		ticket.replaceItemValue("$processid", 1000);
 		ticket.replaceItemValue("$activityid", 10);
 		ticket.replaceItemValue("txtName", "Test");
-		ticket.replaceItemValue("namTeam",Arrays.asList(new String[] { "admin", "anna", "eddy" }));
+		ticket.replaceItemValue("namTeam",Arrays.asList(new String[] { "admin", "alex", "marty" }));
 
 		ticket = testSuite.processWorkitem(ticket, "admin");
 
