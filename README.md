@@ -1,13 +1,12 @@
 # imixs-microservice
 
-Imixs-Workflow is an open source workflow engine for human-centric business process management (BPM). Human-centric BPM means to support human skills and activities by a task orientated workflow-engine.
+[Imixs-Workflow](http://www.imixs.org) is an open source workflow engine for human-centric business process management (BPM). Human-centric BPM means to support human skills and activities by a task orientated workflow-engine. The Imixs-Microservice project encapsulates the [Imixs-Workflow Engine](https://www.imixs.org/doc/index.html) into a RESTful web service interface. This Microservice can be bound to any business application, independent from the technology behind. In this architectural style the business logic can be changed without changing a single line of code. 
 
-The Imixs-Microservice project encapsulates the [Imixs-Workflow Engine](http://www.imixs.org) into a RESTful web service interface. The Imixs-Microservice can be bound to any business application, independent from the technology behind. In this architectural style the business logic can be changed without changing a single line of code. 
+## BPMN 2.0
 
-A business process can be described by a BPMN Model using the Eclipse based [Imixs-Workflow-Modelling Tool](http://www.imixs.org/doc/modelling/index.html). Business data can be created, published and processed either in XML or JSON format.
+The 'Business Process Model and Notation' - BPMN 2.0 is the common standard to describe a business process. BPMN was initially designed to describe a business process without all the technical details of a software system. As an result, a BPMN diagram is easy to understand and a good starting point to talk about a business process with technician as also with management people.
 
-
-See also [Marin Fowlers Blog](http://martinfowler.com/articles/microservices.html) for further information about the concepts of microservices.
+Imixs-Workflow supports BPMN 2.0 and provides a free modelling tool [Imixs-BPMN](https://www.imixs.org/doc/modelling/index.html). Imixs-BPMN takes the full advantage of all the capabilities of BPMN 2.0 and complements them with the features of a powerful workflow engine.
 
 
  
@@ -16,13 +15,42 @@ See also [Marin Fowlers Blog](http://martinfowler.com/articles/microservices.htm
 Imixs-Microservice is based on the Java EE specification and can be deployed into any Java EE application server like [JBoss/Wildfly](http://wildfly.org/), GlassFish or [Payara](http://www.payara.fish/). See the [Imixs-Workflow deployment guide](http://www.imixs.org/doc/deployment/index.html) for further information about deployment and configuration.
 
 ### Docker
-Imixs-Microservice provides also a docker image. This makes is easy to run the Imixs-Microservice in a Docker container.
-If you do not want to install the Imixs-Microservice by yourself, you can skip this chapter and jump directly to the Docker section below.
+Imixs-Microservice provides a docker image making it easy to run the Imixs-Microservice out of the box in a Docker container.
+
+To start the service copy the docker-compose.yml file into your workspace and start the containers:
+
+	docker-compose up
+	
+
+The docker-compose.yml file defines the application stack consisting of a postgres database and a wildfly container:
+
+	version: '3'
+	
+	services:
+	
+	  db:
+	    image: postgres:9.6.1
+	    environment:
+	      POSTGRES_PASSWORD: adminadmin
+	      POSTGRES_DB: workflow
+	
+	  app:
+	    image: imixs/imixs-microservice
+	    environment:
+	      WILDFLY_PASS: adminadmin
+	      DEBUG: "true"
+	      POSTGRES_USER: "postgres"
+	      POSTGRES_PASSWORD: "adminadmin"
+	      POSTGRES_CONNECTION: "jdbc:postgresql://db/workflow"
+	    ports:
+	      - "8080:8080"
+	      - "9990:9990" 
+
 
 
 ### Imixs-Admin Client
 
-The [Imixs-Admin Client](http://www.imixs.org/doc/administration.html) is a web tool to administrate a running instance of the Imixs-Worklfow engine. The Imixs-Admin tool can be deployed in addition to the Imixs-Microservice. 
+The [Imixs-Admin Client](http://www.imixs.org/doc/administration.html) is a web tool to administrate a running instance of the Imixs-Workflow engine. The Imixs-Admin tool can be deployed in addition to the Imixs-Microservice. 
 
 <img src="imixs-admin-client-01.png" width="800" /> 
 
@@ -31,26 +59,40 @@ The Docker Image already contains the latest version of the [Imixs-Admin Client]
 ### Initalize Database Connection
 The Imixs-Microservice expects a database pool with the JNDI name 'imixs-microservice'. You can use any database vendor, but you need to configure the JDBC database pool in your application server before your start the deployment. 
 
-After the first deployment, the schema is created and the database is initialized automatically with a default model (ticket.bpmn) and the default user 'admin' with the default password 'adminadmin'. 
+### Authentication and Authorization
 
-You can initialize the internal UserDB manually by calling the setup URL
+Imixs-Workflow is a human-centry workflow engine which means that each actor need to authenticate against the service to interact. The Worklfow Engine is based on the Java EE and so the authentication is also standardized by the JAAS Specification which supports different authentication solutions like LDAP, Database, SSO and more.  
 
-[http://[YOURSERVER]/imixs-microservice/setup](http://localhost:8080/imixs-microservice/setup)
+The default docker installation provides a set of test users which can be used for testing purpose. The test users are stored in a separate user and roles properties file provided by the container. 
 
-You can add additional accounts or change the default account later, using the 'User-REST service' interface.
+
+| User    | Role                   | Password |
+|---------|------------------------|----------|
+| admin   | IMIXS-WORKFLOW-Manager | adminadmin |
+| alex    | IMIXS-WORKFLOW-Manager | password |
+| marty   | IMIXS-WORKFLOW-Author  | password |
+| melman  | IMIXS-WORKFLOW-Author  | password |
+| gloria  | IMIXS-WORKFLOW-Author  | password |
+| skipper | IMIXS-WORKFLOW-Author  | password |
+| kowalski| IMIXS-WORKFLOW-Author  | password |
+| private | IMIXS-WORKFLOW-Author  | password |
+| rico    | IMIXS-WORKFLOW-Author  | password |
+
+
+You can add additional accounts or change the default account later, by updated the files "imixs-roles.properties" and "imixs-users.properties"..
 
 ### How to Deploy a BPMN Model
 After the Imixs-Microservice is up and running, you can deploy your own BPMN Model. A workflow model can be created using the [Imixs-BPMN eclipse Plugin](http://www.imixs.org/doc/modelling/index.html). The Model can be deployed into the Imixs-Microservice using the 'Model-REST service' interface. You can deploy the default 'Ticket Workflow' using the following curl command: 
 
     curl --user admin:adminadmin --request POST -Tticket.bpmn http://localhost:8080/imixs-microservice/model/bpmn
 
-The example model is included in the Imixs-Microservice project located at: /src/main/resources/ticket.bpmn
+The example model is included in the Imixs-Microservice project located at: /src/model/ticket.bpmn
 
 ### Verify Model
 
 To verify if the model was deployed successfully you can check the deployed model version with the Rest API:
 
-    http://[YOURSERVER]/imixs-microservice/model
+    http://localhost:8080/imixs-microservice/model
 
 
 ## How to Manage a Process Instance
@@ -160,35 +202,6 @@ Find more details about the Imixs-Rest API [here](http://www.imixs.org/doc/resta
 The Imixs-Microservice project provide a set of JUnit Tests. These tests can be used also as a starting point to learn how the RestService API works.
 
 
-## User Management
-
-The Imixs-Microservice provides a user management service to store user credentials into the existing database connection (jdbc/imixs-microservice). This service is recommended for test and development only. 
-
-The userManagement service provides a rest API to create a new user or update an existing account. 
-The service expects a JSON structure with the user id, groups and password:
-
-	{"item":[    
-		  		{"name":"type","value":{"@type":"xs:string","$":"profile"}},     
-		  		{"name":"txtname","value":{"@type":"xs:string","$":"USER_NAME"}},     
-		  		{"name":"txtpassword","value":{"@type":"xs:string","$":"USER_PASSWORD"}},     
-		  		{"name":"txtgroups","value":{"@type":"xs:string","$":"IMIXS-WORKFLOW-Author"}}
-		  ]}
-
-Example curl command:
-
-	curl --user admin:adminadmin -H "Content-Type: application/json" -d \
-	       '{"item":[  \
-	       	    {"name":"type","value":{"@type":"xs:string","$":"profile"}}, \
-	       	    {"name":"txtname","value":{"@type":"xs:string","$":"USER_NAME"}}, \
-	       	    {"name":"txtpassword","value":{"@type":"xs:string","$":"USER_PASSWORD"}}, \
-	       	    {"name":"txtgroups","value":{"@type":"xs:string","$":"IMIXS-WORKFLOW-Author"}} \
-	       	 ]}' \
-	       	 http://localhost:8080/imixs-microservice/user
-
-
-Note that you can also configure you own security domain within you application sever. 
-
-
 
 <br><br><img src="small_h-trans.png">
 
@@ -199,15 +212,13 @@ The docker image is based on the docker image [imixs/wildfly](https://hub.docker
 To run Imixs-Microservice in a Docker container, the container need to be linked to a postgreSQL database container. The database connection is configured in the Wildfly standalone.xml file and can be customized to any other database system. 
 
 
-
-### 1. Build a local Docker Image
+## 1. Build a local Docker Image
 To run the build of a local Docker image:
 	
-	mvn clean install -Pdocker
-
+	mvn clean install -DskipTests -Pdocker
 
  
-### 2. Starting the Imixs-Microservice
+## 2. Starting the Imixs-Microservice
 
 After the local docker container is build Imixs-Micorservice can be started with a PostgreSQL storage container:
 
@@ -221,35 +232,7 @@ http://localhost:8080/imixs-microservice
   
 More details about the imixs/wildfly image, which is the base image for Imixs-Workflow, can be found [here](https://hub.docker.com/r/imixs/wildfly/).
 
-
-
-# Contribute
-General information about Imixs-Workflow can be found the the [project home](http://www.imixs.org). The sources for this docker image are available on [Github](https://github.com/imixs-docker/imixs-workflow). Please report any issues.
-
-
-If you have any questions concerning the Imixs-Microservice please see the [Imixs-Microservice Project on GitHub](https://github.com/imixs/imixs-microservice)
-
-
-
-
-# Development
-
-## 1. Build the image
-
-To build the artifact run the maven command:
-
-    mvn clean install -DskipTests
-    
-To build the docker image run:
-    
-	mvn clean install -DskipTests -Pdocker
 	
-
-## 2. The Debug Mode
-
-During development the docker container evnironment variable 'DEBUG=true'  can be used.
-		
-
 ## Docker for Production
 
 To run the Imixs-Microservice in a Docker production environment the project provides several additional maven profiles:
@@ -273,4 +256,26 @@ where 'localhost:5000' need to be replaced with the host of a private registry. 
 ### docker-hub
 
 Imixs-Microservice is also available on [Docker-Hub](https://hub.docker.com/r/imixs/imixs-microservice/). The public docker images can be used for development and production. If you need technical support please contact [imixs.com](http://www.imixs.com) 
+
+
+
+
+# Contribute
+General information about Imixs-Workflow can be found the the [project home](http://www.imixs.org). The sources for this docker image are available on [Github](https://github.com/imixs-docker/imixs-workflow). Please report any issues.
+
+
+If you have any questions concerning the Imixs-Microservice please see the [Imixs-Microservice Project on GitHub](https://github.com/imixs/imixs-microservice)
+
+
+
+
+# Development
+
+You can use Imixs-Microservice also as a template for custom applications. To build the project code run the maven command:
+
+    mvn clean install -DskipTests
+    
+
+During development the docker container environment variable 'DEBUG=true' can be used to run wildfly in a debug mode listening on port 8787.
+		
 
