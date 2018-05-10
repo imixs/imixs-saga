@@ -13,7 +13,6 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<org.imixs.workflow.version>4.1.1</org.imixs.workflow.version>
-		<org.imixs.marty.version>3.0.3</org.imixs.marty.version>
 		<lucene.version>6.3.0</lucene.version>
 		<custom.webResources>src/main/webapp</custom.webResources>
 		<imixs-workflow.applicationname>imixs-microservice</imixs-workflow.applicationname>
@@ -319,12 +318,7 @@
 			<version>${org.imixs.workflow.version}</version>
 		</dependency>
 
-		<dependency>
-			<groupId>org.imixs.marty</groupId>
-			<artifactId>imixs-marty-ejb</artifactId>
-			<version>${org.imixs.marty.version}</version>
-		</dependency>
-
+		
 
 		<!-- Apache Lucene -->
 		<dependency>

@@ -434,6 +434,7 @@
 					</authentication-jaspi>
 				</security-domain>
 
+				<!--  database realm 
 				<security-domain name="imixsrealm">
 					<authentication>
 						<login-module code="Database" flag="required">
@@ -455,6 +456,20 @@
 						</login-module>
 					</authentication>
 				</security-domain>
+				-->
+				<security-domain name="imixsrealm">
+			        <authentication>
+		                <login-module code="UsersRoles" flag="required">  
+		                    <module-option name="usersProperties" value="${jboss.server.config.dir}/imixs-users.properties"/>  
+		                    <module-option name="rolesProperties" value="${jboss.server.config.dir}/imixs-roles.properties"/>  
+		                </login-module>  
+		                <login-module code="RoleMapping" flag="required">
+	            			<module-option name="rolesProperties" value="file:${jboss.server.config.dir}/imixsrealm.properties"/>
+	                		<module-option name="replaceRole" value="false"/>
+	           			</login-module>
+			        </authentication>
+			    </security-domain>
+			    
 			</security-domains>
 		</subsystem>
 		<subsystem xmlns="urn:jboss:domain:transactions:3.0">
