@@ -11,4 +11,4 @@ RUN wget https://github.com/imixs/imixs-admin/releases/download/4.2.9/imixs-admi
 COPY ./src/docker/conf/* ${WILDFLY_CONFIG}/
 
 # add application artifacts
-COPY ./src/docker/apps/* $WILDFLY_DEPLOYMENT   
+COPY ./src/docker/apps/* ${$WILDFLY_DEPLOYMENT}/   
