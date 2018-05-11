@@ -200,7 +200,7 @@ Find more details about the Imixs-Rest API [here](http://www.imixs.org/doc/resta
 
 
 
-#<img src="small_h-trans.png">
+# <img src="small_h-trans.png">
 
 The Imixs-Microservice provides a Docker Container to be used to run the service on a Docker host. The docker image is based on the docker image [imixs/wildfly](https://hub.docker.com/r/imixs/wildfly/).
 
