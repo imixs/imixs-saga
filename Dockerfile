@@ -8,8 +8,7 @@ RUN wget https://github.com/imixs/imixs-admin/releases/download/4.2.9/imixs-admi
  && mv imixs-admin-4.2.9.war $WILDFLY_DEPLOYMENT  
 
 # add configuration files
-COPY ./src/docker/* ${WILDFLY_CONFIG}/
+COPY ./src/docker/conf/* ${WILDFLY_CONFIG}/
 
-# Install Imixs-Microservice
-COPY ./target/imixs-microservice.war $WILDFLY_DEPLOYMENT   
-
+# add application artifacts
+COPY ./src/docker/apps/* $WILDFLY_DEPLOYMENT   
