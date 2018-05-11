@@ -12,6 +12,7 @@ The 'Business Process Model and Notation' - BPMN 2.0 is the common standard to d
 
 Imixs-Workflow supports BPMN 2.0 and provides a free modeling tool - [Imixs-BPMN](https://www.imixs.org/doc/modelling/index.html). Imixs-BPMN takes the full advantage of all the capabilities of BPMN 2.0 and complements them with the features of a powerful workflow engine.
 
+<center><img src="https://github.com/imixs/imixs-workflow/raw/master/screen_001.png" width="700" /></center>
 
  
 # How to Install
