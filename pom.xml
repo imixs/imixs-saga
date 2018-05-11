@@ -277,6 +277,34 @@
 					<failOnMissingWebXml>false</failOnMissingWebXml>
 				</configuration>
 			</plugin>
+
+			<!-- copy artifact into docker/apps -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>2.8</version>
+				<executions>
+					<execution>
+						<id>copy-installed</id>
+						<phase>install</phase>
+						<goals>
+							<goal>copy</goal>
+						</goals>
+						<configuration>
+							<artifactItems>
+								<artifactItem>
+									<groupId>${project.groupId}</groupId>
+									<artifactId>${project.artifactId}</artifactId>
+									<version>${project.version}</version>
+									<type>${project.packaging}</type>
+								</artifactItem>
+							</artifactItems>
+							<outputDirectory>${project.basedir}/src/docker/apps</outputDirectory>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
 		</plugins>
 
 		<finalName>imixs-microservice</finalName>
@@ -318,7 +346,7 @@
 			<version>${org.imixs.workflow.version}</version>
 		</dependency>
 
-		
+
 
 		<!-- Apache Lucene -->
 		<dependency>
