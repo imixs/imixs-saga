@@ -97,6 +97,7 @@ public class WorkflowTest {
 	 * 
 	 * 
 	 */
+	@Ignore
 	@Test
 	public void createNewWorkitemJSONTest() {
 
