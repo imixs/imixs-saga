@@ -31,7 +31,7 @@
     <bpmn2:task id="Task_1" imixs:processid="1000" name="New Ticket">
       <bpmn2:extensionElements>
         <imixs:item name="txtworkflowsummary" type="xs:string">
-          <imixs:value><![CDATA[<itemValue>subject</itemValue> ]]></imixs:value>
+          <imixs:value><![CDATA[<itemvalue>subject</itemvalue> ]]></imixs:value>
         </imixs:item>
         <imixs:item name="txtworkflowabstract" type="CDATA">
           <imixs:value><![CDATA[Create a new Ticket workflow]]></imixs:value>
@@ -45,7 +45,7 @@
     <bpmn2:task id="Task_2" imixs:processid="1100" name="Open">
       <bpmn2:extensionElements>
         <imixs:item name="txtworkflowsummary" type="xs:string">
-          <imixs:value><![CDATA[<itemValue>subject</itemValue> ]]></imixs:value>
+          <imixs:value><![CDATA[<itemvalue>subject</itemvalue> ]]></imixs:value>
         </imixs:item>
         <imixs:item name="keyupdateacl" type="xs:boolean">
           <imixs:value>true</imixs:value>
@@ -64,7 +64,7 @@
     <bpmn2:task id="Task_3" imixs:processid="1200" name="in Progress">
       <bpmn2:extensionElements>
         <imixs:item name="txtworkflowsummary" type="xs:string">
-          <imixs:value><![CDATA[<itemValue>subject</itemValue> ]]></imixs:value>
+          <imixs:value><![CDATA[<itemvalue>subject</itemvalue> ]]></imixs:value>
         </imixs:item>
         <imixs:item name="keyupdateacl" type="xs:boolean">
           <imixs:value>true</imixs:value>
@@ -84,7 +84,7 @@
     <bpmn2:task id="Task_4" imixs:processid="1900" name="Closed">
       <bpmn2:extensionElements>
         <imixs:item name="txtworkflowsummary" type="xs:string">
-          <imixs:value><![CDATA[<itemValue>subject</itemValue> ]]></imixs:value>
+          <imixs:value><![CDATA[<itemvalue>subject</itemvalue> ]]></imixs:value>
         </imixs:item>
         <imixs:item name="keyupdateacl" type="xs:boolean">
           <imixs:value>true</imixs:value>
