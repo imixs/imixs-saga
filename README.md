@@ -48,9 +48,13 @@ The following _docker-compose.yml_ file defines the application stack consisting
 	      - "9990:9990" 
 
 
+To build the docker image locally run:
+
+	$ mvn clean install -Pdocker
+
 With a single command, you create and start all the services with your own configuration defined in the _docker-compose.yml_ file:
 
-	docker-compose up
+	$ docker-compose up
 	
 
 
