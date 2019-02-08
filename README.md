@@ -108,7 +108,7 @@ To verify if the model was deployed successfully you can check the deployed mode
 ### Create a new Process Instance
 To create a new process instance you can POST a JSON Object to the Imixs-Microservice in the following way
 
-    POST = http://localhost/imixs-microservice/workflow/workitem
+    POST = http://localhost:8080/imixs-microservice/workflow/workitem
 				
 To create a valid workitem the following attributes are mandatory:
 
@@ -154,11 +154,11 @@ Once you created a new process instance based on a predefined model you got a se
 	   {"name":"txtworkflowresultmessage","value":{"@type":"xs:string","$":""}}
 	  ]}
 
-The workitem includes the attribute '$uniqueid' wich is used ot identify the process instance later. Also workflow information like the current status or the owner is returend by the service.
+The workitem includes the attribute '$uniqueid' wich is used ot identify the process instance later. Also workflow information like the current status or the owner is returned by the service.
 
-There are serveral Resouce URIs to request the state of a process instance. Using the $uniqueid returned by the POST method you can request the current status of a single process instance:
+There are several Resouce URIs to request the state of a process instance. Using the $uniqueid returned by the POST method you can request the current status of a single process instance:
 
-    GET = http://localhost/workflow/rest-service/workflow/workitem/[UNIQUEID]
+    GET = http://localhost:8080/imixs-microservice/workflow/workitem/[UNIQUEID]
 
 curl command: 
 
@@ -170,7 +170,7 @@ curl command:
 
 To change the status of a process instance you simply need to post uniqueid together with the next workflow activity defined by your workflow model
 
-    POST = http://localhost/workflow/rest-service/workflow/workitem/[UNIQUEID]
+    POST = http://localhost:8080/imixs-microservice/workflow/workitem/[UNIQUEID]
  
 	 {"item":[
 	     {"name":"$uniqueid","value":{"@type":"xs:string","$":"141cb98aecc-18544f1b"}},
