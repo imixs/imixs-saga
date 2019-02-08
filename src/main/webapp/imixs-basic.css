@@ -1,13 +1,11 @@
 @charset "UTF-8";
 /**
- * Creatix-CSS is an CSS framework for responsive websites and applications. 
- * https://github.com/laluluny/creatix-css
+ * Imixs-Responsive is an CSS framework for responsive websites and applications. 
+ * https://github.com/imixs/imixs-responsive
  *
  * It is licensed under a Creative Commons Share Alike 4.0 International license.
  * http://creativecommons.org/licenses/by-sa/4.0/
  * 
- * Copyright (C) 2014 
- * Karin Soika, Ralph Soika 
  **/
 
 /* RESET */
@@ -117,28 +115,19 @@ html, body {font-size: 101%;}
  
 /* RESPONSIVE BEHAVIOUR */
 @media screen and (max-width: 768px) { 
-	.col-3 {float: left; width: 50% !important;}
 	.stretch,.col-4,.col-5,.col-6,.col-7,.col-8,.col-9,.col-10,.col-11,.col-12
-{clear: both; float: none; width: 100% !important;
-max-width: 738px !important; left: 0; }
+{clear: both; float: none; width: 100% !important; left: 0; text-align: left;}
 	.right-1, .right-2, .right-3, .right-4, .right-5, .right-6, .right-7, 
 	.right-8, .right-9, .right-10, .right-11 {right: 0;} 
-	.left-1, .left-2, .left-3, .left-4, .left-5, .left-6, .left-7, 
-	.left-8, .left-9, .left-10, .left-11 {left: 0;} 
 	.align-right {text-align: left;}
-	.col-4>div.article>.img {float: left !important; left: 0 !important; width: 50% !important;}
-	.article>.col-6, .article {max-width: 100% !important;}
+	.col-3 {float: left;width: 100% !important;	}
  }
  
 @media screen and (max-width: 480px) { .col-3,.col-4,.col-5,.col-6,.col-7,.col-8,.col-9,.col-10,.col-11,.col-12, 	
  	.stretch  {clear: both; float: none; width: 100% !important;
-max-width: 450px !important; left: 0;} 
- 	.col-2{ width: 50% !important; left: 0;}
- 	.col-1 {width: 25% !important; left: 0;}
+max-width: 450px !important; left: 0; text-align: left;} 
+ 	.col-2{ width: 50% !important; left: 0; text-align: left;}
+ 	.col-1 {width: 25% !important; left: 0; text-align: left;}
 	.col-4>div.article>p, .col-4>div.article>img {clear: both!important;float: none !important;width: 100% !important;}
 	.col-6>div.article>p, .col-6>div.article>img {clear: both!important;float: none !important;width: 100% !important;}
 }
-
-/* Show/hide elements on mobile devices */
-@media screen and (max-width: 768px) {.desktop-only {display: none;}}
-@media screen and (min-width: 768px) {.mobile-only {display: none;}}
