@@ -12,7 +12,8 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<org.imixs.workflow.version>4.5.0</org.imixs.workflow.version>
+		<org.imixs.workflow.version>4.5.3</org.imixs.workflow.version>
+		<org.imixs.adapters.version>1.6.0</org.imixs.adapters.version>
 		<lucene.version>7.5.0</lucene.version>
 		<custom.webResources>src/main/webapp</custom.webResources>
 		<imixs-workflow.applicationname>imixs-microservice</imixs-workflow.applicationname>
@@ -365,6 +366,14 @@
 			<version>${lucene.version}</version>
 		</dependency>
 
+
+		<!-- Imixs-Adapter Prometheus -->
+		<dependency>
+			<groupId>org.imixs.workflow</groupId>
+			<artifactId>imixs-adapters-prometheus</artifactId>
+			<version>${org.imixs.adapters.version}</version>
+			<scope>compile</scope>
+		</dependency>
 
 		<!-- JUnit Tests -->
 		<dependency>
