@@ -20,12 +20,13 @@ Imixs-Workflow supports BPMN 2.0 and provides a free modeling tool - [Imixs-BPMN
 Imixs-Microservice is based on the Java EE specification and can be deployed into any Java EE application server like [JBoss/Wildfly](http://wildfly.org/), GlassFish or [Payara](http://www.payara.fish/). See the [Imixs-Workflow deployment guide](http://www.imixs.org/doc/deployment/index.html) for further information about deployment and configuration. Further more, this project offers the possibility to run Imixs-Microservice in a container-based environment. 
 
 ### Run with Docker
+
 Imixs-Microservice provides a docker image, making it easy to run the Imixs-Microservice out of the box in a Docker container. This container image can be used for development as also for productive purpose. 
 To start the Imixs-Microservice as a docker container you need to create a container stack with Docker Compose. [Docker Compose](https://docs.docker.com/compose/overview/) is a tool for defining and running a stack of multiple Docker containers.
 
 The following _docker-compose.yml_ file defines the application stack consisting of a PostgreSQL database and a JBoss/Wildfly container to run Imixs-Microservice:
 
-	version: '3.1'
+	version: '3.3'
 	
 	services:
 	
@@ -45,17 +46,14 @@ The following _docker-compose.yml_ file defines the application stack consisting
 	      POSTGRES_CONNECTION: "jdbc:postgresql://db/workflow"
 	    ports:
 	      - "8080:8080"
-	      - "9990:9990" 
+	      - "9990:9990"
+	      - "8787:8787"
 
-
-To build the docker image locally run:
-
-	$ mvn clean install -Pdocker
 
 With a single command, you create and start all the services with your own configuration defined in the _docker-compose.yml_ file:
 
 	$ docker-compose up
-	
+
 
 
 ### Authentication and Authorization
@@ -81,6 +79,38 @@ The default Docker installation provides a set of predefined users which can be 
 You can add additional accounts or change the default account later, by updated the files "_imixs-roles.properties_" and "_imixs-users.properties_". You can also configure a different custom security realm (e.g. LDAP). 
 
 
+
+### Development
+
+You can also build the docker image locally from sources. This is usefull during development if you provide new features or prugins. To build the image run:
+
+	$ mvn clean install -Pdocker
+
+The project also includes a docker-compose-dev profile with an additional Service providing the [Imixs-Admin Tool](https://www.imixs.org/doc/administration.html). 
+To run the Imixs-Microservice in developer mode run:
+
+	$ docker-compose -f docker-compose-dev.yml up
+
+The Admin Tool can be started from your Web Browser
+
+	http://localhost:8888/
+
+The connect URL to connect the Imixs-Admin Tool with your microservice is _http://app:8080/api_
+
+
+### Monitoring
+
+You can use a monitoring tool chain to monitor and analyze the behavior of your microservice. The tool chain is build up on [Prometheus](https://prometheus.io/) and [Grafana](https://grafana.com/). 
+
+To start the tool chain run:
+
+	$ docker-compose -f docker-compose-prometheus.yml up
+
+You can access the grafana board from your web browser:
+
+	http://localhost:3000
+
+
 # How to Work With the Imixs-Microservice
 After you have started the Imixs-Microservce a full featured Imixs-Workflow instance is ready to be used within your business application project.  The following section includes some short examples how to create, process and verify a Imixs-Workflow instance.
 
@@ -90,7 +120,7 @@ After you have started the Imixs-Microservce a full featured Imixs-Workflow inst
 ### How to Deploy a BPMN Model
 After the Imixs-Microservice is up and running, you can deploy the example model file '_ticket.bpmn_' included in this project. You can deploy the default 'Ticket Workflow' using the following curl command: 
 
-    curl --user admin:adminadmin --request POST -Tticket.bpmn http://localhost:8080/imixs-microservice/model/bpmn
+    curl --user admin:adminadmin --request POST -Tticket.bpmn http://localhost:8080/api/model/bpmn
 
 The example model is included in the Imixs-Microservice project located at: /src/model/ticket.bpmn
 
@@ -101,14 +131,14 @@ Of course your can bring your own BPMN Model. A Imixs-Workflow model can be crea
 
 To verify if the model was deployed successfully you can check the deployed model version with form your web browser:
 
-    http://localhost:8080/imixs-microservice/model
+    http://localhost:8080/api/model
     
 
 
 ### Create a new Process Instance
 To create a new process instance you can POST a JSON Object to the Imixs-Microservice in the following way
 
-    POST = http://localhost:8080/imixs-microservice/workflow/workitem
+    POST = http://localhost:8080/api/workflow/workitem
 				
 To create a valid workitem the following attributes are mandatory:
 
@@ -136,7 +166,7 @@ The example below shows how to post a new Workitem in JSON Format using the curl
 	                 {"name":"$activityid","value":{"@type":"xs:int","$":"10"}}, \
 	                 {"name":"txtname","value":{"@type":"xs:string","$":"test-json"}}\
 	         ]}' \
-	         http://localhost:8080/imixs-microservice/workflow/workitem.json
+	         http://localhost:8080/api/workflow/workitem.json
 
 
 Once you created a new process instance based on a predefined model you got a set of data back form the workflow engine describing the state of your new business object which is now controlled by the workflow engine. This is called the workitem:
@@ -158,19 +188,19 @@ The workitem includes the attribute '$uniqueid' wich is used ot identify the pro
 
 There are several Resouce URIs to request the state of a process instance. Using the $uniqueid returned by the POST method you can request the current status of a single process instance:
 
-    GET = http://localhost:8080/imixs-microservice/workflow/workitem/[UNIQUEID]
+    GET = http://localhost:8080/api/workflow/workitem/[UNIQUEID]
 
 curl command: 
 
 	curl --user admin:adminadmin \
 	      -H "Accept: application/json"  \
-	       http://localhost:8080/imixs-microservice/workflow/workitem/[UNIQUEID]
+	       http://localhost:8080/api/workflow/workitem/[UNIQUEID]
 
 
 
 To change the status of a process instance you simply need to post uniqueid together with the next workflow activity defined by your workflow model
 
-    POST = http://localhost:8080/imixs-microservice/workflow/workitem/[UNIQUEID]
+    POST = http://localhost:8080/api/workflow/workitem/[UNIQUEID]
  
 	 {"item":[
 	     {"name":"$uniqueid","value":{"@type":"xs:string","$":"141cb98aecc-18544f1b"}},
@@ -185,7 +215,7 @@ Within the object you can define any kind of data to be stored together with the
 ### Open the Task List
 Each user involved in a business process has a personal task list (called the 'worklist'). You can request the task list for the current user by the following Rest API URL: 
 
-    http://[YOURSERVER]/imixs-microservice/workflow/worklist
+    http://[YOURSERVER]/api/workflow/worklist
 
 The result will include all workitems for the current user.
 
@@ -198,7 +228,7 @@ To request the Worklist for the current user 'admin' user you can call:
 
     curl --user admin:adminadmin -H \
          "Accept: application/json" \
-         http://localhost:8080/imixs-microservice/workflow/tasklist/creator/admin
+         http://localhost:8080/api/workflow/tasklist/creator/admin
 
 Find more details about the Imixs-Rest API [here](http://www.imixs.org/doc/restapi/workflowservice.html). 
 
@@ -297,10 +327,10 @@ The Imixs-Microservice project provide a set of JUnit Tests. These tests can be 
 
 
 # Contribute
-General information about Imixs-Workflow can be found the the [project home](http://www.imixs.org). The sources for this docker image are available on [Github](https://github.com/imixs-docker/imixs-workflow). Please report any issues.
+General information about Imixs-Workflow can be found the the [project home](http://www.imixs.org). The sources for this docker image are available on [Docker Hub](https://hub.docker.com/u/imixs). Please report any issues.
 
 
-If you have any questions concerning the Imixs-Microservice please see the [Imixs-Microservice Project on GitHub](https://github.com/imixs/imixs-microservice)
+If you have any questions concerning the Imixs-Microservice please see the [Issue Tracker on Github](https://github.com/imixs/imixs-microservice/issues)
 
 
 
