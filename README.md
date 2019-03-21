@@ -40,14 +40,11 @@ The following _docker-compose.yml_ file defines the application stack consisting
 	    image: imixs/imixs-microservice
 	    environment:
 	      WILDFLY_PASS: adminadmin
-	      DEBUG: "true"
 	      POSTGRES_USER: "postgres"
 	      POSTGRES_PASSWORD: "adminadmin"
 	      POSTGRES_CONNECTION: "jdbc:postgresql://db/workflow"
 	    ports:
 	      - "8080:8080"
-	      - "9990:9990"
-	      - "8787:8787"
 
 
 With a single command, you create and start all the services with your own configuration defined in the _docker-compose.yml_ file:
