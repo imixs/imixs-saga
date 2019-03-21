@@ -1,0 +1,28 @@
+version: '3.3'
+
+services:
+
+  db:
+    image: postgres:9.6.1
+    environment:
+      POSTGRES_PASSWORD: adminadmin
+      POSTGRES_DB: workflow
+
+  app:
+    image: imixs/imixs-microservice
+    environment:
+      WILDFLY_PASS: adminadmin
+      DEBUG: "true"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "adminadmin"
+      POSTGRES_CONNECTION: "jdbc:postgresql://db/workflow"
+    ports:
+      - "8080:8080"
+      - "9990:9990"
+      - "8787:8787"
+ 
+
+  imixsadmin:
+    image: imixs/imixs-admin
+    ports:
+      - "8888:8080"
