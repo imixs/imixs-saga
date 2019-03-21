@@ -16,7 +16,7 @@ import org.imixs.workflow.ItemCollection;
 import org.imixs.workflow.exceptions.ModelException;
 import org.imixs.workflow.services.rest.BasicAuthenticator;
 import org.imixs.workflow.services.rest.RestClient;
-import org.imixs.workflow.test.WorkflowTestSuite;
+
 import org.imixs.workflow.util.Base64;
 import org.imixs.workflow.xml.XMLDocumentAdapter;
 import org.junit.Before;
@@ -26,25 +26,19 @@ import org.junit.Test;
 import junit.framework.Assert;
 
 /**
- * This test shows an example how to post a workitem and how to get the worklist
- * from the RestService API.
- * 
- * The test uses the Imixs WorkflowTestSuite and shows also how to post a JSON
- * Object to the Rest API.
- * 
+ * This test simmulates batch processing with high load
  * 
  * @author rsoika
  *
  */
-public class WorkflowTest {
+public class WorkflowLoadRunner {
 
 	static String BASE_URL = "http://localhost:8080/api/";
 	static String USERID = "admin";
 	static String PASSWORD = "adminadmin";
 	static String MODEL_VERSION = "1.0.1";
 	RestClient restClient = null;
-	WorkflowTestSuite testSuite = null;
-
+	
 	/**
 	 * The setup method deploys the ticket workflow into the running workflow
 	 * instance.
@@ -64,13 +58,33 @@ public class WorkflowTest {
 	}
 
 	/**
+	 * Run 100 creatins...
+	 */
+	@Test
+	public void create100Test() {
+
+		int MAX_COUNT = 100;
+		int count = 0;
+		long l=System.currentTimeMillis();
+		System.out.println("Start creat100Test...");
+		while (count < MAX_COUNT) {
+			createNewWorkitemTest("Some data...." + count);
+			count++;
+		}
+		long time=System.currentTimeMillis()-l;
+		System.out.println("Completed creat100Test in " + (time) + "ms");
+		
+		System.out.println("  - processing time ~" + (time/100) + "ms");
+		
+
+	}
+
+	/**
 	 * create new Ticket based on a Imixs ItemCollection object using the Imixs
-	 * WorkflowTestSuite.
+	 * RestClient.
 	 * 
 	 */
-	@Ignore
-	@Test
-	public void createNewWorkitemTest() {
+	void createNewWorkitemTest(String subject) {
 
 		RestClient restClient = new RestClient();
 		// create a default basic authenticator
@@ -83,7 +97,7 @@ public class WorkflowTest {
 		ticket.replaceItemValue("$ModelVersion", MODEL_VERSION);
 		ticket.replaceItemValue("$taskid", 1000);
 		ticket.replaceItemValue("$eventid", 10);
-		ticket.replaceItemValue("txtName", "Test");
+		ticket.replaceItemValue("txtName", subject);
 		ticket.replaceItemValue("namTeam", Arrays.asList(new String[] { "admin", "alex", "marty" }));
 		try {
 			ticket = restClient.postXMLDocument(BASE_URL + "workflow/workitem", XMLDocumentAdapter.getDocument(ticket));
@@ -94,9 +108,7 @@ public class WorkflowTest {
 		}
 
 		Assert.assertNotNull(ticket);
-		String uid = ticket.getUniqueID();
-		WorkflowTestSuite.log(Level.INFO, "UID=" + uid);
-		Assert.assertFalse(uid.isEmpty());
+		
 	}
 
 	/**
@@ -104,9 +116,7 @@ public class WorkflowTest {
 	 * 
 	 * 
 	 */
-	@Ignore
-	@Test
-	public void createNewWorkitemJSONTest() {
+	void createNewWorkitemJSONTest(String subject) {
 		ItemCollection ticket = null;
 		RestClient restClient = new RestClient();
 		// create a default basic authenticator
@@ -114,14 +124,15 @@ public class WorkflowTest {
 		// register the authenticator
 		restClient.registerRequestFilter(basicAuth);
 
-			// create a json test string
+		// create a json test string
 		String json = "{\"item\":[" + "     {\"name\":\"type\",\"value\":{\"@type\":\"xs:string\",\"$\":\"workitem\"}},"
 				+ "     {\"name\":\"$modelversion\",\"value\":{\"@type\":\"xs:string\",\"$\":\"" + MODEL_VERSION
 				+ "\"}}," + "     {\"name\":\"$taskid\",\"value\":{\"@type\":\"xs:int\",\"$\":\"1000\"}},"
 				+ "     {\"name\":\"$eventid\",\"value\":{\"@type\":\"xs:int\",\"$\":\"10\"}},"
 				+ "     {\"name\":\"namteam\",\"value\":[{\"@type\":\"xs:string\",\"$\":\"admin\"},"
 				+ "	{\"@type\":\"xs:string\",\"$\":\"eddy\"},{\"@type\":\"xs:string\",\"$\":\"john\"}]},"
-				+ "     {\"name\":\"txtname\",\"value\":{\"@type\":\"xs:string\",\"$\":\"test-json\"}}" + "]}";
+				+ "     {\"name\":\"txtname\",\"value\":{\"@type\":\"xs:string\",\"$\":\"" +
+				 subject + "\"}}" + "]}";
 
 		try {
 			ticket = restClient.postJSON(BASE_URL + "workflow/workitem", json);
@@ -132,19 +143,18 @@ public class WorkflowTest {
 		}
 
 		Assert.assertNotNull(ticket);
-		String uid = ticket.getUniqueID();
-		WorkflowTestSuite.log(Level.INFO, "UID=" + uid);
-		Assert.assertFalse(uid.isEmpty());
+		
+	
 
 	}
-	
+
 	/**
-	 * This method deploys a BPMN model into the running workflow instance via the
-	 * Imixs-Rest API
+	 * This helper method deploys a BPMN model into the running workflow instance
+	 * via the Imixs-Rest API
 	 * 
 	 * @throws Exception
 	 */
-	public void deployBPMNModel(String modelFilePath) throws Exception {
+	void deployBPMNModel(String modelFilePath) throws Exception {
 		PrintWriter printWriter = null;
 		HttpURLConnection urlConnection = null;
 		try {
@@ -202,7 +212,7 @@ public class WorkflowTest {
 	 * This method decodes the user id and password used for basic authentication
 	 * 
 	 */
-	private String getAccessByUser() {
+	String getAccessByUser() {
 		String sURLAccess = "";
 		String sUserCode = USERID + ":" + PASSWORD;
 		char[] authcode = Base64.encode(sUserCode.getBytes());

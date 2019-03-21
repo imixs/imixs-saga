@@ -46,11 +46,10 @@
 	<security-constraint>
 		<web-resource-collection>
 			<web-resource-name>restricted</web-resource-name>
-			<url-pattern>/model/*</url-pattern>
-			<url-pattern>/workflow/*</url-pattern>
-			<url-pattern>/report/*</url-pattern>
-			<url-pattern>/entity/*</url-pattern>
-			<url-pattern>/user/*</url-pattern>
+			<url-pattern>/api/model/*</url-pattern>
+			<url-pattern>/api/workflow/*</url-pattern>
+			<url-pattern>/api/report/*</url-pattern>
+			<url-pattern>/api/document/*</url-pattern>
 			<http-method>GET</http-method>
 			<http-method>POST</http-method>
 			<http-method>DELETE</http-method>
