@@ -54,13 +54,15 @@ With a single command, you create and start all the services with your own confi
 
 	$ docker-compose up
 
+The Imixs Rest API is available udner the following URL
 
+	http://localhost:8080/api
 
 ### Authentication and Authorization
 
-Imixs-Workflow is a human-centry workflow engine which means that each actor need to authenticate against the service to interact. The Workflow Engine is based on the Java EE and so the authentication is also standardized by the JAAS Specification which supports different authentication solutions like LDAP, Database, SSO and more.  
+Imixs-Workflow is a Human-Centric workflow engine. This means that each actor is authenticated against the service. The Workflow Engine is based on the Java EE and so the authentication is also standardized and supports different authentication solutions like LDAP, Database, SSO and more.  
 
-The default Docker installation provides a set of predefined users which can be used for testing purpose. The test users are stored in a separate user and roles properties file located in the container. See the following list of predefined test user accounts:
+The default Docker installation provides a set of predefined user accounts which can be used for testing purpose:
 
 
 | User    | Role                   | Password |
@@ -76,39 +78,13 @@ The default Docker installation provides a set of predefined users which can be 
 | rico    | IMIXS-WORKFLOW-Author  | password |
 
 
-You can add additional accounts or change the default account later, by updated the files "_imixs-roles.properties_" and "_imixs-users.properties_". You can also configure a different custom security realm (e.g. LDAP). 
+You can add or change accounts by updating the property files:
 
+ * _imixs-roles.properties_ 
+ * _imixs-users.properties_
+ 
+And of course  you can configure a different custom security realm (e.g. LDAP). 
 
-
-### Development
-
-You can also build the docker image locally from sources. This is usefull during development if you provide new features or prugins. To build the image run:
-
-	$ mvn clean install -Pdocker
-
-The project also includes a docker-compose-dev profile with an additional Service providing the [Imixs-Admin Tool](https://www.imixs.org/doc/administration.html). 
-To run the Imixs-Microservice in developer mode run:
-
-	$ docker-compose -f docker-compose-dev.yml up
-
-The Admin Tool can be started from your Web Browser
-
-	http://localhost:8888/
-
-The connect URL to connect the Imixs-Admin Tool with your microservice is _http://app:8080/api_
-
-
-### Monitoring
-
-You can use a monitoring tool chain to monitor and analyze the behavior of your microservice. The tool chain is build up on [Prometheus](https://prometheus.io/) and [Grafana](https://grafana.com/). 
-
-To start the tool chain run:
-
-	$ docker-compose -f docker-compose-prometheus.yml up
-
-You can access the grafana board from your web browser:
-
-	http://localhost:3000
 
 
 # How to Work With the Imixs-Microservice
@@ -288,35 +264,59 @@ Imixs-Microservice is also available on [Docker-Hub](https://hub.docker.com/r/im
 
 # Development
 
-You can use Imixs-Microservice also as a template for a custom workflow project. To build the project from the source code run the maven command:
+The Imixs-Microservice project also includes a docker-compose-dev profile with additional settings and services.
 
-    mvn clean install -DskipTests
- 		
+To run the Imixs-Microservice in developer mode run:
 
-### Initialize a Database Connection
-The Imixs-Microservice expects a JPA database pool with the JNDI name 'imixs-microservice'. You can use any SQL database vendor, but you need to configure the JDBC database pool in your application server before your start the deployment. 
-
-The _docker-compose.yml_ provided by this project already defines such a stack configuration. 
+	$ docker-compose -f docker-compose-dev.yml up
 
    
-### Debug Mode
-
-During development the docker container environment variable 'DEBUG=true' can be used to run wildfly in a debug mode listening on port 8787.
-
-
 ### The Imixs-Admin Client
 
-The [Imixs-Admin Client](http://www.imixs.org/doc/administration.html) is a web tool to administrate a running instance of the Imixs-Workflow Engine. The Imixs-Admin tool is automatically deployed when running Imixs-Microservice based on the official Docker Container. 
+In the developer mode the service prvides an additional admin service. The [Imixs-Admin Client](http://www.imixs.org/doc/administration.html) is a web tool to administrate a running instance of the Imixs-Workflow Engine. The Imixs-Admin tool is automatically deployed when running Imixs-Microservice based on the official Docker Container. 
 
-<img src="imixs-admin-client-01.png" width="800" /> 
+<img src="screen_imixs-admin-client-01.png" width="800" /> 
 
 You can open the Imixs-Admin Client from your browser with at the following location:
 
-	http://localhost:8080/imixsadmin
+	http://localhost:8888/
+
+The connect URL to connect the Imixs-Admin Tool with your microservice is _http://app:8080/api_
 
 To learn more about all the Imixs-Admin client, see the [official documentation](http://www.imixs.org/doc/administration.html). 
 
-### Java Rest Client
+
+### Build from Sources
+
+You can use Imixs-Microservice also as a template for a custom workflow project. To build the project from the source code run the maven command:
+
+    $ mvn clean install
+ 		
+To build the image run:
+
+	$ mvn clean install -Pdocker 		
+
+You can also map a deployment directory for hot-deployment:
+
+    ...
+    volumes:
+        - ~/git/imixs-microservice/src/docker/deployments:/opt/wildfly/standalone/deployments/
+    ...
+
+
+### Debug
+
+During development the wildfly runs in a debug mode listening on port 8787.
+
+
+### Initialize a Database Connection
+
+The Imixs-Microservice expects a JPA database pool with the JNDI name 'imixs-microservice'. You can use any SQL database vendor. Just configure the JDBC database pool in your application server before your start the deployment. 
+
+The _docker-compose.yml_ provided by this project already defines such a stack configuration located in _/src/docker/conf/standalone.xml/_
+
+
+### The Imixs Rest Client
 
 To access the Imixs-Microservice form a Java application you can use the Imixs-Workflow RestClient provided by the [Melman Project](https://github.com/imixs/imixs-melman).
 
@@ -326,9 +326,30 @@ The Imixs-Microservice project provide a set of JUnit Tests. These tests can be 
 
 
 
-# Contribute
-General information about Imixs-Workflow can be found the the [project home](http://www.imixs.org). The sources for this docker image are available on [Docker Hub](https://hub.docker.com/u/imixs). Please report any issues.
 
+# Monitoring
+
+You can use a monitoring tool chain to monitor and analyze the behavior of your microservice. The tool chain in Imixs-Microservice is build up on [Prometheus](https://prometheus.io/) and [Grafana](https://grafana.com/). 
+
+To start the tool chain run:
+
+	$ docker-compose -f docker-compose-prometheus.yml up
+
+This Docker Stack includes an additonal prometheus service and Grafana Service which allows you to monitor and analyse your business case. 
+You can access the Grafana from your web browser:
+
+	http://localhost:3000
+
+To configure the prometheus data source just add the Prometheus service endpoint in Grafana:
+
+	http://prometheus:9090/
+	
+<img src="screen_monitoring_grafana.png" width="800" /> 	
+
+
+# Contribute
+
+General information about Imixs-Workflow can be found on the [project site](http://www.imixs.org). The docker image is available on [Docker Hub](https://hub.docker.com/u/imixs).
 
 If you have any questions concerning the Imixs-Microservice please see the [Issue Tracker on Github](https://github.com/imixs/imixs-microservice/issues)
 

@@ -20,6 +20,10 @@ services:
       - "8080:8080"
       - "9990:9990"
       - "8787:8787"
+    
+# Uncomment the followign lines to provide a auto-deployment directory for development   
+#     volumes:
+#        - ~/git/imixs-microservice/src/docker/deployments:/opt/wildfly/standalone/deployments/
  
 
   imixsadmin:
