@@ -98,6 +98,8 @@ After the Imixs-Microservice is up and running, you can deploy the example model
 The example model is included in the Imixs-Microservice project located at: /src/model/ticket.bpmn
 
 Of course your can bring your own BPMN Model. A Imixs-Workflow model can be created using the [Imixs-BPMN Eclipse Plugin](http://www.imixs.org/doc/modelling/index.html). 
+
+**NOTE:** cURL isn't installed in Windows by default. See the [Use Curl on Windows](https://stackoverflow.com/questions/9507353/how-do-i-install-and-use-curl-on-windows) discussion on stackoverflow.
  
  
 ### Verify Model
