@@ -54,7 +54,7 @@ public class WorkflowTest {
 	@Before
 	public void setup() throws Exception {
 
-		try {
+		try { 
 			deployBPMNModel("/ticket.bpmn");
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -70,9 +70,9 @@ public class WorkflowTest {
 	 */
 	@Ignore
 	@Test
-	public void createNewWorkitemTest() {
-
-		RestClient restClient = new RestClient();
+	public void createNewWorkitemTest() { 
+ 
+		RestClient restClient = new RestClient(BASE_URL);
 		// create a default basic authenticator
 		BasicAuthenticator basicAuth = new BasicAuthenticator(USERID, PASSWORD);
 		// register the authenticator
