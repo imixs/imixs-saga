@@ -87,7 +87,7 @@ public class WorkflowLoadRunner {
 	 */
 	void createNewWorkitemTest(String subject) {
 
-		RestClient restClient = new RestClient();
+		RestClient restClient = new RestClient(BASE_URL);
 		// create a default basic authenticator
 		BasicAuthenticator basicAuth = new BasicAuthenticator(USERID, PASSWORD);
 		// register the authenticator
