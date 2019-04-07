@@ -10,13 +10,11 @@ import java.io.StringWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Arrays;
-import java.util.logging.Level;
 
 import org.imixs.workflow.ItemCollection;
 import org.imixs.workflow.exceptions.ModelException;
 import org.imixs.workflow.services.rest.BasicAuthenticator;
 import org.imixs.workflow.services.rest.RestClient;
-
 import org.imixs.workflow.util.Base64;
 import org.imixs.workflow.xml.XMLDocumentAdapter;
 import org.junit.Before;
