@@ -12,8 +12,8 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<org.imixs.workflow.version>4.5.5-SNAPSHOT</org.imixs.workflow.version>
-		<org.imixs.adapters.version>1.6.0</org.imixs.adapters.version>
+		<org.imixs.workflow.version>4.5.5</org.imixs.workflow.version>
+		<org.imixs.adapters.version>1.6.1</org.imixs.adapters.version>
 		<lucene.version>7.5.0</lucene.version>
 		<custom.webResources>src/main/webapp</custom.webResources>
 		<imixs-workflow.applicationname>imixs-microservice</imixs-workflow.applicationname>
@@ -391,7 +391,18 @@
 			<version>${org.imixs.adapters.version}</version>
 			<scope>compile</scope>
 		</dependency>
-
+		
+		
+		<!-- Imixs-Adapter Apache Kafka (since versin 1.6.2) 
+		<dependency>
+			<groupId>org.imixs.workflow</groupId>
+			<artifactId>imixs-adapters-kafka</artifactId>
+			<version>${org.imixs.adapters.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		-->
+		
+		
 		<!-- JUnit Tests -->
 		<dependency>
 			<groupId>junit</groupId>
