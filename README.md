@@ -133,7 +133,7 @@ See the following Example:
     
 The example below shows how to post a new Workitem in JSON Format using the curl command. The request post a JSON structure for a new workitem with the $modelVerson 1.0.0 , ProcessID 10 and ActivityID 10. 
 
-	curl --user admin:adminadmin -H "Content-Type: application/json" -d \
+	curl --user admin:adminadmin -H "Content-Type: application/json" -H 'Accept: application/json' -d \
 	       '{"item":[ \
 	                 {"name":"type","value":{"@type":"xs:string","$":"workitem"}}, \
 	                 {"name":"$modelversion","value":{"@type":"xs:string","$":"1.0.1"}}, \
