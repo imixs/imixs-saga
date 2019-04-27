@@ -8,16 +8,16 @@ Imixs-Microservice provides a Rest API to interact with the Imixs-Workflow Engin
 
 ## BPMN 2.0
 
-The 'Business Process Model and Notation' - BPMN 2.0 is the common standard to describe a business process. BPMN was initially designed to describe a business process without all the technical details of a software system. As an result, a BPMN diagram is easy to understand and a good starting point to talk about a business process with technician as also with management people.
+The 'Business Process Model and Notation' - BPMN 2.0 is the common standard to describe a business process. BPMN was initially designed to describe a business process without all the technical details of a software system. As a result, a BPMN diagram is easy to understand and a good starting point to talk about a business process with technician as also with management people.
 
-Imixs-Workflow supports BPMN 2.0 and provides a free modeling tool - [Imixs-BPMN](https://www.imixs.org/doc/modelling/index.html). Imixs-BPMN takes the full advantage of all the capabilities of BPMN 2.0 and complements them with the features of a powerful workflow engine.
+Imixs-Workflow supports the BPMN 2.0 standard and provides the free modeling tool - [Imixs-BPMN](https://www.imixs.org/doc/modelling/index.html). Imixs-BPMN takes the full advantage of all the capabilities of BPMN 2.0 and complements them with the features of a powerful workflow engine.
 
 <center><img src="https://github.com/imixs/imixs-workflow/raw/master/screen_001.png" width="700" /></center>
 
  
 # How to Install
 
-Imixs-Microservice is based on the Java EE specification and can be deployed into any Java EE application server like [JBoss/Wildfly](http://wildfly.org/), GlassFish or [Payara](http://www.payara.fish/). See the [Imixs-Workflow deployment guide](http://www.imixs.org/doc/deployment/index.html) for further information about deployment and configuration. Further more, this project offers the possibility to run Imixs-Microservice in a container-based environment. 
+Imixs-Microservice is based on the Java EE specification and can be deployed into any Java EE application server like [JBoss/Wildfly](http://wildfly.org/), GlassFish or [Payara](http://www.payara.fish/). See the [Imixs-Workflow deployment guide](http://www.imixs.org/doc/deployment/index.html) for further information. 
 
 ### Run with Docker
 
@@ -62,6 +62,7 @@ And of course  you can configure a different custom security realm (e.g. LDAP).
 
 
 # How to Work With the Imixs-Microservice
+
 After you have started the Imixs-Microservce a full featured Imixs-Workflow instance is ready to be used within your business application project.  The following section includes some short examples how to create, process and verify a Imixs-Workflow instance.
 
 **NOTE:** You need to authenticate against the rest service API. In this examples we will use the default user 'admin' with the default password 'adminadmin'.
@@ -69,54 +70,53 @@ After you have started the Imixs-Microservce a full featured Imixs-Workflow inst
 
 ### How to Deploy a BPMN Model
 
-Imixs-Microservie automatically loads a default BPMN model from the location defined by teh environment variable 'IMIXS_MODEL' during startup. Of course you can also upload your own model via the Imixs Rest API. See the following curl command: 
+Imixs-Microservice automatically loads a default BPMN model from the location defined by the environment variable 'IMIXS_MODEL' during the startup. You can also add or update a model created with [Imixs-BPMN](http://www.imixs.org/doc/modelling/index.html) during runtime via the Imixs Rest API. See the following curl command: 
 
     curl --user admin:adminadmin --request POST -Tticket-en-1.0.0.bpmn http://localhost:8080/api/model/bpmn
 
 An example model is included in the Imixs-Microservice project located at: /src/model/ticket-en-1.0.0.bpmn
-
-Of course your can bring your own BPMN Model. A Imixs-Workflow model can be created using the [Imixs-BPMN Eclipse Plugin](http://www.imixs.org/doc/modelling/index.html). 
 
 **NOTE:** cURL isn't installed in Windows by default. See the [Use Curl on Windows](https://stackoverflow.com/questions/9507353/how-do-i-install-and-use-curl-on-windows) discussion on stackoverflow.
  
  
 ### Verify Model
 
-To verify if the model was deployed successfully you can check the deployed model version with form your web browser:
+To verify if the model was deployed successfully you can check the model repository form your web browser:
 
     http://localhost:8080/api/model
     
 
 
 ### Create a new Process Instance
-To create a new process instance you can POST a JSON Object to the Imixs-Microservice in the following way
+
+To create a new process instance you can POST a JSON Object to the Imixs-Microservice Rest API: 
 
     POST = http://localhost:8080/api/workflow/workitem
 				
 To create a valid workitem the following attributes are mandatory:
 
 * $modelversion = the version of your model
-* $processid = the start process
-* $activityid = the activity to be processed
+* $taskid = the start task in your model
+* $eventid = the initial event to be processed by the Imixs-Worklfow engine
 
 See the following Example:
 
     {"item":[
-     {"name":"$modelversion","value":{"@type":"xs:string","$":"1.0.1"}},
-     {"name":"$processid","value":{"@type":"xs:int","$":"1000"}}, 
-     {"name":"$activityid","value":{"@type":"xs:int","$":"10"}}, 
-     {"name":"_subject","value":{"@type":"xs:string","$":"Some usefull data.."}}
+     {"name":"$modelversion","value":{"@type":"xs:string","$":"1.0"}},
+     {"name":"$taskid","value":{"@type":"xs:int","$":"1000"}}, 
+     {"name":"$eventid","value":{"@type":"xs:int","$":"10"}}, 
+     {"name":"_subject","value":{"@type":"xs:string","$":"...some business data..."}}
     ]}  
     
-    
-The example below shows how to post a new Workitem in JSON Format using the curl command. The request post a JSON structure for a new workitem with the $modelVerson 1.0.0 , ProcessID 10 and ActivityID 10. 
 
-	curl --user admin:adminadmin -H "Content-Type: application/json" -H 'Accept: application/json' -d \
+The example below shows how to post a new Workitem in the JSON format using the curl command. The request creates a new process instance with the $modelVerson 1.0, TaskID 10 and the inital EventID 10. 
+
+	$ curl --user admin:adminadmin -H "Content-Type: application/json" -H 'Accept: application/json' -d \
 	       '{"item":[ \
 	                 {"name":"type","value":{"@type":"xs:string","$":"workitem"}}, \
-	                 {"name":"$modelversion","value":{"@type":"xs:string","$":"1.0.1"}}, \
-	                 {"name":"$processid","value":{"@type":"xs:int","$":"1000"}}, \
-	                 {"name":"$activityid","value":{"@type":"xs:int","$":"10"}}, \
+	                 {"name":"$modelversion","value":{"@type":"xs:string","$":"1.0"}}, \
+	                 {"name":"$taskid","value":{"@type":"xs:int","$":"1000"}}, \
+	                 {"name":"$eventid","value":{"@type":"xs:int","$":"10"}}, \
 	                 {"name":"txtname","value":{"@type":"xs:string","$":"test-json"}}\
 	         ]}' \
 	         http://localhost:8080/api/workflow/workitem.json
@@ -124,22 +124,29 @@ The example below shows how to post a new Workitem in JSON Format using the curl
 
 Once you created a new process instance based on a predefined model you got a set of data back form the workflow engine describing the state of your new business object which is now controlled by the workflow engine. This is called the workitem:
 
-    {"item":[
-	   {"name":"$uniqueid","value":{"@type":"xs:string","$":"141cb98aecc-18544f1b"}},
-	   {"name":"$modelversion","value":{"@type":"xs:string","$":"my-model-definition-0.0.2"}},
-	   {"name":"$processid","value":{"@type":"xs:int","$":"1000"}},
-	   {"name":"namcreator","value":{"@type":"xs:string","$":"admin"}}, 
-	   {"name":"namcurrenteditor","value":{"@type":"xs:string","$":"admin"}}, 
-	   {"name":"namowner","value":{"@type":"xs:string","$":"admin"}}, 
-	   {"name":"$isauthor","value":{"@type":"xs:boolean","$":"true"}},
-	   {"name":"_subject","value":{"@type":"xs:string","$":"JUnit Test-6476"}}, 
-	   {"name":"txtworkflowstatus","value":{"@type":"xs:string","$":"Vorlauf"}}, 
-	   {"name":"txtworkflowresultmessage","value":{"@type":"xs:string","$":""}}
+	{"document":[
+	  {"item":[
+	    {"value":[1556380031038],"name":"$created"},
+	    {"value":["admin"],"name":"$creator"},
+	    {"value":["admin"],"name":"$editor"},
+	    {"value":[0],"name":"$eventid"},
+	    {"value":[true],"name":"$isauthor"},
+	    {"value":["1.0"],"name":"$modelversion"},
+	    {"value":[1556380031038],"name":"$modified"},
+	    {"value":[1100],"name":"$taskid"},
+	    {"value":["51f3c349-06f5-4bda-ba10-d50bcb9ec0bf"],"name":"$uniqueid"},
+	    {"value":["Ticket"],"name":"$workflowgroup"},
+	    {"value":["Open"],"name":"$workflowstatus"},
+	    {"value":["test-json"],"name":"txtname"},
+	    {"value":["workitem"],"name":"type"}
 	  ]}
+	]}
 
-The workitem includes the attribute '$uniqueid' wich is used ot identify the process instance later. Also workflow information like the current status or the owner is returned by the service.
 
-There are several Resouce URIs to request the state of a process instance. Using the $uniqueid returned by the POST method you can request the current status of a single process instance:
+
+The workitem includes the attribute '$uniqueid' which is used to identify the process instance later. Also workflow information like the current status or the editor is returned by the service.
+
+There are several Resource URIs to request the state of a process instance. Using the $uniqueid returned by the POST method you can request the current status of a single process instance:
 
     GET = http://localhost:8080/api/workflow/workitem/[UNIQUEID]
 
@@ -151,18 +158,18 @@ curl command:
 
 
 
-To change the status of a process instance you simply need to post uniqueid together with the next workflow activity defined by your workflow model
+To change the status of a process instance you simply need to post an updated version of your process instance together with the event to be processed:
 
     POST = http://localhost:8080/api/workflow/workitem/[UNIQUEID]
  
 	 {"item":[
 	     {"name":"$uniqueid","value":{"@type":"xs:string","$":"141cb98aecc-18544f1b"}},
-	     {"name":"$activityid","value":{"@type":"xs:int","$":"1"}}, 
-	     {"name":"_subject","value":{"@type":"xs:string","$":"Some usefull data.."}}
-	     {"name":"_customdata","value":{"@type":"xs:string","$":"Some more data.."}}
+	     {"name":"$eventid","value":{"@type":"xs:int","$":"1"}}, 
+	     {"name":"_subject","value":{"@type":"xs:string","$":"...some other business data..."}}
+	     {"name":"_customdata","value":{"@type":"xs:string","$":"...some additional data..."}}
 	   ]}  
 
-Within the object you can define any kind of data to be stored together with the process instance.
+You can define any kind of business data to be stored together with the process instance.
 
 
 ### Open the Task List
@@ -189,13 +196,12 @@ Find more details about the Imixs-Rest API [here](http://www.imixs.org/doc/resta
 
 # <img src="https://github.com/imixs/imixs-microservice/raw/master/small_h-trans.png">
 
-Imixs-Microservice provides a docker image, making it easy to run the Imixs-Microservice out of the box in a Docker container. This container image can be used for development as also for productive purpose. To start the Imixs-Microservice as a docker container you need to create a container stack with Docker Compose. Docker Compose is a tool for defining and running a stack of multiple Docker containers.
+Imixs-Microservice provides a docker image, making it easy to run the Imixs-Microservice out of the box in a Docker container. This container image can be used for development as also for productive purpose. To start the Imixs-Microservice in a docker container you can define a container stack with Docker Compose. Docker Compose is a tool for defining and running a stack of multiple Docker containers.
 
-The following docker-compose.yml file defines the application stack consisting of a PostgreSQL database and a JBoss/Wildfly container to run Imixs-Microservice:
+The following docker-compose.yml file defines the application stack consisting of a PostgreSQL database and a Imixs-Microservice service:
 
 
-	version: '3.3'
-	
+	version: '3.3'	
 	services:
 	
 	  db:
@@ -222,11 +228,11 @@ To start the service run:
 	$ docker-compose up
 
 
-The application can be accessed from a web browser at the following url:
+The application can be accessed from a web browser at the following URL:
 
-http://localhost:8080/
+	http://localhost:8080/
 
-More details about the imixs/wildfly image, which is the base image for Imixs-Workflow, can be found [here](https://hub.docker.com/r/imixs/wildfly/).
+The image _imixs/imixs-microservice_ is based on the Docker image _imixs/wildfly_. You can find details about the base image [here](https://hub.docker.com/r/imixs/wildfly/).
 
 ### Provide a Model
 
@@ -253,16 +259,17 @@ You can define a model file to be updloaded during startup of the service. See t
 
 In this example the model project directory is mapped as a volume to the service instance /home/imixs/model/
 
-You can initialize provided models by calling the Rest API url:
+You can initialize provided models by calling the Rest API URL:
 
 	 http://localhost:8080/api/setup
 
 This will automatically reload the models from the defined location. 
 
 ## How to Build a Local Docker Image
-To run the build of a local Docker image:
+
+To build the Docker image locally from sources run:
 	
-	mvn clean install -DskipTests -Pdocker
+	$ mvn clean install -DskipTests -Pdocker
 
 	
 ## Docker for Production
@@ -287,14 +294,12 @@ where 'localhost:5000' need to be replaced with the host of a private registry. 
 
 ### docker-hub
 
-Imixs-Microservice is also available on [Docker-Hub](https://hub.docker.com/r/imixs/imixs-microservice/). The public docker images can be used for development and production. If you need technical support please contact [imixs.com](http://www.imixs.com) 
+Imixs-Microservice is also available on [Docker-Hub](https://hub.docker.com/r/imixs/imixs-microservice/). The public docker images can be used for development and production. If you need technical support please contact [imixs.com](https://www.imixs.com/contact/) 
 
 
 # Development
 
-The Imixs-Microservice project also includes a docker-compose-dev profile with additional settings and services.
-
-To run the Imixs-Microservice in developer mode run:
+The Imixs-Microservice project also includes a docker-compose-dev profile with additional settings and services. To run the Imixs-Microservice in developer mode run:
 
 	$ docker-compose -f docker-compose-dev.yml up
 
@@ -363,7 +368,7 @@ To start the tool chain run:
 
 	$ docker-compose -f docker-compose-prometheus.yml up
 
-This Docker Stack includes an additonal prometheus service and Grafana Service which allows you to monitor and analyse your business case. 
+This Docker Stack includes an additonal prometheus service and Grafana Service which allows you to monitor and analyze your business case. 
 You can access the Grafana from your web browser:
 
 	http://localhost:3000
