@@ -31,14 +31,15 @@ import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
 
 /**
- * The Imixs Microservice application setup
- * 
+ * The Imixs Microservice application setup.
+ *
  * @author rsoika
- * 
+ * @version 1.0
  */
 
 @ApplicationPath("/api")
 public class ImixsApplication extends Application {
-	
+
+	public static final String ENV_IMIXS_MODEL = "IMIXS_MODEL";
 
 }

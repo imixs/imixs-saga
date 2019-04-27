@@ -1,6 +1,6 @@
 # The Imixs-Microservice
 
-[Imixs-Workflow](http://www.imixs.org) is an open source workflow engine for human-centric business process management (BPM). Human-centric BPM means to support human skills and activities by a task orientated workflow-engine.
+[Imixs-Workflow](http://www.imixs.org) is an open source workflow engine for human-centric business process management (BPM). Human-centric BPM means to support human skills and activities by a task orientated workflow-engine. Read more about Imixs-Workflow [here](http://www.imixs.org).
 
 ## The Rest API
 The Imixs-Microservice project encapsulates the [Imixs-Workflow Engine](https://www.imixs.org/doc/index.html) into a microservice to be bound to any business application, independent from the technology behind. In this architectural style the business logic can be changed without changing a single line of code. 
@@ -22,36 +22,13 @@ Imixs-Microservice is based on the Java EE specification and can be deployed int
 ### Run with Docker
 
 Imixs-Microservice provides a docker image, making it easy to run the Imixs-Microservice out of the box in a Docker container. This container image can be used for development as also for productive purpose. 
-To start the Imixs-Microservice as a docker container you need to create a container stack with Docker Compose. [Docker Compose](https://docs.docker.com/compose/overview/) is a tool for defining and running a stack of multiple Docker containers.
+To start the Imixs-Microservice you need to define a container stack with Docker Compose. A docker-compose.yml file is already part of the project. 
 
-The following _docker-compose.yml_ file defines the application stack consisting of a PostgreSQL database and a JBoss/Wildfly container to run Imixs-Microservice:
-
-	version: '3.3'
-	
-	services:
-	
-	  db:
-	    image: postgres:9.6.1
-	    environment:
-	      POSTGRES_PASSWORD: adminadmin
-	      POSTGRES_DB: workflow
-	
-	  app:
-	    image: imixs/imixs-microservice
-	    environment:
-	      WILDFLY_PASS: adminadmin
-	      POSTGRES_USER: "postgres"
-	      POSTGRES_PASSWORD: "adminadmin"
-	      POSTGRES_CONNECTION: "jdbc:postgresql://db/workflow"
-	    ports:
-	      - "8080:8080"
-
-
-With a single command, you create and start all the services with your own configuration defined in the _docker-compose.yml_ file:
+To start the service run:
 
 	$ docker-compose up
 
-The Imixs Rest API is available udner the following URL
+The Imixs Rest API is available under the following URL
 
 	http://localhost:8080/api
 
@@ -91,11 +68,12 @@ After you have started the Imixs-Microservce a full featured Imixs-Workflow inst
 
 
 ### How to Deploy a BPMN Model
-After the Imixs-Microservice is up and running, you can deploy the example model file '_ticket.bpmn_' included in this project. You can deploy the default 'Ticket Workflow' using the following curl command: 
 
-    curl --user admin:adminadmin --request POST -Tticket.bpmn http://localhost:8080/api/model/bpmn
+Imixs-Microservie automatically loads a default BPMN model from the location defined by teh environment variable 'IMIXS_MODEL' during startup. Of course you can also upload your own model via the Imixs Rest API. See the following curl command: 
 
-The example model is included in the Imixs-Microservice project located at: /src/model/ticket.bpmn
+    curl --user admin:adminadmin --request POST -Tticket-en-1.0.0.bpmn http://localhost:8080/api/model/bpmn
+
+An example model is included in the Imixs-Microservice project located at: /src/model/ticket-en-1.0.0.bpmn
 
 Of course your can bring your own BPMN Model. A Imixs-Workflow model can be created using the [Imixs-BPMN Eclipse Plugin](http://www.imixs.org/doc/modelling/index.html). 
 
@@ -211,24 +189,75 @@ Find more details about the Imixs-Rest API [here](http://www.imixs.org/doc/resta
 
 # <img src="https://github.com/imixs/imixs-microservice/raw/master/small_h-trans.png">
 
-The Imixs-Microservice provides a Docker Container to be used to run the service on a Docker host. The docker image is based on the docker image [imixs/wildfly](https://hub.docker.com/r/imixs/wildfly/).
+Imixs-Microservice provides a docker image, making it easy to run the Imixs-Microservice out of the box in a Docker container. This container image can be used for development as also for productive purpose. To start the Imixs-Microservice as a docker container you need to create a container stack with Docker Compose. Docker Compose is a tool for defining and running a stack of multiple Docker containers.
+
+The following docker-compose.yml file defines the application stack consisting of a PostgreSQL database and a JBoss/Wildfly container to run Imixs-Microservice:
 
 
-## Starting the Imixs-Microservice With Docker
+	version: '3.3'
+	
+	services:
+	
+	  db:
+	    image: postgres:9.6.1
+	    environment:
+	      POSTGRES_PASSWORD: adminadmin
+	      POSTGRES_DB: workflow
+	
+	  app:
+	    image: imixs/imixs-microservice
+	    environment:
+	      WILDFLY_PASS: adminadmin
+	      POSTGRES_USER: "postgres"
+	      POSTGRES_PASSWORD: "adminadmin"
+	      POSTGRES_CONNECTION: "jdbc:postgresql://db/workflow"
+	      IMIXS_MODEL: "ticket-en-1.0.0.bpmn"
+	    ports:
+	      - "8080:8080"
 
-To run Imixs-Microservice in a Docker container, the container need to be linked to SQL database container. The database connection is configured in the Wildfly standalone.xml file and can be customized to any other database system. 
-The _docker-compose.yml_ included in this project can be used to run the necessary docker container with a single command:
 
-	docker-compose up
+
+To start the service run:
+
+	$ docker-compose up
 
 
 The application can be accessed from a web browser at the following url:
 
-http://localhost:8080/imixs-microservice
+http://localhost:8080/
 
 More details about the imixs/wildfly image, which is the base image for Imixs-Workflow, can be found [here](https://hub.docker.com/r/imixs/wildfly/).
 
+### Provide a Model
 
+You can define a model file to be updloaded during startup of the service. See the following configuration which defines a custom model file to be loaded:
+
+	...
+	  app:
+	    image: imixs/imixs-microservice
+	    environment:
+	      WILDFLY_PASS: adminadmin
+	      DEBUG: "true"
+	      POSTGRES_USER: "postgres"
+	      POSTGRES_PASSWORD: "adminadmin"
+	      POSTGRES_CONNECTION: "jdbc:postgresql://db/workflow"
+	      IMIXS_MODEL: "/home/imixs/model/my-model-1.0.0.bpmn"
+	    ports:
+	      - "8080:8080"
+	      - "9990:9990"
+	      - "8787:8787"
+	    
+	    volumes:
+	      - ~/git/imixs-microservice/src/model/:/home/imixs/model/
+ 
+
+In this example the model project directory is mapped as a volume to the service instance /home/imixs/model/
+
+You can initialize provided models by calling the Rest API url:
+
+	 http://localhost:8080/api/setup
+
+This will automatically reload the models from the defined location. 
 
 ## How to Build a Local Docker Image
 To run the build of a local Docker image:
