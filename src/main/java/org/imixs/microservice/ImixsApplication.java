@@ -39,7 +39,7 @@ import javax.ws.rs.core.Application;
 
 @ApplicationPath("/api")
 public class ImixsApplication extends Application {
-
+ 
 	public static final String ENV_IMIXS_MODEL = "IMIXS_MODEL";
 
 }

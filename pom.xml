@@ -9,11 +9,59 @@
 	<name>Imixs-Workflow Microservice</name>
 
 	<description>Imixs-Workflow Microservice </description>
+	<url>https://github.com/imixs/imixs-microservice</url>
+	<organization>
+		<name>Imixs Software Solutions GmbH</name>
+		<url>http://www.imixs.com</url>
+	</organization>
+	<inceptionYear>2006</inceptionYear>
+
+	<developers>
+		<developer>
+			<id>rsoika</id>
+			<name>Ralph Soika</name>
+			<email>ralph.soika@imixs.com</email>
+			<url>http://blog.imixs.org/</url>
+			<organization>Imixs Software Solutions GmbH</organization>
+			<organizationUrl>http://www.imixs.com</organizationUrl>
+			<roles>
+				<role>developer</role>
+				<role>testing</role>
+			</roles>
+			<timezone>2</timezone>
+		</developer>
+
+		<developer>
+			<id>gaheinle</id>
+			<name>Gaby Heinle</name>
+			<email />
+			<url />
+			<organization>Imixs Software Solutions GmbH</organization>
+			<organizationUrl>http://www.imixs.com</organizationUrl>
+			<roles>
+				<role>developer</role>
+				<role>testing</role>
+			</roles>
+			<timezone>2</timezone>
+		</developer>
+	</developers>
+
+	<scm>
+		<connection>scm:git:https://github.com/imixs/imixs-microservice.git</connection>
+		<developerConnection>scm:git:https://github.com/imixs/imixs-microservice.git</developerConnection>
+		<url>https://github.com/imixs/imixs-microservice/</url>
+	</scm>
+
+	<issueManagement>
+		<system>GitHub</system>
+		<url>https://github.com/imixs/imixs-microservice/issues</url>
+	</issueManagement>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<org.imixs.workflow.version>4.5.5</org.imixs.workflow.version>
-		<org.imixs.adapters.version>2.0.0-SNAPSHOT</org.imixs.adapters.version>
+		<org.imixs.workflow.version>5.0.0</org.imixs.workflow.version>
+		<org.imixs.adapters.version>2.0.0</org.imixs.adapters.version>
+		<org.imixs.melman.version>1.0.9</org.imixs.melman.version>
 		<lucene.version>7.5.0</lucene.version>
 		<custom.webResources>src/main/webapp</custom.webResources>
 		<imixs-workflow.applicationname>imixs-microservice</imixs-workflow.applicationname>
@@ -197,53 +245,6 @@
 		</repository>
 	</repositories>
 
-	<url>https://github.com/imixs/imixs-microservice</url>
-	<organization>
-		<name>Imixs Software Solutions GmbH</name>
-		<url>http://www.imixs.com</url>
-	</organization>
-	<inceptionYear>2006</inceptionYear>
-
-	<developers>
-		<developer>
-			<id>rsoika</id>
-			<name>Ralph Soika</name>
-			<email>ralph.soika@imixs.com</email>
-			<url>http://blog.imixs.org/</url>
-			<organization>Imixs Software Solutions GmbH</organization>
-			<organizationUrl>http://www.imixs.com</organizationUrl>
-			<roles>
-				<role>developer</role>
-				<role>testing</role>
-			</roles>
-			<timezone>2</timezone>
-		</developer>
-
-		<developer>
-			<id>gaheinle</id>
-			<name>Gaby Heinle</name>
-			<email />
-			<url />
-			<organization>Imixs Software Solutions GmbH</organization>
-			<organizationUrl>http://www.imixs.com</organizationUrl>
-			<roles>
-				<role>developer</role>
-				<role>testing</role>
-			</roles>
-			<timezone>2</timezone>
-		</developer>
-	</developers>
-
-	<scm>
-		<connection>scm:git:https://github.com/imixs/imixs-microservice.git</connection>
-		<developerConnection>scm:git:https://github.com/imixs/imixs-microservice.git</developerConnection>
-		<url>https://github.com/imixs/imixs-microservice/</url>
-	</scm>
-
-	<issueManagement>
-		<system>GitHub</system>
-		<url>https://github.com/imixs/imixs-microservice/issues</url>
-	</issueManagement>
 
 	<build>
 
@@ -266,14 +267,6 @@
 					<target>1.8</target>
 				</configuration>
 			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-resources-plugin</artifactId>
-				<version>2.6</version>
-				<configuration>
-					<encoding>${project.build.sourceEncoding}</encoding>
-				</configuration>
-			</plugin>
 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -290,6 +283,15 @@
 				</configuration>
 			</plugin>
 
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>2.6</version>
+				<configuration>
+					<encoding>${project.build.sourceEncoding}</encoding>
+				</configuration>
+			</plugin>
+			
 			<!-- copy artifact into docker/apps -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -329,23 +331,16 @@
 	</build>
 
 	<dependencies>
-		<!-- JEE Dependencies -->
+		<!-- Jakarta EE -->
 		<dependency>
 			<groupId>javax</groupId>
 			<artifactId>javaee-api</artifactId>
-			<version>7.0</version>
+			<version>8.0</version>
 			<scope>provided</scope>
 		</dependency>
-
-		<dependency>
-			<groupId>javax.faces</groupId>
-			<artifactId>jsf-api</artifactId>
-			<version>2.0</version>
-			<scope>provided</scope>
-		</dependency>
+	
 
 		<!-- Imixs Workflow -->
-
 		<dependency>
 			<groupId>org.imixs.workflow</groupId>
 			<artifactId>imixs-workflow-engine</artifactId>
@@ -382,15 +377,6 @@
 			<artifactId>lucene-queryparser</artifactId>
 			<version>${lucene.version}</version>
 		</dependency>
-
-
-		<!-- Imixs-Adapter Prometheus -->
-		<dependency>
-			<groupId>org.imixs.workflow</groupId>
-			<artifactId>imixs-adapters-prometheus</artifactId>
-			<version>${org.imixs.adapters.version}</version>
-			<scope>compile</scope>
-		</dependency>
 		
 		
 		<!-- Imixs-Adapter Apache Kafka (since version 1.6.3) 
@@ -402,6 +388,13 @@
 		</dependency>
 		-->
 		
+		<dependency>
+			<groupId>org.imixs.workflow</groupId>
+			<artifactId>imixs-melman</artifactId>
+			<version>${org.imixs.melman.version}</version>
+			<scope>test</scope>
+		</dependency>
+	
 		
 		<!-- JUnit Tests -->
 		<dependency>
@@ -410,6 +403,22 @@
 			<version>4.8.1</version>
 			<scope>test</scope>
 		</dependency>
+		
+		<!-- JAX-RS 2.0 Test dependencies -->
+		<dependency>
+			<groupId>org.glassfish.jersey.core</groupId>
+			<artifactId>jersey-client</artifactId>
+			<version>2.27</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.cxf</groupId>
+			<artifactId>cxf-rt-rs-client</artifactId>
+			<version>3.0.15</version>
+			<scope>test</scope>
+		</dependency>
+		
 
 	</dependencies>
 </project>
