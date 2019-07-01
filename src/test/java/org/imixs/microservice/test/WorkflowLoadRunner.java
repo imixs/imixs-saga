@@ -1,5 +1,7 @@
 package org.imixs.microservice.test;
 
+import static org.junit.Assume.assumeTrue;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.InputStream;
@@ -10,6 +12,7 @@ import java.io.StringWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.List;
 
 import javax.ws.rs.core.MediaType;
 
@@ -19,9 +22,8 @@ import org.imixs.workflow.ItemCollection;
 import org.imixs.workflow.exceptions.ModelException;
 import org.imixs.workflow.services.rest.RestClient;
 import org.imixs.workflow.util.Base64;
-import org.imixs.workflow.xml.XMLDocumentAdapter;
+import org.imixs.workflow.xml.XMLDataCollectionAdapter;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import junit.framework.Assert;
@@ -37,10 +39,12 @@ public class WorkflowLoadRunner {
 	static String BASE_URL = "http://localhost:8080/api/";
 	static String USERID = "admin";
 	static String PASSWORD = "adminadmin";
-	static String MODEL_VERSION = "1.0.1";
+	static String MODEL_VERSION = "1.0";
 	 
 	WorkflowClient workflowCLient=null;
-	
+
+	private IntegrationTest integrationTestChecker = new IntegrationTest(BASE_URL);
+
 	/**
 	 * The setup method deploys the ticket workflow into the running workflow
 	 * instance.
@@ -50,13 +54,15 @@ public class WorkflowLoadRunner {
 	@Before
 	public void setup() throws Exception {
 
+		// Assumptions for integration tests
+		assumeTrue(integrationTestChecker.connected());
+		
 		try {
 			deployBPMNModel("/ticket-en-1.0.0.bpmn");
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw e;
 		}
-		
 		
 		workflowCLient= new WorkflowClient(BASE_URL);
 		// create a default basic authenticator
@@ -68,9 +74,8 @@ public class WorkflowLoadRunner {
 	}
 
 	/**
-	 * Run 100 creatins...
+	 * Run 100 creations of a process instance...
 	 */
-	@Ignore
 	@Test
 	public void create100Test() {
 
@@ -140,9 +145,15 @@ public class WorkflowLoadRunner {
 				 subject + "\"}}" + "]}";
 
 		try {
-			String result = restClient.post(BASE_URL + "workflow/workitem", json, MediaType.APPLICATION_JSON);
-			ticket=XMLDocumentAdapter.readItemCollection(result.getBytes());
-
+			// post json request, accept XML
+			String result = restClient.post(BASE_URL + "workflow/workitem.json", json, MediaType.APPLICATION_JSON,
+					MediaType.APPLICATION_XML);
+			// convert result content into XMLDataCollection
+			List<ItemCollection> tickets = XMLDataCollectionAdapter.readCollection(result.getBytes());
+			// extract 1st workitem...
+			Assert.assertNotNull(tickets);
+			Assert.assertTrue(tickets.size() > 0);
+			ticket =tickets.get(0);
 			
 		} catch (Exception e) {
 			e.printStackTrace();

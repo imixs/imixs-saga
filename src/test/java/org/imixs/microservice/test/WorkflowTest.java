@@ -10,6 +10,7 @@ import java.io.StringWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.List;
 
 import javax.ws.rs.core.MediaType;
 
@@ -17,12 +18,10 @@ import org.imixs.melman.BasicAuthenticator;
 import org.imixs.melman.WorkflowClient;
 import org.imixs.workflow.ItemCollection;
 import org.imixs.workflow.exceptions.ModelException;
-
 import org.imixs.workflow.services.rest.RestClient;
 import org.imixs.workflow.util.Base64;
-import org.imixs.workflow.xml.XMLDocumentAdapter;
+import org.imixs.workflow.xml.XMLDataCollectionAdapter;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import junit.framework.Assert;
@@ -30,13 +29,17 @@ import junit.framework.Assert;
 /**
  * This test shows an example how to post a workitem and how to get the worklist
  * from the RestService API.
- * 
- * The test uses the Imixs WorkflowTestSuite and shows also how to post a JSON
- * Object to the Rest API.
- * 
+ * <p>
+ * The test class uses the jUnit concept of assumptions. Before each test, a set
+ * of assumptions can be made. If one of these assumptions is not met, the test
+ * should be skipped.
+ * <p>
+ * In this case, we make the assumption that a connection to the imixs-workflow
+ * rest service can be established.
+ * <p>
+ * See also: https://reflectoring.io/conditional-junit4-junit5-tests/
  * 
  * @author rsoika
- *
  */
 public class WorkflowTest {
 
@@ -45,8 +48,10 @@ public class WorkflowTest {
 	static String PASSWORD = "adminadmin";
 	static String MODEL_VERSION = "1.0";
 
-	WorkflowClient workflowCLient=null;
-	
+	WorkflowClient workflowCLient = null;
+
+	private IntegrationTest integrationTest = new IntegrationTest(BASE_URL);
+
 	/**
 	 * The setup method deploys the ticket workflow into the running workflow
 	 * instance.
@@ -56,20 +61,21 @@ public class WorkflowTest {
 	@Before
 	public void setup() throws Exception {
 
-		try { 
+		// Assumptions for integration tests
+		org.junit.Assume.assumeTrue(integrationTest.connected());
+
+		try {
 			deployBPMNModel("/ticket-en-1.0.0.bpmn");
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw e;
 		}
-		
 
-		workflowCLient= new WorkflowClient(BASE_URL);
+		workflowCLient = new WorkflowClient(BASE_URL);
 		// create a default basic authenticator
 		BasicAuthenticator basicAuth = new BasicAuthenticator(USERID, PASSWORD);
 		// register the authenticator
 		workflowCLient.registerClientRequestFilter(basicAuth);
-
 
 	}
 
@@ -78,10 +84,9 @@ public class WorkflowTest {
 	 * WorkflowTestSuite.
 	 * 
 	 */
-	@Ignore
 	@Test
-	public void createNewWorkitemTest() { 
- 	
+	public void createNewWorkitemTest() {
+
 		ItemCollection ticket = new ItemCollection();
 		ticket.replaceItemValue("type", "workitem");
 		ticket.replaceItemValue("$ModelVersion", MODEL_VERSION);
@@ -91,7 +96,7 @@ public class WorkflowTest {
 		ticket.replaceItemValue("namTeam", Arrays.asList(new String[] { "admin", "alex", "marty" }));
 		try {
 			ticket = workflowCLient.processWorkitem(ticket);
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			Assert.fail();
@@ -99,26 +104,32 @@ public class WorkflowTest {
 
 		Assert.assertNotNull(ticket);
 		String uid = ticket.getUniqueID();
-		
+
 		Assert.assertFalse(uid.isEmpty());
 	}
 
 	/**
 	 * create new Ticket based on a JSON String
-	 * 
-	 * 
+	 * <p>
+	 * The method post a JSON string and accepts XML. The returned XML Content is
+	 * converted back into a ItemCollection.
+	 * <p>
+	 * This code is just to verify the JSON call. Use the Imixs-Melman
+	 * WorkflowClient to hide content convention.
 	 */
-	@Ignore
+	// @Ignore
 	@Test
 	public void createNewWorkitemJSONTest() {
+
 		ItemCollection ticket = null;
 		RestClient restClient = new RestClient();
 		// create a default basic authenticator
-		org.imixs.workflow.services.rest.BasicAuthenticator basicAuth = new org.imixs.workflow.services.rest.BasicAuthenticator(USERID, PASSWORD);
+		org.imixs.workflow.services.rest.BasicAuthenticator basicAuth = new org.imixs.workflow.services.rest.BasicAuthenticator(
+				USERID, PASSWORD);
 		// register the authenticator
 		restClient.registerRequestFilter(basicAuth);
 
-			// create a json test string
+		// create a json test string
 		String json = "{\"item\":[" + "     {\"name\":\"type\",\"value\":{\"@type\":\"xs:string\",\"$\":\"workitem\"}},"
 				+ "     {\"name\":\"$modelversion\",\"value\":{\"@type\":\"xs:string\",\"$\":\"" + MODEL_VERSION
 				+ "\"}}," + "     {\"name\":\"$taskid\",\"value\":{\"@type\":\"xs:int\",\"$\":\"1000\"}},"
@@ -128,10 +139,15 @@ public class WorkflowTest {
 				+ "     {\"name\":\"txtname\",\"value\":{\"@type\":\"xs:string\",\"$\":\"test-json\"}}" + "]}";
 
 		try {
-			String result = restClient.post(BASE_URL + "workflow/workitem.json", json, MediaType.APPLICATION_JSON);
-			
-			ticket=XMLDocumentAdapter.readItemCollection(result.getBytes()); 
+			// post json request, accept XML
+			String result = restClient.post(BASE_URL + "workflow/workitem.json", json, MediaType.APPLICATION_JSON,
+					MediaType.APPLICATION_XML);
 
+			List<ItemCollection> tickets = XMLDataCollectionAdapter.readCollection(result.getBytes());
+			// extract 1st workitem...
+			Assert.assertNotNull(tickets);
+			Assert.assertTrue(tickets.size() > 0);
+			ticket = tickets.get(0);
 		} catch (Exception e) {
 			e.printStackTrace();
 			Assert.fail();
@@ -139,11 +155,11 @@ public class WorkflowTest {
 
 		Assert.assertNotNull(ticket);
 		String uid = ticket.getUniqueID();
-		
+
 		Assert.assertFalse(uid.isEmpty());
 
 	}
-	
+
 	/**
 	 * This method deploys a BPMN model into the running workflow instance via the
 	 * Imixs-Rest API
