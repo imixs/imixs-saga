@@ -1,4 +1,4 @@
-FROM imixs/wildfly:1.2.7
+FROM imixs/wildfly:1.2.9
 
 # Imixs-Microservice Version 1.5.4
 MAINTAINER ralph.soika@imixs.com
