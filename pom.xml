@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.imixs.workflow</groupId>
 	<artifactId>imixs-microservice</artifactId>
-	<version>1.5.7</version>
+	<version>1.5.8</version>
 	<packaging>war</packaging>
 	<name>Imixs-Workflow Microservice</name>
 
@@ -59,7 +59,7 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<org.imixs.workflow.version>5.0.4</org.imixs.workflow.version>
+		<org.imixs.workflow.version>5.0.5-SNAPSHOT</org.imixs.workflow.version>
 		<org.imixs.adapters.version>2.1.0</org.imixs.adapters.version>
 		<org.imixs.melman.version>1.0.9</org.imixs.melman.version>
 		<lucene.version>7.5.0</lucene.version>
@@ -234,14 +234,6 @@
 			<id>sonatype-snaptshots</id>
 			<name>Sonatype Snapshot repository</name>
 			<url>http://oss.sonatype.org/content/repositories/snapshots</url>
-		</repository>
-		<repository>
-			<id>imixs-mvn-repo</id>
-			<url>https://raw.githubusercontent.com/imixs/imixs-mvn-repo/master/</url>
-			<snapshots>
-				<enabled>true</enabled>
-				<updatePolicy>always</updatePolicy>
-			</snapshots>
 		</repository>
 	</repositories>
 
