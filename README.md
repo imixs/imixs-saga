@@ -403,6 +403,11 @@ To access the Imixs-Microservice form a Java application you can use the Imixs-W
 The Imixs-Microservice project provide a set of JUnit Tests. These tests can be used also as a starting point to learn how the RestService API works.
 
 
+# Registry
+
+The Imixs-Microservice project provides a registry service for registration and discovery of Imixs-Microservicess within a microservice architecture. This allows a client to start a new process instance within a microservice architecture without knowning the details about a concrete workflow instance. 
+
+Find details in the [Imixs-Registry](./tree/master/imixs-microservice-registry) sub project.
 
 
 # Monitoring
