@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.imixs.workflow</groupId>
 	<artifactId>imixs-microservice</artifactId>
-	<version>1.5.8</version>
+	<version>1.5.9</version>
 	<packaging>war</packaging>
 	<name>Imixs-Workflow Microservice</name>
 
