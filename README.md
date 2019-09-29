@@ -405,9 +405,13 @@ The Imixs-Microservice project provide a set of JUnit Tests. These tests can be 
 
 # Registry
 
-The Imixs-Microservice project provides a registry service for registration and discovery of Imixs-Microservicess within a microservice architecture. This allows a client to start a new process instance within a microservice architecture without knowning the details about a concrete workflow instance. 
+The Imixs-Microservice project provides a registry service for registration and discovery of workflow services within a microservice architecture. This allows a client to start a new process instance within a microservice architecture without knowning the model details about a concrete workflow instance. 
 
-Find details in the [Imixs-Registry](./tree/master/imixs-microservice-registry) sub project.
+To activate this feature in a Imixs-Microservice instance you just have to add the envorinment variable _imixs.registry.serviceendpoint_ pointing to the service endpoint of a running Imixs-Registry service. 
+
+	IMIXS_REGISTRY_SERVICEENDPOINT: "http://registry:8080/api"
+
+Find details in the [Imixs-Registry](https://github.com/imixs/imixs-microservice/tree/master/imixs-microservice-registry) sub project.
 
 
 # Monitoring
