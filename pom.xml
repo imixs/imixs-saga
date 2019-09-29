@@ -4,9 +4,15 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.imixs.workflow</groupId>
 	<artifactId>imixs-microservice</artifactId>
-	<version>1.5.9</version>
-	<packaging>war</packaging>
+	<version>2.0.0-SNAPSHOT</version>
+	<packaging>pom</packaging>
 	<name>Imixs-Workflow Microservice</name>
+
+	<modules>
+		<module>imixs-microservice-app</module>
+		<module>imixs-microservice-core</module>
+		<module>imixs-microservice-registry</module>
+	</modules>
 
 	<description>Imixs-Workflow Microservice </description>
 	<url>https://github.com/imixs/imixs-microservice</url>
@@ -59,175 +65,12 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<org.imixs.workflow.version>5.0.5</org.imixs.workflow.version>
+		<org.imixs.workflow.version>5.1.0-SNAPSHOT</org.imixs.workflow.version>
 		<org.imixs.adapters.version>2.1.0</org.imixs.adapters.version>
-		<org.imixs.melman.version>1.0.9</org.imixs.melman.version>
-		<lucene.version>7.5.0</lucene.version>
+		<org.imixs.melman.version>1.0.11</org.imixs.melman.version>
 		<custom.webResources>src/main/webapp</custom.webResources>
 		<imixs-workflow.applicationname>imixs-microservice</imixs-workflow.applicationname>
 	</properties>
-
-	<profiles>
-
-		<profile>
-			<id>docker</id>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-antrun-plugin</artifactId>
-						<version>1.8</version>
-						<executions>
-							<execution>
-								<phase>install</phase>
-								<configuration>
-									<target>
-										<exec executable="docker">
-											<arg value="build" />
-											<arg value="-t" />
-											<arg value="imixs/${imixs-workflow.applicationname}" />
-											<arg value="." />
-										</exec>
-									</target>
-								</configuration>
-								<goals>
-									<goal>run</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-		<profile>
-			<id>docker-build</id>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-antrun-plugin</artifactId>
-						<version>1.8</version>
-						<executions>
-							<execution>
-								<phase>install</phase>
-								<configuration>
-									<target>
-										<exec executable="docker">
-											<arg value="build" />
-											<arg value="-t" />
-											<arg
-												value="imixs/${imixs-workflow.applicationname}:${project.version}" />
-											<arg value="." />
-										</exec>
-									</target>
-								</configuration>
-								<goals>
-									<goal>run</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-		<profile>
-			<id>docker-push</id>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-antrun-plugin</artifactId>
-						<version>1.8</version>
-						<executions>
-							<execution>
-								<phase>install</phase>
-								<configuration>
-									<target>
-										<exec executable="docker">
-											<arg value="build" />
-											<arg value="-t" />
-											<arg
-												value="imixs/${imixs-workflow.applicationname}:${project.version}" />
-											<arg value="." />
-										</exec>
-										<exec executable="docker">
-											<arg value="tag" />
-											<arg
-												value="imixs/${imixs-workflow.applicationname}:${project.version}" />
-											<arg
-												value="${org.imixs.docker.registry}/imixs/${imixs-workflow.applicationname}:${project.version}" />
-										</exec>
-										<exec executable="docker">
-											<arg value="push" />
-											<arg
-												value="${org.imixs.docker.registry}/imixs/${imixs-workflow.applicationname}:${project.version}" />
-										</exec>
-									</target>
-								</configuration>
-								<goals>
-									<goal>run</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-		<profile>
-			<id>docker-hub</id>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-antrun-plugin</artifactId>
-						<version>1.8</version>
-						<executions>
-							<execution>
-								<phase>install</phase>
-								<configuration>
-									<target>
-										<exec executable="docker">
-											<arg value="build" />
-											<arg value="-t" />
-											<arg
-												value="imixs/${imixs-workflow.applicationname}:${project.version}" />
-											<arg value="." />
-										</exec>
-										<exec executable="docker">
-											<arg value="push" />
-											<arg
-												value="imixs/${imixs-workflow.applicationname}:${project.version}" />
-										</exec>
-									</target>
-								</configuration>
-								<goals>
-									<goal>run</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-
-
-		<!-- wildfly profile (development - unpacking war) -->
-		<profile>
-			<id>wildfly</id>
-			<properties>
-				<custom.unpackTypes>war</custom.unpackTypes>
-			</properties>
-		</profile>
-
-		<!-- glassfish profile -->
-		<profile>
-			<id>glassfish</id>
-			<properties>
-				<custom.webResources>src/main/webapp_glassfish</custom.webResources>
-				<custom.unpackTypes>war</custom.unpackTypes>
-			</properties>
-		</profile>
-	</profiles>
 
 	<repositories>
 		<repository>
@@ -247,9 +90,7 @@
 				<filtering>true</filtering>
 			</resource>
 		</resources>
-		
-		
-		
+
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -262,155 +103,132 @@
 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-war-plugin</artifactId>
-				<version>2.4</version>
-				<configuration>
-					<webResources>
-						<resource>
-							<!-- this is relative to the pom.xml directory -->
-							<directory>${custom.webResources}</directory>
-						</resource>
-					</webResources>
-					<failOnMissingWebXml>false</failOnMissingWebXml>
-				</configuration>
-			</plugin>
-
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-resources-plugin</artifactId>
 				<version>2.6</version>
 				<configuration>
 					<encoding>${project.build.sourceEncoding}</encoding>
 				</configuration>
 			</plugin>
-			
-			<!-- copy artifact into docker/apps -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-dependency-plugin</artifactId>
-				<version>2.8</version>
-				<executions>
-					<execution>
-						<id>copy-installed</id>
-						<phase>install</phase>
-						<goals>
-							<goal>copy</goal>
-						</goals>
-						<configuration>
-							<artifactItems>
-								<artifactItem>
-									<groupId>${project.groupId}</groupId>
-									<artifactId>${project.artifactId}</artifactId>
-									<version>${project.version}</version>
-									<type>${project.packaging}</type>
-								</artifactItem>
-							</artifactItems>
-							<outputDirectory>${project.basedir}/src/docker/apps</outputDirectory>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
+
 		</plugins>
-
-		<!-- test directory for junit -->
-		<testResources>
-			<testResource>
-				<directory>${project.basedir}/src/model</directory>
-			</testResource>
-		</testResources>
-
-		<finalName>imixs-microservice</finalName>
 	</build>
+
+
+
+
+	<dependencyManagement>
+
+		<dependencies>
+			<!-- Jakarta EE -->
+			<dependency>
+				<groupId>javax</groupId>
+				<artifactId>javaee-api</artifactId>
+				<version>8.0</version>
+				<scope>provided</scope>
+			</dependency>
+
+
+			<!-- Imixs Workflow -->
+			<dependency>
+				<groupId>org.imixs.workflow</groupId>
+				<artifactId>imixs-workflow-engine</artifactId>
+				<version>${org.imixs.workflow.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.imixs.workflow</groupId>
+				<artifactId>imixs-workflow-jax-rs</artifactId>
+				<version>${org.imixs.workflow.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.imixs.workflow</groupId>
+				<artifactId>imixs-workflow-faces</artifactId>
+				<version>${org.imixs.workflow.version}</version>
+			</dependency>
+			
+			
+			<dependency>
+				<groupId>org.imixs.workflow</groupId>
+				<artifactId>imixs-workflow-index-lucene</artifactId>
+				<version>${org.imixs.workflow.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.imixs.workflow</groupId>
+				<artifactId>imixs-workflow-index-solr</artifactId>
+				<version>${org.imixs.workflow.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.imixs.workflow</groupId>
+				<artifactId>imixs-melman</artifactId>
+				<version>${org.imixs.melman.version}</version>
+				<scope>test</scope>
+			</dependency>
+
+
+			<!-- JUnit Tests -->
+			<dependency>
+				<groupId>junit</groupId>
+				<artifactId>junit</artifactId>
+				<version>4.8.1</version>
+				<scope>test</scope>
+			</dependency>
+
+			<!-- JAX-RS 2.0 Test dependencies -->
+			<dependency>
+				<groupId>org.glassfish.jersey.core</groupId>
+				<artifactId>jersey-client</artifactId>
+				<version>2.27</version>
+				<scope>test</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>org.apache.cxf</groupId>
+				<artifactId>cxf-rt-rs-client</artifactId>
+				<version>3.0.15</version>
+				<scope>test</scope>
+			</dependency>
+
+
+		</dependencies>
+	</dependencyManagement>
+
 
 	<dependencies>
 		<!-- Jakarta EE -->
 		<dependency>
 			<groupId>javax</groupId>
 			<artifactId>javaee-api</artifactId>
-			<version>8.0</version>
 			<scope>provided</scope>
 		</dependency>
-	
 
-		<!-- Imixs Workflow -->
-		<dependency>
-			<groupId>org.imixs.workflow</groupId>
-			<artifactId>imixs-workflow-engine</artifactId>
-			<version>${org.imixs.workflow.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.imixs.workflow</groupId>
-			<artifactId>imixs-workflow-jax-rs</artifactId>
-			<version>${org.imixs.workflow.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.imixs.workflow</groupId>
-			<artifactId>imixs-workflow-faces</artifactId>
-			<version>${org.imixs.workflow.version}</version>
-		</dependency>
-
-
-
-		<!-- Apache Lucene -->
-		<dependency>
-			<groupId>org.apache.lucene</groupId>
-			<artifactId>lucene-core</artifactId>
-			<version>${lucene.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.lucene</groupId>
-			<artifactId>lucene-analyzers-common</artifactId>
-			<version>${lucene.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.lucene</groupId>
-			<artifactId>lucene-queryparser</artifactId>
-			<version>${lucene.version}</version>
-		</dependency>
-		
-		
-		<!-- Imixs-Adapter Apache Kafka (since version 1.6.3) 
-		<dependency>
-			<groupId>org.imixs.workflow</groupId>
-			<artifactId>imixs-adapters-kafka</artifactId>
-			<version>${org.imixs.adapters.version}</version>
-			<scope>compile</scope>
-		</dependency>
-		-->
-		
-		<dependency>
-			<groupId>org.imixs.workflow</groupId>
-			<artifactId>imixs-melman</artifactId>
-			<version>${org.imixs.melman.version}</version>
-			<scope>test</scope>
-		</dependency>
-	
-		
 		<!-- JUnit Tests -->
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.8.1</version>
 			<scope>test</scope>
 		</dependency>
-		
+
 		<!-- JAX-RS 2.0 Test dependencies -->
 		<dependency>
 			<groupId>org.glassfish.jersey.core</groupId>
 			<artifactId>jersey-client</artifactId>
-			<version>2.27</version>
 			<scope>test</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>org.apache.cxf</groupId>
 			<artifactId>cxf-rt-rs-client</artifactId>
-			<version>3.0.15</version>
 			<scope>test</scope>
 		</dependency>
-		
 
+
+		<dependency>
+			<groupId>org.imixs.workflow</groupId>
+			<artifactId>imixs-melman</artifactId>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
+
 </project>

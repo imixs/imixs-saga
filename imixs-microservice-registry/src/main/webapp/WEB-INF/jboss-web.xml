@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jboss-web>
+
+	<!-- Mail Ref -->
+	<resource-ref>
+		<res-ref-name>mail/org.imixs.workflow.mail</res-ref-name>
+		<res-type>javax.mail.Session</res-type>
+		<jndi-name>java:/mail/org.imixs.workflow.mail</jndi-name>
+	</resource-ref>
+
+	<default-encoding>UTF-8</default-encoding>
+	<context-root>/</context-root>
+	<security-domain>imixsrealm</security-domain>
+
+</jboss-web>

@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="content-type" content="text/html;charset=UTF-8" />
+<title>Imixs-Microservice</title>
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, minimum-scale=1" />
+
+<link type="text/css;charset=UTF-8" rel="stylesheet" media="all"
+	href="imixs-basic.css" />
+<link type="text/css;charset=UTF-8" rel="stylesheet" media="all"
+	href="imixs-layout.css" />
+<link rel="stylesheet" href="./fonts/typicons.min.css" />
+
+<link type="text/css;charset=UTF-8" rel="stylesheet" media="all"
+	href="imixs-microservice.css" />
+
+
+<style>
+</style>
+</head>
+<body>
+
+	<div id="header">
+		<div class="row">
+
+			<div id="imixs-servicenav">
+				<ul>
+					<li><a href="./index.html"><span
+							class="typcn typcn-home-outline"></span>Home</a></li>
+
+					<li><a href="https://github.com/imixs/imixs-microservice"
+						target="_blank"><span class="typcn typcn-social-github"></span>Source
+							Code</a></li>
+
+					<li><a href="http://www.imixs.org" target="_blank"><span
+							class="typcn typcn-world"></span>imixs-workflow</a></li>
+
+				</ul>
+			</div>
+
+			<div id="imixs-header">
+				<div id="imixs-logo"></div>
+				<div id="imixs-branding">
+					<span class="imixs-brandingtext1">Imixs Workflow</span> <span
+						class="imixs-brandingtext3">...the open source workflow
+						technology for business applications</span>
+					<p>
+						<span class="imixs-brandingtext2">Microservice</span>
+					</p>
+				</div>
+			</div>
+
+		</div>
+	</div>
+
+
+
+
+	<div id="container">
+
+		<!--  WHAT -->
+
+		<div class="row section  text-left" id="section4">
+
+			<div class="col-12">
+				<h1>Welcome to Imixs-Workflow</h1>
+				<p>
+
+					The <a href="https://github.com/imixs/imixs-microservice"
+						target="_blank">Imixs-Microservice project</a> encapsulates the <a
+						href="http://www.imixs.org" target="_blank">Imixs-Workflow
+						Engine</a> into a RESTful web service interface. The
+					Imixs-Microservice can be bound to any business application,
+					independent from the technology behind. In this architectural style
+					the business logic can be changed without changing a single line of
+					code.
+				</p>
+
+
+
+				<h2>How to Deploy a BPMN Model</h2>
+				<p>
+					After you have setup the Imixs-Workfow Microservice you can deploy
+					a workflow Model. A workflow model can be created using the <a
+						href="http://www.imixs.org/doc/modelling/index.html"
+						target="_blank">Imixs-BPMN eclipse Plugin</a>. A workflow Model
+					can be deployed into the Imixs-Workflow using the 'Model-REST
+					service' interface. You can deploy the default 'Ticket Workflow'
+					using the curl command: <br />
+
+				</p>
+				<pre>curl --user admin:adminadmin --request POST -Tticket.bpmn http://localhost:8080/api/model/bpmn</pre>
+				<p>You will find the example model in the Imixs-Microservice
+					project located at: /src/main/resources/ticket.bpmn</p>
+
+
+				<h2>Verify Model</h2>
+
+				<p>
+					To verify if the model was deployed successfully you can check the
+					deployed model version with the Rest API: <a href="./api/model"
+						target="_blank" class="sample-url">http://[YOURSERVER]/api/model</a>
+					
+				</p>
+
+
+				<h2>Create a Process Instance</h2>
+				<p>To create a new process instance you can POST a JSON Object
+					to the Imixs-Microservice in the following way:</p>
+
+				<pre>curl --user admin:adminadmin -H "Accept: Application/json" -H "Content-Type: application/json" -d \
+	       '{"item":[ \
+	                 {"name":"type","value":{"@type":"xs:string","$":"workitem"}}, \
+	                 {"name":"$modelversion","value":{"@type":"xs:string","$":"1.0.0"}}, \
+	                 {"name":"txtworkflowgroup","value":{"@type":"xs:string","$":"Ticket"}}, \
+	                 {"name":"$processid","value":{"@type":"xs:int","$":"1000"}}, \
+	                 {"name":"$activityid","value":{"@type":"xs:int","$":"10"}}, \
+	                 {"name":"txtname","value":{"@type":"xs:string","$":"test-json"}}\
+	         ]}' \
+	         http://localhost:8080/api/workflow/workitem.json</pre>
+	         
+	         <p>The result can be verified by the following GET URI:</p>
+	         
+	         <a href="./api/workflow/tasklist/creator/admin"
+						target="_blank" class="sample-url">http://[YOURSERVER]/api/tasklist/creator/admin</a>
+	         
+	         
+	         <p>
+	         <a href="https://github.com/imixs/imixs-microservice">See
+						the Imixs-Microservice Project on GitHub for further Information.</a>
+	         </p>
+			</div>
+
+
+		</div>
+	</div>
+
+
+	<div id="footer">
+		<p></p>
+	</div>
+</body>
+</html>

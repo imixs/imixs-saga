@@ -269,7 +269,7 @@ This will automatically reload the models from the defined location.
 
 To build the Docker image locally from sources run:
 	
-	$ mvn clean install -DskipTests -Pdocker
+	$ mvn clean install -Pdocker
 
 	
 ## Docker for Production
@@ -336,6 +336,51 @@ You can also map a deployment directory for hot-deployment:
         - ~/git/imixs-microservice/src/docker/deployments:/opt/wildfly/standalone/deployments/
     ...
 
+
+
+### Extend the Imixs-Micorsevice
+
+If you plan to extend the Imixs-Microservice you just need to setup a Maven Overlay Project:
+
+
+	
+	...
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-war-plugin</artifactId>
+				<version>2.4</version>
+				<configuration>
+					<webResources>
+						<resource>
+							<filtering>true</filtering>
+							<!-- this is relative to the pom.xml directory -->
+							<directory>${custom.webResources}</directory>
+							<includes>
+								<include>**/WEB-INF/*</include>
+								<include>/src/main/resources/*</include>
+								<!-- include any other file types you want to filter -->
+							</includes>
+						</resource>
+					</webResources>
+					<overlays>
+						<overlay>
+							<groupId>org.imixs.workflow</groupId>
+							<artifactId>imixs-microservice</artifactId>
+						</overlay>
+					</overlays>
+				</configuration>
+			</plugin>			
+		</plugins>
+		....
+	</build>
+	.....
+
+
+This will result in a new Microservice Project including the Imxixs-Microservice Core API. You can customize this project or add additional functionallity like Plug-Ins or Adapter Classes.
+
+	
 
 ### Debug
 
