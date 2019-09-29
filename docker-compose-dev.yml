@@ -18,6 +18,7 @@ services:
       POSTGRES_CONNECTION: "jdbc:postgresql://db/workflow"
       IMIXS_MODEL: "/home/imixs/model/ticket-en-1.0.0.bpmn"
       MODEL_DEFAULT_DATA: "/home/imixs/model/ticket-en-1.0.0.bpmn"
+      IMIXS_REGISTRY_SERVICEENDPOINT: "http://registry:8080/api"
     ports:
       - "8080:8080"
       - "9990:9990"

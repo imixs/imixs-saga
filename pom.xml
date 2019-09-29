@@ -119,16 +119,16 @@
 	<dependencyManagement>
 
 		<dependencies>
-			<!-- Jakarta EE -->
-			<dependency>
-				<groupId>javax</groupId>
-				<artifactId>javaee-api</artifactId>
-				<version>8.0</version>
-				<scope>provided</scope>
-			</dependency>
+
 
 
 			<!-- Imixs Workflow -->
+			<dependency>
+				<groupId>org.imixs.workflow</groupId>
+				<artifactId>imixs-workflow-core</artifactId>
+				<version>${org.imixs.workflow.version}</version>
+			</dependency>
+			
 			<dependency>
 				<groupId>org.imixs.workflow</groupId>
 				<artifactId>imixs-workflow-engine</artifactId>
@@ -146,8 +146,8 @@
 				<artifactId>imixs-workflow-faces</artifactId>
 				<version>${org.imixs.workflow.version}</version>
 			</dependency>
-			
-			
+
+
 			<dependency>
 				<groupId>org.imixs.workflow</groupId>
 				<artifactId>imixs-workflow-index-lucene</artifactId>
@@ -200,6 +200,16 @@
 		<dependency>
 			<groupId>javax</groupId>
 			<artifactId>javaee-api</artifactId>
+			<version>8.0</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- Microprofile -->
+		<dependency>
+			<groupId>org.eclipse.microprofile</groupId>
+			<artifactId>microprofile</artifactId>
+			<version>2.2</version>
+			<type>pom</type>
 			<scope>provided</scope>
 		</dependency>
 
