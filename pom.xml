@@ -67,7 +67,8 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<org.imixs.workflow.version>5.1.0-SNAPSHOT</org.imixs.workflow.version>
 		<org.imixs.adapters.version>2.1.0</org.imixs.adapters.version>
-		<org.imixs.melman.version>1.0.11</org.imixs.melman.version>
+		<org.imixs.melman.version>1.0.12-SNAPSHOT</org.imixs.melman.version>
+		<org.imixs.jwt.version>1.0.2-SNAPSHOT</org.imixs.jwt.version>
 		<custom.webResources>src/main/webapp</custom.webResources>
 		<imixs-workflow.applicationname>imixs-microservice</imixs-workflow.applicationname>
 	</properties>
@@ -119,9 +120,7 @@
 	<dependencyManagement>
 
 		<dependencies>
-
-
-
+		
 			<!-- Imixs Workflow -->
 			<dependency>
 				<groupId>org.imixs.workflow</groupId>
@@ -163,9 +162,13 @@
 				<groupId>org.imixs.workflow</groupId>
 				<artifactId>imixs-melman</artifactId>
 				<version>${org.imixs.melman.version}</version>
-				<scope>test</scope>
 			</dependency>
 
+			<dependency>
+			     <groupId>org.imixs.jwt</groupId>
+			     <artifactId>imixs-jwt</artifactId>
+			     <version>${org.imixs.jwt.version}</version>
+			</dependency>
 
 			<!-- JUnit Tests -->
 			<dependency>

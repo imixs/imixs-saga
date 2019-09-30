@@ -18,5 +18,18 @@
 			<artifactId>imixs-workflow-core</artifactId>
 		</dependency>
 
+		<!-- Imixs Melman -->
+		<dependency>
+			<groupId>org.imixs.workflow</groupId>
+			<artifactId>imixs-melman</artifactId>
+		</dependency>
+
+		<!-- Imixs JWT -->
+		<dependency>
+			<groupId>org.imixs.jwt</groupId>
+			<artifactId>imixs-jwt</artifactId>
+		</dependency>
+
+
 	</dependencies>
 </project>

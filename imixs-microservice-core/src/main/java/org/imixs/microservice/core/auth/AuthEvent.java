@@ -12,7 +12,7 @@ import org.imixs.melman.AbstractClient;
  * 
  * @author Ralph Soika
  * @version 1.0
- * @see org.imixs.microservice.core.RegisterService
+ * @see org.imixs.microservice.core.AutoRegisterService
  */
 public class AuthEvent {
 
