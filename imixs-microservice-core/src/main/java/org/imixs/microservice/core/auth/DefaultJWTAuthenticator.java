@@ -23,7 +23,7 @@ import org.imixs.melman.JWTAuthenticator;
  * @author rsoika
  *
  */
-public class DefaultJWTAuth {
+public class DefaultJWTAuthenticator {
 
 	@Inject
 	@ConfigProperty(name = "imixs.registry.auth.jwt.secret", defaultValue = "")
@@ -33,7 +33,7 @@ public class DefaultJWTAuth {
 	@ConfigProperty(name = "imixs.registry.auth.jwt.disable.default", defaultValue = "false")
 	boolean disabled;
 
-	private static Logger logger = Logger.getLogger(DefaultJWTAuth.class.getName());
+	private static Logger logger = Logger.getLogger(DefaultJWTAuthenticator.class.getName());
 
 	/**
 	 * This method registers the default JWT auth module.
