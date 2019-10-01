@@ -224,6 +224,7 @@
 								</artifactItem>
 							</artifactItems>
 							<outputDirectory>${project.basedir}/src/docker/apps</outputDirectory>
+							<stripVersion>true</stripVersion>
 						</configuration>
 					</execution>
 				</executions>
