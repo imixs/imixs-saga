@@ -1,0 +1,64 @@
+version: '3.3'
+
+services:
+
+  db:
+    image: postgres:9.6.1
+    environment:
+      POSTGRES_PASSWORD: adminadmin
+      POSTGRES_DB: workflow
+
+  app:
+    image: imixs/imixs-microservice
+    environment:
+      WILDFLY_PASS: adminadmin
+      DEBUG: "true"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "adminadmin"
+      POSTGRES_CONNECTION: "jdbc:postgresql://db/workflow"
+      IMIXS_MODEL: "/home/imixs/model/ticket-en-1.0.0.bpmn"
+      MODEL_DEFAULT_DATA: "/home/imixs/model/ticket-en-1.0.0.bpmn"
+      IMIXS_REGISTRY_SERVICEENDPOINT: "http://registry:8080/api"
+    ports:
+      - "8080:8080"
+      - "9990:9990"
+      - "8787:8787"    
+    volumes:
+      - ~/git/imixs-microservice/imixs-microservice-app/src/model/:/home/imixs/model/
+# Uncomment the followign lines to provide a auto-deployment directory for development   
+      - ~/git/imixs-microservice/imixs-microservice-app/src/docker/deployments:/opt/wildfly/standalone/deployments/
+    depends_on:
+      - registry
+
+
+
+  registry:
+    image: imixs/imixs-registry
+    environment:
+      WILDFLY_PASS: adminadmin
+      DEBUG: "true"
+      TZ: "Europe/Berlin"
+    ports:
+      - "8081:8080"
+      - "9991:9990"
+      - "8788:8787"    
+
+    volumes:
+      - ~/git/imixs-microservice/imixs-microservice-registry/src/docker/deployments:/opt/wildfly/standalone/deployments/
+      
+
+
+
+
+
+
+
+
+
+
+
+
+#  imixsadmin:
+#    image: imixs/imixs-admin
+#    ports:
+#      - "8888:8080"

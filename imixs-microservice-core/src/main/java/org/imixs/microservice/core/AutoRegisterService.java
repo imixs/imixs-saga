@@ -41,11 +41,8 @@ import org.imixs.workflow.xml.XMLDocumentAdapter;
 // @ConcurrencyManagement(ConcurrencyManagementType.BEAN)
 public class AutoRegisterService implements Serializable {
 
-	
-	
 	public static final String ITEM_SERVICEENDPOINT = "$serviceendpoint";
-	
-	
+
 	@Resource
 	private TimerService timerService;
 
@@ -80,16 +77,18 @@ public class AutoRegisterService implements Serializable {
 		// do we have a imixs-registry endpoint defined?
 		if (!registryServiceEndpoint.isEmpty()) {
 			registerMicroservice();
+
+			// start timer if no one is started yet....
+			if (findTimer() == null) {
+				logger.finest("......create new timer: " + timerID + " - timer intervall=" + registryIntervall + "ms");
+				TimerConfig config = new TimerConfig();
+				// config.set
+				config.setPersistent(false);
+				timerService.createIntervalTimer(0, registryIntervall, config);
+			}
+
 		}
 
-		// start timer?
-		if (findTimer() == null) {
-			logger.finest("......create timer: " + timerID + " - timer intervall=" + registryIntervall + "ms");
-			TimerConfig config = new TimerConfig();
-			// config.set
-			config.setPersistent(false);
-			timerService.createIntervalTimer(0, registryIntervall, config);
-		}
 	}
 
 	@PreDestroy
@@ -109,7 +108,8 @@ public class AutoRegisterService implements Serializable {
 	 */
 	@Timeout
 	private synchronized void onTimer() {
-		logger.info("...update Imixs-Registry endpoint: " + registryServiceEndpoint);
+		logger.info("...ping Imixs-Registry endpoint: " + registryServiceEndpoint);
+		registerMicroservice();
 	}
 
 	/**
@@ -133,18 +133,17 @@ public class AutoRegisterService implements Serializable {
 		}
 
 		try {
-			logger.info("register new Imixs-Microservice...");
 			ItemCollection matcherDocument = new ItemCollection();
 			matcherDocument.setItemValue("type", "workitem");
-			
+
 			matcherDocument.setItemValue("", "http://test." + System.currentTimeMillis() + ".com/api");
 			// post new service
 			client.postXMLDocument("/services", XMLDocumentAdapter.getDocument(matcherDocument));
-			logger.info("registration successfull...");
+			logger.info("...registration successfull...");
 		} catch (RestAPIException e) {
 			logger.severe("Unable to register service at Imixs-Registry: " + registryServiceEndpoint + " - "
 					+ e.getMessage());
-			e.printStackTrace();
+			
 		}
 
 	}

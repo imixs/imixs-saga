@@ -164,21 +164,6 @@
                     </security>
                 </datasource>
               
-              	<!-- imixs-workflow datasource -->
-                <datasource jta="true" jndi-name="java:/jdbc/imixs-microservice" pool-name="imixs-microservice" enabled="true" use-ccm="true">
-                	<connection-url>${env.POSTGRES_CONNECTION}</connection-url>
-				    <driver-class>org.postgresql.Driver</driver-class>
-				    <driver>postgresql</driver>
-				    <security>
-				      <user-name>${env.POSTGRES_USER}</user-name>
-				      <password>${env.POSTGRES_PASSWORD}</password>
-				    </security>
-                     <validation>
-                        <valid-connection-checker class-name="org.jboss.jca.adapters.jdbc.extensions.postgres.PostgreSQLValidConnectionChecker"/>
-                        <!-- any background-validation-millis > 0 will enable background validation. See https://jira.jboss.org/browse/JBAS-4088. -->
-                        <background-validation-millis>60000</background-validation-millis>
-                    </validation>                
-                </datasource>                 
                 <drivers>
                     <driver name="h2" module="com.h2database.h2">
                         <xa-datasource-class>org.h2.jdbcx.JdbcDataSource</xa-datasource-class>

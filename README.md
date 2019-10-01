@@ -281,7 +281,8 @@ To run the Imixs-Microservice in a Docker production environment the project pro
 
 With the profile '_docker-build_' a docker container based on the current version of Imixs-Microservice is created locally
  
-	mvn clean install -Pdocker-build
+	$ cd imixs-microservice-app
+	$ mvn clean install -Pdocker-build
 
 
 ### docker-push

@@ -70,7 +70,6 @@
 		<org.imixs.melman.version>1.0.12-SNAPSHOT</org.imixs.melman.version>
 		<org.imixs.jwt.version>1.0.2-SNAPSHOT</org.imixs.jwt.version>
 		<custom.webResources>src/main/webapp</custom.webResources>
-		<imixs-workflow.applicationname>imixs-microservice</imixs-workflow.applicationname>
 	</properties>
 
 	<repositories>
@@ -222,26 +221,17 @@
 			<artifactId>junit</artifactId>
 			<scope>test</scope>
 		</dependency>
-
-		<!-- JAX-RS 2.0 Test dependencies -->
 		<dependency>
 			<groupId>org.glassfish.jersey.core</groupId>
 			<artifactId>jersey-client</artifactId>
 			<scope>test</scope>
 		</dependency>
-
 		<dependency>
 			<groupId>org.apache.cxf</groupId>
 			<artifactId>cxf-rt-rs-client</artifactId>
 			<scope>test</scope>
 		</dependency>
 
-
-		<dependency>
-			<groupId>org.imixs.workflow</groupId>
-			<artifactId>imixs-melman</artifactId>
-			<scope>test</scope>
-		</dependency>
 	</dependencies>
 
 </project>

@@ -102,7 +102,7 @@ public class RegistryService {
 	 * endpoint URI accessible form the Imixs-Registry service.
 	 * 
 	 * @param xmlworkitem - service description to be registered.
-	 * @return
+	 * @return the request document 
 	 */
 	@POST
 	@Path("/")
