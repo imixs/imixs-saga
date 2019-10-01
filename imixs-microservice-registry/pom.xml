@@ -247,18 +247,8 @@
 		<!-- Imixs Workflow -->
 		<dependency>
 			<groupId>org.imixs.workflow</groupId>
-			<artifactId>imixs-workflow-engine</artifactId>
+			<artifactId>imixs-workflow-core</artifactId>
 		</dependency>
-	
-		
-		<!-- Imixs-Adapter Apache Kafka (since version 1.6.3) 
-		<dependency>
-			<groupId>org.imixs.workflow</groupId>
-			<artifactId>imixs-adapters-kafka</artifactId>
-			<version>${org.imixs.adapters.version}</version>
-			<scope>compile</scope>
-		</dependency>
-		-->
 	
 	</dependencies>
 	
