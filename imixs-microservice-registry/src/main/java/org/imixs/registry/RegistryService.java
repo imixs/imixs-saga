@@ -62,8 +62,9 @@ import org.imixs.workflow.xml.XMLDocumentAdapter;
  * @author rsoika
  *
  */
-@Stateless
 @Path("/services")
+@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.TEXT_XML })
+@Stateless
 public class RegistryService {	
 
 	public static final String ITEM_SERVICEENDPOINT = "$serviceendpoint";

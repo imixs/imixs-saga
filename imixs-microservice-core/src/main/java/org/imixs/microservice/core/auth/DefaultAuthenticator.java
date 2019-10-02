@@ -3,6 +3,7 @@ package org.imixs.microservice.core.auth;
 import java.util.logging.Logger;
 
 import javax.crypto.SecretKey;
+import javax.enterprise.context.RequestScoped;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
@@ -44,6 +45,7 @@ import org.imixs.melman.JWTAuthenticator;
  * @version 1.0
  * @author rsoika
  */
+@RequestScoped
 public class DefaultAuthenticator {
 
 	@Inject

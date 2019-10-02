@@ -133,7 +133,7 @@ public class AutoRegisterService implements Serializable {
 			ItemCollection matcherDocument = new ItemCollection();
 			matcherDocument.setItemValue("type", "workitem");
 
-			matcherDocument.setItemValue("", "http://test." + System.currentTimeMillis() + ".com/api");
+			matcherDocument.setItemValue("$serviceendpoint", "http://app:8080/api");
 			// post new service
 			client.postXMLDocument("/services", XMLDocumentAdapter.getDocument(matcherDocument));
 			logger.info("...registration successfull...");
