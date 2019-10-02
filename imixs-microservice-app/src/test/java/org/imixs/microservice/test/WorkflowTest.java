@@ -140,10 +140,11 @@ public class WorkflowTest {
 
 		try {
 			// post json request, accept XML
-			String result = restClient.post(BASE_URL + "workflow/workitem.json", json, MediaType.APPLICATION_JSON,
+			String result = restClient.post(BASE_URL + "workflow/workitem", json, MediaType.APPLICATION_JSON,
 					MediaType.APPLICATION_XML);
 
 			List<ItemCollection> tickets = XMLDataCollectionAdapter.readCollection(result.getBytes());
+	
 			// extract 1st workitem...
 			Assert.assertNotNull(tickets);
 			Assert.assertTrue(tickets.size() > 0);

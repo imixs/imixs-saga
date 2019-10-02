@@ -82,7 +82,6 @@
 
 
 	<build>
-
 		<resources>
 			<!-- enable resource filtering for multi language version -->
 			<resource>
@@ -100,7 +99,6 @@
 					<target>1.8</target>
 				</configuration>
 			</plugin>
-
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-resources-plugin</artifactId>
@@ -109,43 +107,33 @@
 					<encoding>${project.build.sourceEncoding}</encoding>
 				</configuration>
 			</plugin>
-
 		</plugins>
 	</build>
 
-
-
-
 	<dependencyManagement>
-
 		<dependencies>
-		
+
 			<!-- Imixs Workflow -->
 			<dependency>
 				<groupId>org.imixs.workflow</groupId>
 				<artifactId>imixs-workflow-core</artifactId>
 				<version>${org.imixs.workflow.version}</version>
 			</dependency>
-			
 			<dependency>
 				<groupId>org.imixs.workflow</groupId>
 				<artifactId>imixs-workflow-engine</artifactId>
 				<version>${org.imixs.workflow.version}</version>
 			</dependency>
-
 			<dependency>
 				<groupId>org.imixs.workflow</groupId>
 				<artifactId>imixs-workflow-jax-rs</artifactId>
 				<version>${org.imixs.workflow.version}</version>
 			</dependency>
-
 			<dependency>
 				<groupId>org.imixs.workflow</groupId>
 				<artifactId>imixs-workflow-faces</artifactId>
 				<version>${org.imixs.workflow.version}</version>
 			</dependency>
-
-
 			<dependency>
 				<groupId>org.imixs.workflow</groupId>
 				<artifactId>imixs-workflow-index-lucene</artifactId>
@@ -156,17 +144,16 @@
 				<artifactId>imixs-workflow-index-solr</artifactId>
 				<version>${org.imixs.workflow.version}</version>
 			</dependency>
-
+			
 			<dependency>
 				<groupId>org.imixs.workflow</groupId>
 				<artifactId>imixs-melman</artifactId>
 				<version>${org.imixs.melman.version}</version>
 			</dependency>
-
 			<dependency>
-			     <groupId>org.imixs.jwt</groupId>
-			     <artifactId>imixs-jwt</artifactId>
-			     <version>${org.imixs.jwt.version}</version>
+				<groupId>org.imixs.jwt</groupId>
+				<artifactId>imixs-jwt</artifactId>
+				<version>${org.imixs.jwt.version}</version>
 			</dependency>
 
 			<!-- JUnit Tests -->
@@ -176,22 +163,18 @@
 				<version>4.8.1</version>
 				<scope>test</scope>
 			</dependency>
-
-			<!-- JAX-RS 2.0 Test dependencies -->
 			<dependency>
 				<groupId>org.glassfish.jersey.core</groupId>
 				<artifactId>jersey-client</artifactId>
 				<version>2.27</version>
 				<scope>test</scope>
 			</dependency>
-
 			<dependency>
 				<groupId>org.apache.cxf</groupId>
 				<artifactId>cxf-rt-rs-client</artifactId>
 				<version>3.0.15</version>
 				<scope>test</scope>
 			</dependency>
-
 
 		</dependencies>
 	</dependencyManagement>

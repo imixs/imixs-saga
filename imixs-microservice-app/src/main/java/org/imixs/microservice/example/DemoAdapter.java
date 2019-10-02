@@ -32,8 +32,8 @@ import java.util.logging.Logger;
 
 import javax.ejb.EJB;
 
-import org.imixs.workflow.Adapter;
 import org.imixs.workflow.ItemCollection;
+import org.imixs.workflow.SignalAdapter;
 import org.imixs.workflow.engine.ModelService;
 import org.imixs.workflow.exceptions.AdapterException;
 
@@ -45,7 +45,7 @@ import org.imixs.workflow.exceptions.AdapterException;
  *
  */
 
-public class DemoAdapter implements Adapter {
+public class DemoAdapter implements SignalAdapter {
 
 	// inject services...
 	@EJB

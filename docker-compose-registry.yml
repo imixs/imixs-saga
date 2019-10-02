@@ -19,6 +19,9 @@ services:
       IMIXS_MODEL: "/home/imixs/model/ticket-en-1.0.0.bpmn"
       MODEL_DEFAULT_DATA: "/home/imixs/model/ticket-en-1.0.0.bpmn"
       IMIXS_REGISTRY_SERVICEENDPOINT: "http://registry:8080/api"
+      IMIXS_REGISTRY_AUTH_METHOD: "BASIC"
+      IMIXS_REGISTRY_AUTH_USERID: "admin"
+      IMIXS_REGISTRY_AUTH_SECRET: "adminadmin"
     ports:
       - "8080:8080"
       - "9990:9990"

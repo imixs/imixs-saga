@@ -24,7 +24,7 @@ services:
       - "8787:8787"
     
     volumes:
-      - ~/git/imixs-microservice/imixs-microservice-app/src/model/:/home/imixs/model/
+      - ~/git/imixs-microservice/src/model/:/home/imixs/model/
 # Uncomment the followign lines to provide a auto-deployment directory for development   
       - ~/git/imixs-microservice/imixs-microservice-app/src/docker/deployments:/opt/wildfly/standalone/deployments/
  

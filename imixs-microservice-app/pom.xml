@@ -231,7 +231,7 @@
 		<!-- test directory for junit -->
 		<testResources>
 			<testResource>
-				<directory>${project.basedir}/src/model</directory>
+				<directory>${project.parent.basedir}/src/model</directory>
 			</testResource>
 		</testResources>
 
@@ -246,12 +246,14 @@
 			<groupId>org.imixs.workflow</groupId>
 			<artifactId>imixs-workflow-engine</artifactId>
 		</dependency>
-		
 		<dependency>
 			<groupId>org.imixs.workflow</groupId>
 			<artifactId>imixs-workflow-index-lucene</artifactId>
 		</dependency>
-	
+		<dependency>
+			<groupId>org.imixs.workflow</groupId>
+			<artifactId>imixs-workflow-jax-rs</artifactId>
+		</dependency>
 		
 		<!-- Imixs-Adapter Apache Kafka (since version 1.6.3) 
 		<dependency>
@@ -269,5 +271,4 @@
 		</dependency>
 	
 	</dependencies>
-	
 </project>
