@@ -51,8 +51,8 @@ public class AutoRegisterService implements Serializable {
 	String registryServiceEndpoint;
 
 	@Inject
-	@ConfigProperty(name = "imixs.registry.intervall", defaultValue = "120000")
-	int registryIntervall;
+	@ConfigProperty(name = "imixs.registry.interval", defaultValue = "120000")
+	int registryInterval;
 
 	@Inject
 	protected Event<AuthEvent> authEvents;
@@ -80,11 +80,11 @@ public class AutoRegisterService implements Serializable {
 
 			// start timer if no one is started yet....
 			if (findTimer() == null) {
-				logger.finest("......create new timer: " + timerID + " - timer intervall=" + registryIntervall + "ms");
+				logger.finest("......create new timer: " + timerID + " - timer intervall=" + registryInterval + "ms");
 				TimerConfig config = new TimerConfig();
 				// config.set
 				config.setPersistent(false);
-				timerService.createIntervalTimer(0, registryIntervall, config);
+				timerService.createIntervalTimer(0, registryInterval, config);
 			}
 
 		}
@@ -121,11 +121,8 @@ public class AutoRegisterService implements Serializable {
 		// create a new Instance of a DocumentClient to register the service at the
 		// Imixs-Registry
 		DocumentClient client = new DocumentClient(registryServiceEndpoint);
-		// fire an AuthEvent to register a ClientRequestFilter (default is the
-		// JWTAuthenticator)
-		// Finally fire the SetupEvent. This allows CDI Observers to react on the setup
+		// fire an AuthEvent to register a ClientRequestFilter
 		if (authEvents != null) {
-			// create Group Event
 			AuthEvent authEvent = new AuthEvent(client);
 			authEvents.fire(authEvent);
 		} else {

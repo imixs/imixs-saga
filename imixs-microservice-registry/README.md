@@ -31,7 +31,7 @@ Adding a new workflow service to the registry at runtime is one of the core feat
 
 The Imixs-Registry provides an API for the registration of a Imixs-Microservice. This allows the Imixs-Registry to automatically update the mapping table  when a new workflow service is stared or becomes unavailable. 
 
-A new Imixs-Microservice instance can be automatically registered with the Imixs-Registry during startup. This prevents the need for to edit the mapping table manually at runtime. The service registry invokes registered workflow services periodically to verify that the service instance is healthy and available to handle requests. A workflow service instance periodically invokes the registration during runtime in order to prevent its registration from expiring.
+A new Imixs-Microservice instance can be automatically registered with the Imixs-Registry during startup. This prevents the need for to edit the mapping table manually at runtime.  A workflow service instance periodically invokes the registration during runtime in order to prevent its registration from expiring.
 
 **Benefits:**
 
@@ -40,6 +40,40 @@ A new Imixs-Microservice instance can be automatically registered with the Imixs
  - If a Imixs-Microservice goes down, the mapping table will updated (health check)
  - If a Imixs-Microservice goes down and starts again, the mapping table will be updated automatically (ping mechanism)
  
+### Setup
+
+To setup an Imixs-Microservice with the Self Registration feature the following configuration properties can be injected:
+
+	IMIXS_REGISTRY_SERVICEENDPOINT: the url of the Imixs-Registry instance
+	IMIXS_REGISTRY_INTERVAL: an interval in milliseconds (default 120000) to ping the registry
+
+### Authentication
+
+To register a Imixs-Microservice at the Imixs-Registry Service, the Imixs-Microservice need to authenticate itself with an appropriate auth method. 
+The imixs-microservice-core module supports different Authencation Methods which can be chousn by configuration properties:
+
+    IMIXS_REGISTRY_AUTH_METHOD:  auth method (BASIC|FORM|JWT|CUSTOM)
+    IMIXS_REGISTRY_AUTH_SECRET:  user password or jwt secret
+    IMIXS_REGISTRY_AUTH_USERID:  userId
+    IMIXS_REGISTRY_AUTH_SERVICE: Service endpoint for Form based authentication or Custom implementations
+
+
+Depending on the auth method (BASIC,FORM,JWT) the corresponding authenticator filter is chosen per default. The properties _imixs.registry.auth.secret_ and _imixs.registry.auth.userid_ can be used to set password and userid.
+
+In case the auth method is not defined or set to 'CUSTOM' no default filter is chosen. In this case a custom implementation can observe the following CDI Event:
+ 
+
+	org.imixs.microservice.core.auth.AuthEvent
+
+The event can be used to register a custom RequestFilter:
+
+	public void registerRequestFilter(@Observes AuthEvent authEvent) {
+		// create a custom RequestFilter
+		ClientRequestFilter filter=....
+		// register auth filter
+		authEvent.getClient().registerClientRequestFilter(filter);
+	}
+
 
  
 ## Service Discovery
