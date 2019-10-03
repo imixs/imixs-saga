@@ -29,6 +29,7 @@ package org.imixs.registry;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
@@ -50,12 +51,12 @@ import org.imixs.workflow.xml.XMLDocument;
 import org.imixs.workflow.xml.XMLDocumentAdapter;
 
 /**
- * This api endpoint provides method to registry a Imixs-Microservice. The
+ * This api endpoint provides methods to registry an Imixs-Microservice. The
  * endpoint provides a GET method to list all registered services and a POST
  * method to register a new Imixs-Microserivce. The Imixs-Microservice core api
- * provicdes the EJB 'AutoRegisterService' which will automatically register a
- * Imixs-Microservice on startup if the property
- * 'imixs.registry.serviceendpoint' is set.
+ * provides the EJB 'RegistrySelfRegistrationService' which will automatically
+ * register a Imixs-Microservice on startup if the property 'imixs.registry.api'
+ * is set.
  * <p>
  * The client must have Manager access to be allowed to use this service.
  * 
@@ -65,16 +66,20 @@ import org.imixs.workflow.xml.XMLDocumentAdapter;
 @Path("/services")
 @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.TEXT_XML })
 @Stateless
-public class RegistryService {	
+public class RegistryService {
 
-	public static final String ITEM_SERVICEENDPOINT = "$serviceendpoint";
-	
+	public static final String ITEM_API = "$api";
+
 	@javax.ws.rs.core.Context
 	private HttpServletRequest servletRequest;
 
 	private static Logger logger = Logger.getLogger(RegistryService.class.getName());
 
-	private Set<String> serviceRegistry = ConcurrentHashMap.newKeySet();
+	private Map<String, ItemCollection> serviceRegistry = new ConcurrentHashMap<String, ItemCollection>();
+
+	public Set<String> getServices() {
+		return serviceRegistry.keySet();
+	}
 
 	/**
 	 * Retuns a list of all registered services
@@ -83,9 +88,9 @@ public class RegistryService {
 	 */
 	@GET
 	@Path("/")
-	public GenericEntity<List<String>> helloWorld() {
+	public GenericEntity<List<String>> listServices() {
 		List<String> list = new ArrayList<String>();
-		for (String service : serviceRegistry) {
+		for (String service : serviceRegistry.keySet()) {
 			// result=result+"service endpoint: " + service + " ";
 			list.add(service);
 		}
@@ -97,19 +102,20 @@ public class RegistryService {
 	 * This method registers a Imixs-Microservice provided in xml document
 	 * description.
 	 * <p>
-	 * The document can contain any items with regex to define a matcher object.
+	 * The document can contain items with a regex to define a matcher object.
 	 * <p>
-	 * The item '$serviceendpoint' is mandatory and must contain a valid service
-	 * endpoint URI accessible form the Imixs-Registry service.
+	 * The item '$api' is mandatory and must contain a valid service api endpoint
+	 * accessible form the Imixs-Registry service.
 	 * 
-	 * @param xmlworkitem - service description to be registered.
-	 * @return the request document 
+	 * @param xmlworkitem
+	 *            - service description to be registered.
+	 * @return status
 	 */
 	@POST
 	@Path("/")
 	@Produces(MediaType.APPLICATION_XML)
 	@Consumes({ MediaType.APPLICATION_XML, "text/xml" })
-	public Response putJob(XMLDocument xmlworkitem) {
+	public Response registerService(XMLDocument xmlworkitem) {
 		if (servletRequest.isUserInRole("org.imixs.ACCESSLEVEL.MANAGERACCESS") == false) {
 			return Response.status(Response.Status.UNAUTHORIZED).build();
 		}
@@ -120,15 +126,15 @@ public class RegistryService {
 			return Response.status(Response.Status.NOT_ACCEPTABLE).build();
 		}
 
-		if (workitem.getItemValueString(ITEM_SERVICEENDPOINT).isEmpty()) {
+		String serviceEndpoint = workitem.getItemValueString(ITEM_API);
+		if (serviceEndpoint.isEmpty()) {
 			logger.severe("Invalid service registration. Service description must at least provide the item '"
-					+ ITEM_SERVICEENDPOINT + "'");
+					+ ITEM_API + "'");
 			return Response.status(Response.Status.NOT_ACCEPTABLE).build();
 		}
 
-		serviceRegistry.add(workitem.getItemValueString(ITEM_SERVICEENDPOINT));
-		return Response.ok(XMLDataCollectionAdapter.getDataCollection(workitem), MediaType.APPLICATION_XML)
-				.build();
+		serviceRegistry.put(serviceEndpoint, workitem);
+		return Response.ok(XMLDataCollectionAdapter.getDataCollection(workitem), MediaType.APPLICATION_XML).build();
 	}
 
 }

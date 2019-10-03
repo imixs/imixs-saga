@@ -18,10 +18,12 @@ services:
       POSTGRES_CONNECTION: "jdbc:postgresql://db/workflow"
       IMIXS_MODEL: "/home/imixs/model/ticket-en-1.0.0.bpmn"
       MODEL_DEFAULT_DATA: "/home/imixs/model/ticket-en-1.0.0.bpmn"
-      IMIXS_REGISTRY_SERVICEENDPOINT: "http://registry:8080/api"
+      IMIXS_REGISTRY_API: "http://registry:8080/api"
       IMIXS_REGISTRY_AUTH_METHOD: "BASIC"
       IMIXS_REGISTRY_AUTH_USERID: "admin"
       IMIXS_REGISTRY_AUTH_SECRET: "adminadmin"
+      IMIXS_REGISTRY_INDEX: true
+      IMIXS_API: "http://app:8080/api"
     ports:
       - "8080:8080"
       - "9990:9990"
@@ -41,6 +43,8 @@ services:
       WILDFLY_PASS: adminadmin
       DEBUG: "true"
       TZ: "Europe/Berlin"
+      SOLR_API: "http://registry-solr:8080"    
+      INDEX_INTERVAL: 10000  
     ports:
       - "8081:8080"
       - "9991:9990"

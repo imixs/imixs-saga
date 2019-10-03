@@ -78,11 +78,12 @@ The event can be used to register a custom RequestFilter:
  
 ## Service Discovery
  
- 
-
 Based on a specific business event, a client can query the registry to obtain a list of available workflow instances or start a new process instance within a matching workflow instance. 
 
  
  
+## Derived Index
+
+The Imixs-Registry supports a derived index over all registered Imixs-Microserives. This index is refreshed periodically based on EventLog entries written by each Imixs-Microserivce. This mechanism ensures that only committed data is indexed. The index is updated periodically so it runns behind the origin transaction. To get a live view to a Imixs-Microservice the service can be search directly by the Rest-API. 
  
  
