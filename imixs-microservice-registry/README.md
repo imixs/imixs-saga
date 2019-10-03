@@ -47,33 +47,6 @@ To setup an Imixs-Microservice with the Self Registration feature the following 
 	IMIXS_REGISTRY_SERVICEENDPOINT: the url of the Imixs-Registry instance
 	IMIXS_REGISTRY_INTERVAL: an interval in milliseconds (default 120000) to ping the registry
 
-### Authentication
-
-To register a Imixs-Microservice at the Imixs-Registry Service, the Imixs-Microservice need to authenticate itself with an appropriate auth method. 
-The imixs-microservice-core module supports different Authencation Methods which can be chousn by configuration properties:
-
-    IMIXS_REGISTRY_AUTH_METHOD:  auth method (BASIC|FORM|JWT|CUSTOM)
-    IMIXS_REGISTRY_AUTH_SECRET:  user password or jwt secret
-    IMIXS_REGISTRY_AUTH_USERID:  userId
-    IMIXS_REGISTRY_AUTH_SERVICE: Service endpoint for Form based authentication or Custom implementations
-
-
-Depending on the auth method (BASIC,FORM,JWT) the corresponding authenticator filter is chosen per default. The properties _imixs.registry.auth.secret_ and _imixs.registry.auth.userid_ can be used to set password and userid.
-
-In case the auth method is not defined or set to 'CUSTOM' no default filter is chosen. In this case a custom implementation can observe the following CDI Event:
- 
-
-	org.imixs.microservice.core.auth.AuthEvent
-
-The event can be used to register a custom RequestFilter:
-
-	public void registerRequestFilter(@Observes AuthEvent authEvent) {
-		// create a custom RequestFilter
-		ClientRequestFilter filter=....
-		// register auth filter
-		authEvent.getClient().registerClientRequestFilter(filter);
-	}
-
 
  
 ## Service Discovery
@@ -86,4 +59,14 @@ Based on a specific business event, a client can query the registry to obtain a 
 
 The Imixs-Registry supports a derived index over all registered Imixs-Microserives. This index is refreshed periodically based on EventLog entries written by each Imixs-Microserivce. This mechanism ensures that only committed data is indexed. The index is updated periodically so it runns behind the origin transaction. To get a live view to a Imixs-Microservice the service can be search directly by the Rest-API. 
  
+The following environment settings need to be defined in a Imixs-Microservice to activate the index service:
+
+    IMIXS-REGISTRY_API= service endpoint of a Imixs-Registry
+    IMIXS-REGISTRY_INDEX_ENABLED= true
+
+The following environment variables are optional:
+
+	IMIXS-REGISTRY_INDEX_TYPEFILTER - optional type filter (regex) - default: (workitem|workitemarchive) 
+	IMIXS-REGISTRY_INDEX_FIELDS - optional item list (default list is defined by schema service)
+	
  

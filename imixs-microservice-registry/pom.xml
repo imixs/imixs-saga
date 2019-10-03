@@ -249,7 +249,19 @@
 			<groupId>org.imixs.workflow</groupId>
 			<artifactId>imixs-workflow-core</artifactId>
 		</dependency>
-	
+		
+		<!-- Imixs Melman -->
+		<dependency>
+			<groupId>org.imixs.workflow</groupId>
+			<artifactId>imixs-melman</artifactId>
+		</dependency>
+		
+		<!-- Imixs-Microservice-Security -->
+		<dependency>
+			<groupId>org.imixs.workflow</groupId>
+			<artifactId>imixs-microservice-security</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 	</dependencies>
 	
 </project>

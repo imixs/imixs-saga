@@ -27,3 +27,18 @@ Find more details in the module [Imixs-Registry](https://github.com/imixs/imixs-
 ## IndexService
 
 The Imixs registry can maintain a derived index across all registered Imixs microservices. This index is a fast access layer to search for running process instances distributed across different Imixs microservices.   
+
+The following environment settings need to be defined to activate the index service:
+
+
+    IMIXS-REGISTRY_API= service endpoint of a Imixs-Registry
+    IMIXS-REGISTRY_INDEX_ENABLED= true
+
+The following environment variables are optional:
+
+	IMIXS-REGISTRY_INDEX_TYPEFILTER - optional type filter (regex) - default: (workitem|workitemarchive) 
+	IMIXS-REGISTRY_INDEX_FIELDS - optional item list (default list is defined by schema service)
+	
+	
+	
+	

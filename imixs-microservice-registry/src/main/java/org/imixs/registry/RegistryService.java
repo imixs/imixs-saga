@@ -28,7 +28,7 @@
 package org.imixs.registry;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -41,7 +41,8 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.GenericEntity;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -77,9 +78,24 @@ public class RegistryService {
 
 	private Map<String, ItemCollection> serviceRegistry = new ConcurrentHashMap<String, ItemCollection>();
 
+	
+	/**
+	 * Returns all registered service API endpoints
+	 * @return
+	 */
 	public Set<String> getServices() {
 		return serviceRegistry.keySet();
 	}
+	
+	
+	/**
+	 * Returns all registered service definitions
+	 * @return
+	 */
+	public Collection<ItemCollection> getServiceDefinitions() {
+		return serviceRegistry.values();
+	}
+
 
 	/**
 	 * Retuns a list of all registered services
@@ -88,14 +104,11 @@ public class RegistryService {
 	 */
 	@GET
 	@Path("/")
-	public GenericEntity<List<String>> listServices() {
-		List<String> list = new ArrayList<String>();
-		for (String service : serviceRegistry.keySet()) {
-			// result=result+"service endpoint: " + service + " ";
-			list.add(service);
-		}
-		return new GenericEntity<List<String>>(list) {
-		};
+	public Response listServices(@QueryParam("format") String format) {
+		Collection<ItemCollection> serviceDefinitons = serviceRegistry.values();
+
+		return convertResultList(serviceDefinitons, format);
+
 	}
 
 	/**
@@ -135,6 +148,47 @@ public class RegistryService {
 
 		serviceRegistry.put(serviceEndpoint, workitem);
 		return Response.ok(XMLDataCollectionAdapter.getDataCollection(workitem), MediaType.APPLICATION_XML).build();
+	}
+
+	/**
+	 * This method converts a ItemCollection List into a Jax-rs response object.
+	 * <p>
+	 * The method expects optional items and format string (json|xml)
+	 * <p>
+	 * In case the result set is null, than the method returns an empty collection.
+	 * 
+	 * @param result
+	 *            list of ItemCollection
+	 * @param items
+	 *            - optional item list
+	 * @param format
+	 *            - optional format string (json|xml)
+	 * @return jax-rs Response object.
+	 */
+	private Response convertResultList(Collection<ItemCollection> result, String format) {
+		if (result == null) {
+			result = new ArrayList<ItemCollection>();
+		}
+		if ("json".equals(format)) {
+			return Response
+					// Set the status and Put your entity here.
+					.ok(XMLDataCollectionAdapter.getDataCollection(result))
+					// Add the Content-Type header to tell Jersey which format it should marshall
+					// the entity into.
+					.header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON).build();
+		} else if ("xml".equals(format)) {
+			return Response
+					// Set the status and Put your entity here.
+					.ok(XMLDataCollectionAdapter.getDataCollection(result))
+					// Add the Content-Type header to tell Jersey which format it should marshall
+					// the entity into.
+					.header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_XML).build();
+		} else {
+			// default header param
+			return Response
+					// Set the status and Put your entity here.
+					.ok(XMLDataCollectionAdapter.getDataCollection(result)).build();
+		}
 	}
 
 }

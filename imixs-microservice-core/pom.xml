@@ -29,10 +29,11 @@
 			<artifactId>imixs-melman</artifactId>
 		</dependency>
 
-		<!-- Imixs JWT -->
+		<!-- Imixs-Microservice-Security -->
 		<dependency>
-			<groupId>org.imixs.jwt</groupId>
-			<artifactId>imixs-jwt</artifactId>
+			<groupId>org.imixs.workflow</groupId>
+			<artifactId>imixs-microservice-security</artifactId>
+			<version>${project.version}</version>
 		</dependency>
 
 
