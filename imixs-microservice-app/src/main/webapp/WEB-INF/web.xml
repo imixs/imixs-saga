@@ -15,10 +15,7 @@
 	<security-constraint>
 		<web-resource-collection>
 			<web-resource-name>restricted</web-resource-name>
-			<url-pattern>/api/model/*</url-pattern>
-			<url-pattern>/api/workflow/*</url-pattern>
-			<url-pattern>/api/report/*</url-pattern>
-			<url-pattern>/api/document/*</url-pattern>
+			<url-pattern>/api/*</url-pattern>
 		</web-resource-collection>
 		<auth-constraint>
 			<role-name>org.imixs.ACCESSLEVEL.READERACCESS</role-name>

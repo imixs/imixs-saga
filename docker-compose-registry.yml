@@ -22,7 +22,7 @@ services:
       IMIXS_REGISTRY_AUTH_METHOD: "BASIC"
       IMIXS_REGISTRY_AUTH_USERID: "admin"
       IMIXS_REGISTRY_AUTH_SECRET: "adminadmin"
-      IMIXS_REGISTRY_INDEX: true
+      IMIXS_REGISTRY_INDEX: "true"
       IMIXS_API: "http://app:8080/api"
     ports:
       - "8080:8080"

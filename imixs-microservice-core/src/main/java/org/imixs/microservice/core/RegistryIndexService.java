@@ -106,10 +106,11 @@ public class RegistryIndexService implements Serializable {
 	 * @param documentContext
 	 */
 	public void removeDocumentToIndex(ItemCollection document) {
-
-		// write a new EventLog entry for each document....
-		eventLogService.createEvent(EVENTLOG_TOPIC_INDEX_REMOVE, document.getUniqueID());
-
+		// remove document form index - @see issue #412
+		if (!document.getItemValueBoolean(DocumentService.NOINDEX)) {
+			// write a new EventLog entry for each document....
+			eventLogService.createEvent(EVENTLOG_TOPIC_INDEX_REMOVE, document.getUniqueID());
+		}
 	}
 
 }
