@@ -57,7 +57,8 @@ import org.imixs.workflow.exceptions.ModelException;
  * <li>Service Discover by Business Rule</li>
  * </ul>
  * <p>
- * The methdod discoverService starts the process.
+ * The method discoverService starts the process.
+
  * 
  * @author Ralph Soika
  * @version 1.0
@@ -85,6 +86,7 @@ public class DiscoveryService {
 	 * @param businessEvent
 	 */
 	public void discoverService(ItemCollection businessEvent) {
+		logger.info("...discover registry.....");
 		long l = System.currentTimeMillis();
 		if (businessEvent == null) {
 			return;
@@ -214,24 +216,23 @@ public class DiscoveryService {
 
 		if (versions.size() == 1) {
 			// exactly one model
-			String modelVersion=versions.get(0);
+			String modelVersion = versions.get(0);
 			service = registryService.getServiceByModelVersion(versions.get(0));
-			
+
 			/*
 			 * if no $taskid and $eventid is provided we compute it form the model
 			 */
-			if (businessEvent.getTaskID()==0) {
-				
+			if (businessEvent.getTaskID() == 0) {
+
 				BPMNModel model = registryService.getModel(modelVersion);
 				List<ItemCollection> startTasks = model.getStartTasks();
-				if (startTasks==null || startTasks.size()==0) {
-					logger.warning(
-							"Invalid model '" + model.getVersion() + "' no start task found!");
+				if (startTasks == null || startTasks.size() == 0) {
+					logger.warning("Invalid model '" + model.getVersion() + "' no start task found!");
 					return false;
 				}
 				ItemCollection task = startTasks.get(0);
-				
-				int taskID=task.getItemValueInteger("numprocessid");
+
+				int taskID = task.getItemValueInteger("numprocessid");
 				businessEvent.setTaskID(taskID);
 				if (businessEvent.getEventID() == 0) {
 					// evaluate start event....
@@ -248,7 +249,7 @@ public class DiscoveryService {
 			}
 			service = registryService.getServiceByModelVersion(modelVersion);
 			businessEvent.setItemValue(RegistryService.ITEM_API, service);
-			
+
 			return true;
 		}
 
