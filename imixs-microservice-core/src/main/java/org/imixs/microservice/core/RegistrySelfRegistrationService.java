@@ -1,11 +1,15 @@
 package org.imixs.microservice.core;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
+import javax.annotation.security.DeclareRoles;
+import javax.annotation.security.RunAs;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
 import javax.ejb.Timeout;
@@ -21,7 +25,8 @@ import org.imixs.melman.RestAPIException;
 import org.imixs.microservice.core.auth.AuthEvent;
 import org.imixs.workflow.ItemCollection;
 import org.imixs.workflow.WorkflowKernel;
-import org.imixs.workflow.xml.XMLDocumentAdapter;
+import org.imixs.workflow.engine.ModelService;
+import org.imixs.workflow.xml.XMLDataCollectionAdapter;
 
 /**
  * This service is a singleton EJB which registers the Imixs-Microservice during
@@ -37,6 +42,8 @@ import org.imixs.workflow.xml.XMLDocumentAdapter;
  * @author rsoika
  * 
  */
+@DeclareRoles({ "org.imixs.ACCESSLEVEL.MANAGERACCESS" })
+@RunAs("org.imixs.ACCESSLEVEL.MANAGERACCESS")
 @Startup
 @Singleton
 // @ConcurrencyManagement(ConcurrencyManagementType.BEAN)
@@ -59,8 +66,13 @@ public class RegistrySelfRegistrationService implements Serializable {
 	@ConfigProperty(name = "imixs.api", defaultValue = "http://localhost:8080/api")
 	String imixsAPI;
 
+	
+	
 	@Inject
 	protected Event<AuthEvent> authEvents;
+	
+	@Inject
+	protected ModelService modelService;
 
 	private static final long serialVersionUID = 1L;
 	private static Logger logger = Logger.getLogger(RegistrySelfRegistrationService.class.getName());
@@ -121,6 +133,7 @@ public class RegistrySelfRegistrationService implements Serializable {
 	 * This method registers the microservice at a given imixs-registry endpoint
 	 */
 	private void registerMicroservice() {
+		long l=System.currentTimeMillis();
 		logger.info("...register Imixs-Registry (" + registryAPI + ")");
 
 		// create a new Instance of a DocumentClient to register the service at the
@@ -135,13 +148,20 @@ public class RegistrySelfRegistrationService implements Serializable {
 		}
 
 		try {
-			ItemCollection matcherDocument = new ItemCollection();
-			matcherDocument.setItemValue("type", "workitem");
-
-			matcherDocument.setItemValue(ITEM_API, imixsAPI);
+			// send all model definitions.....
+			List<String> versions = modelService.getLatestVersions();
+			List<ItemCollection> models=new ArrayList<ItemCollection>();
+			for (String version:versions) {
+				
+				ItemCollection modelEntity=modelService.loadModelEntity(version);
+				// add the api endpoint...
+				modelEntity.setItemValue(ITEM_API, imixsAPI);
+				models.add(modelEntity);
+			}
+			
 			// post new service
-			client.postXMLDocument("/services", XMLDocumentAdapter.getDocument(matcherDocument));
-			logger.info("...registration successfull...");
+			client.postXMLDataCollection("/services", XMLDataCollectionAdapter.getDataCollection(models));
+			logger.info("...registration of " + models.size() + " models completed in "+(System.currentTimeMillis()-l) +"ms...");
 		} catch (RestAPIException e) {
 			logger.severe("Unable to register service at Imixs-Registry: " + registryAPI + " - " + e.getMessage());
 

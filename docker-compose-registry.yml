@@ -22,7 +22,9 @@ services:
       IMIXS_REGISTRY_AUTH_METHOD: "BASIC"
       IMIXS_REGISTRY_AUTH_USERID: "admin"
       IMIXS_REGISTRY_AUTH_SECRET: "adminadmin"
-      IMIXS_REGISTRY_INDEX_ENABLED: "true"
+      IMIXS_REGISTRY_INTERVAL: 10000
+#      IMIXS_REGISTRY_INDEX_ENABLED: "true"
+      IMIXS_REGISTRY_INDEX_ENABLED: "false"
       IMIXS-REGISTRY_INDEX_FIELDS: ""
       IMIXS_API: "http://app:8080/api"
     ports:
@@ -44,8 +46,8 @@ services:
       WILDFLY_PASS: adminadmin
       DEBUG: "true"
       TZ: "Europe/Berlin"
-      SOLR_API: "http://registry-solr:8080"    
-      INDEX_INTERVAL: 10000
+#      SOLR_API: "http://registry-solr:8080"    
+      INDEX_INTERVAL: 60000
       IMIXS_REGISTRY_AUTH_METHOD: "BASIC"
       IMIXS_REGISTRY_AUTH_USERID: "admin"
       IMIXS_REGISTRY_AUTH_SECRET: "adminadmin"      

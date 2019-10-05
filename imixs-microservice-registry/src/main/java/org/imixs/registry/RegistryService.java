@@ -27,14 +27,19 @@
 
 package org.imixs.registry;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
-import javax.ejb.Stateless;
+import javax.annotation.PostConstruct;
+import javax.ejb.Singleton;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -46,10 +51,14 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.imixs.workflow.FileData;
 import org.imixs.workflow.ItemCollection;
+import org.imixs.workflow.Model;
+import org.imixs.workflow.bpmn.BPMNParser;
+import org.imixs.workflow.exceptions.AccessDeniedException;
+import org.imixs.workflow.exceptions.ModelException;
+import org.imixs.workflow.xml.XMLDataCollection;
 import org.imixs.workflow.xml.XMLDataCollectionAdapter;
-import org.imixs.workflow.xml.XMLDocument;
-import org.imixs.workflow.xml.XMLDocumentAdapter;
 
 /**
  * This api endpoint provides methods to registry an Imixs-Microservice. The
@@ -66,49 +75,69 @@ import org.imixs.workflow.xml.XMLDocumentAdapter;
  */
 @Path("/services")
 @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.TEXT_XML })
-@Stateless
+@Singleton
 public class RegistryService {
 
 	public static final String ITEM_API = "$api";
+
+	private Map<String, Model> modelStore = null;
 
 	@javax.ws.rs.core.Context
 	private HttpServletRequest servletRequest;
 
 	private static Logger logger = Logger.getLogger(RegistryService.class.getName());
 
-	private Map<String, ItemCollection> serviceRegistry = new ConcurrentHashMap<String, ItemCollection>();
+	private Map<String, Model> serviceRegistry = new ConcurrentHashMap<String, Model>();
 
-	
+	/**
+	 * This method initializes a new modelStore
+	 * 
+	 * @return
+	 */
+	@PostConstruct
+	void init() {
+		modelStore = new TreeMap<String, Model>();
+	}
+
 	/**
 	 * Returns all registered service API endpoints
+	 * 
 	 * @return
 	 */
 	public Set<String> getServices() {
 		return serviceRegistry.keySet();
 	}
-	
-	
+
 	/**
-	 * Returns all registered service definitions
+	 * Returns all registered service definitions as ItemCollections containing the
+	 * API endpoint and the associated modelVersions
+	 * 
 	 * @return
 	 */
-	public Collection<ItemCollection> getServiceDefinitions() {
-		return serviceRegistry.values();
-	}
-
+//	public Collection<Model> getServiceDefinitions() {
+//		return serviceRegistry.values();
+//	}
 
 	/**
-	 * Retuns a list of all registered services
+	 * Retuns a list of all registered service definitions in a XML format
 	 * 
 	 * @return
 	 */
 	@GET
 	@Path("/")
 	public Response listServices(@QueryParam("format") String format) {
-		Collection<ItemCollection> serviceDefinitons = serviceRegistry.values();
-
-		return convertResultList(serviceDefinitons, format);
-
+		
+		List<ItemCollection> result=new ArrayList<ItemCollection>();
+		Set<String> services=getServices();
+		for (String service: services) {
+			ItemCollection def=new ItemCollection();
+			def.setItemValue(ITEM_API, service);
+			Model model=serviceRegistry.get(service);
+			def.model(model.getVersion());
+			def.setItemValue("$workflowgroups", model.getGroups());
+			result.add(def);
+		}
+		return convertResultList(result, format);
 	}
 
 	/**
@@ -128,26 +157,78 @@ public class RegistryService {
 	@Path("/")
 	@Produces(MediaType.APPLICATION_XML)
 	@Consumes({ MediaType.APPLICATION_XML, "text/xml" })
-	public Response registerService(XMLDocument xmlworkitem) {
+	public Response registerService(XMLDataCollection xmlDataCollection) {
+		long l=System.currentTimeMillis();
 		if (servletRequest.isUserInRole("org.imixs.ACCESSLEVEL.MANAGERACCESS") == false) {
 			return Response.status(Response.Status.UNAUTHORIZED).build();
 		}
-		ItemCollection workitem;
-		workitem = XMLDocumentAdapter.putDocument(xmlworkitem);
 
-		if (workitem == null) {
+		if (xmlDataCollection == null) {
 			return Response.status(Response.Status.NOT_ACCEPTABLE).build();
 		}
 
-		String serviceEndpoint = workitem.getItemValueString(ITEM_API);
-		if (serviceEndpoint.isEmpty()) {
-			logger.severe("Invalid service registration. Service description must at least provide the item '"
-					+ ITEM_API + "'");
-			return Response.status(Response.Status.NOT_ACCEPTABLE).build();
-		}
+		List<ItemCollection> modelDefinitions = XMLDataCollectionAdapter.putDataCollection(xmlDataCollection);
+		for (ItemCollection modelEntity : modelDefinitions) {
 
-		serviceRegistry.put(serviceEndpoint, workitem);
-		return Response.ok(XMLDataCollectionAdapter.getDataCollection(workitem), MediaType.APPLICATION_XML).build();
+			String serviceEndpoint = modelEntity.getItemValueString(ITEM_API);
+			if (serviceEndpoint.isEmpty()) {
+				logger.severe("Invalid service registration. model description does not contain an api endpoint '"
+						+ ITEM_API + "'");
+				return Response.status(Response.Status.NOT_ACCEPTABLE).build();
+			}
+
+			Model model = getModelFromModelEntity(modelEntity);
+			if (model != null) {
+				serviceRegistry.put(serviceEndpoint, model);
+			}
+		}
+		logger.finest("......parsed " + modelDefinitions.size() + " model entities in " + (System.currentTimeMillis()-l) + "ms....");
+
+		return Response.ok().build();
+	}
+
+	private Model getModelFromModelEntity(ItemCollection modelEntity) {
+		List<FileData> files = modelEntity.getFileData();
+
+		for (FileData file : files) {
+			logger.finest("......loading file:" + file.getName());
+			byte[] rawData = file.getContent();
+			InputStream bpmnInputStream = new ByteArrayInputStream(rawData);
+			try {
+				Model model = BPMNParser.parseModel(bpmnInputStream, "UTF-8");
+				return model;
+
+			} catch (Exception e) {
+				logger.warning("Failed to load model '" + file.getName() + "' : " + e.getMessage());
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * This method removes a specific ModelVersion form the internal model store. If
+	 * modelVersion is null the method will remove all models. The model will not be
+	 * removed from the database. Use deleteModel to delete the model from the
+	 * database.
+	 * 
+	 * @throws AccessDeniedException
+	 */
+	public void removeModel(String modelversion) {
+		modelStore.remove(modelversion);
+		logger.finest("......removed BPMNModel '" + modelversion + "'...");
+	}
+
+	/**
+	 * Returns a Model by version. In case no matching model version exits, the
+	 * method throws a ModelException.
+	 **/
+	public Model getModel(String version) throws ModelException {
+		Model model = modelStore.get(version);
+		if (model == null) {
+			throw new ModelException(ModelException.UNDEFINED_MODEL_VERSION,
+					"Modelversion '" + version + "' not found!");
+		}
+		return model;
 	}
 
 	/**

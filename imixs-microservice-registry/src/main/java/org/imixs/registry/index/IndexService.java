@@ -1,8 +1,8 @@
 package org.imixs.registry.index;
 
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
@@ -102,16 +102,18 @@ public class IndexService implements Serializable {
 	 */
 	@Timeout
 	private synchronized void onTimer() {
-		long l = System.currentTimeMillis();
-		logger.info("...update Index: " + solrAPI);
-		// iterate over all registeres Imixs-Microserives and read the eventLog entries
+		if (!solrAPI.isEmpty()) {
+			long l = System.currentTimeMillis();
+			logger.info("...update Index: " + solrAPI);
+			// iterate over all registeres Imixs-Microserives and read the eventLog entries
 
-		Collection<ItemCollection> serviceDefinitons = registryService.getServiceDefinitions();
-		for (ItemCollection serviceDefinition : serviceDefinitons) {
-			flushEventLog(serviceDefinition);
+			Set<String> services = registryService.getServices();
+			for (String service: services) {
+				flushEventLog(service);
+			}
+
+			logger.info("...updated Index in " + (System.currentTimeMillis() - l) + "ms");
 		}
-
-		logger.info("...updated Index in " + (System.currentTimeMillis() - l) + "ms");
 	}
 
 	/**
@@ -121,9 +123,8 @@ public class IndexService implements Serializable {
 	 * After the solr index was updated, the method deletes the eventLog entries
 	 * from the Imixs-Microservice instance.
 	 */
-	private void flushEventLog(ItemCollection serviceDefinition) {
+	private void flushEventLog(String  serviceAPI) {
 
-		String serviceAPI = serviceDefinition.getItemValueString("$api");
 		logger.info("...flush event log : " + serviceAPI);
 
 		// create a new Instance of a DocumentClient...
@@ -138,9 +139,10 @@ public class IndexService implements Serializable {
 
 		try {
 			// load eventLog entries.....
-			List<ItemCollection> eventLogEntries = client.getCustomResource("/eventlog/imixs-registry.index.remove~imixs-registry.index.add");
-			logger.info("..." +  eventLogEntries.size() + " event log entries read successfull...");
-			
+			List<ItemCollection> eventLogEntries = client
+					.getCustomResource("/eventlog/imixs-registry.index.remove~imixs-registry.index.add");
+			logger.info("..." + eventLogEntries.size() + " event log entries read successfull...");
+
 		} catch (RestAPIException e) {
 			logger.severe("Unable to read eventlog from: " + serviceAPI + " - " + e.getMessage());
 
