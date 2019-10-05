@@ -51,22 +51,15 @@ To setup an Imixs-Microservice with the Self Registration feature the following 
  
 ## Service Discovery
  
-Based on a specific business event, a client can query the registry to obtain a list of available workflow instances or start a new process instance within a matching workflow instance. 
+A client can start a new process instance by sending a business event to the Imixs-Registry. The discovery process will select a matching Imixs-Microservice and forward the business event to initialize a new workflow.
 
+Read more about the discovery process in the section [Service Discovery](doc/DISCOVERY.md).
  
  
 ## Derived Index
 
-The Imixs-Registry supports a derived index over all registered Imixs-Microserives. This index is refreshed periodically based on EventLog entries written by each Imixs-Microserivce. This mechanism ensures that only committed data is indexed. The index is updated periodically so it runns behind the origin transaction. To get a live view to a Imixs-Microservice the service can be search directly by the Rest-API. 
- 
-The following environment settings need to be defined in a Imixs-Microservice to activate the index service:
+The Imixs-Registry supports a derived index over all registered Imixs-Microserives. This index allows a client to search for running process instances, regardless of where those process instances run. This index is based on Apache Solr which is a highly reliable, scalable and fault tolerant search engine.
 
-    IMIXS-REGISTRY_API= service endpoint of a Imixs-Registry
-    IMIXS-REGISTRY_INDEX_ENABLED= true
+Read more about the derived index in the section [Indexing](doc/INDEX.md).
 
-The following environment variables are optional:
 
-	IMIXS-REGISTRY_INDEX_TYPEFILTER - optional type filter (regex) - default: (workitem|workitemarchive) 
-	IMIXS-REGISTRY_INDEX_FIELDS - optional item list (default list is defined by schema service)
-	
- 
