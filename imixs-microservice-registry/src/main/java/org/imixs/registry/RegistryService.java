@@ -31,12 +31,14 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.Singleton;
@@ -54,6 +56,7 @@ import javax.ws.rs.core.Response;
 import org.imixs.workflow.FileData;
 import org.imixs.workflow.ItemCollection;
 import org.imixs.workflow.Model;
+import org.imixs.workflow.bpmn.BPMNModel;
 import org.imixs.workflow.bpmn.BPMNParser;
 import org.imixs.workflow.exceptions.AccessDeniedException;
 import org.imixs.workflow.exceptions.ModelException;
@@ -69,6 +72,9 @@ import org.imixs.workflow.xml.XMLDataCollectionAdapter;
  * is set.
  * <p>
  * The client must have Manager access to be allowed to use this service.
+ * <p>
+ * Model Versions are ambiguous. It is not allowed to register a model version
+ * with different api endpoints.
  * 
  * @author rsoika
  *
@@ -80,14 +86,14 @@ public class RegistryService {
 
 	public static final String ITEM_API = "$api";
 
-	private Map<String, Model> modelStore = null;
+	private Map<String, BPMNModel> modelStore = null;
 
 	@javax.ws.rs.core.Context
 	private HttpServletRequest servletRequest;
 
 	private static Logger logger = Logger.getLogger(RegistryService.class.getName());
 
-	private Map<String, Model> serviceRegistry = new ConcurrentHashMap<String, Model>();
+	private Map<String, BPMNModel> serviceRegistry = new ConcurrentHashMap<String, BPMNModel>();
 
 	/**
 	 * This method initializes a new modelStore
@@ -96,7 +102,7 @@ public class RegistryService {
 	 */
 	@PostConstruct
 	void init() {
-		modelStore = new TreeMap<String, Model>();
+		modelStore = new TreeMap<String, BPMNModel>();
 	}
 
 	/**
@@ -108,15 +114,27 @@ public class RegistryService {
 		return serviceRegistry.keySet();
 	}
 
+	
+	/**
+	 * Returns all registered models
+	 * 
+	 * @return 
+	 */
+	public Collection<BPMNModel> getModels() {
+		return serviceRegistry.values();
+	} 
+
+	
+	
 	/**
 	 * Returns all registered service definitions as ItemCollections containing the
 	 * API endpoint and the associated modelVersions
 	 * 
 	 * @return
 	 */
-//	public Collection<Model> getServiceDefinitions() {
-//		return serviceRegistry.values();
-//	}
+	// public Collection<Model> getServiceDefinitions() {
+	// return serviceRegistry.values();
+	// }
 
 	/**
 	 * Retuns a list of all registered service definitions in a XML format
@@ -126,13 +144,13 @@ public class RegistryService {
 	@GET
 	@Path("/")
 	public Response listServices(@QueryParam("format") String format) {
-		
-		List<ItemCollection> result=new ArrayList<ItemCollection>();
-		Set<String> services=getServices();
-		for (String service: services) {
-			ItemCollection def=new ItemCollection();
+
+		List<ItemCollection> result = new ArrayList<ItemCollection>();
+		Set<String> services = getServices();
+		for (String service : services) {
+			ItemCollection def = new ItemCollection();
 			def.setItemValue(ITEM_API, service);
-			Model model=serviceRegistry.get(service);
+			Model model = serviceRegistry.get(service);
 			def.model(model.getVersion());
 			def.setItemValue("$workflowgroups", model.getGroups());
 			result.add(def);
@@ -158,7 +176,7 @@ public class RegistryService {
 	@Produces(MediaType.APPLICATION_XML)
 	@Consumes({ MediaType.APPLICATION_XML, "text/xml" })
 	public Response registerService(XMLDataCollection xmlDataCollection) {
-		long l=System.currentTimeMillis();
+		long l = System.currentTimeMillis();
 		if (servletRequest.isUserInRole("org.imixs.ACCESSLEVEL.MANAGERACCESS") == false) {
 			return Response.status(Response.Status.UNAUTHORIZED).build();
 		}
@@ -177,31 +195,44 @@ public class RegistryService {
 				return Response.status(Response.Status.NOT_ACCEPTABLE).build();
 			}
 
-			Model model = getModelFromModelEntity(modelEntity);
+			BPMNModel model = getModelFromModelEntity(modelEntity);
 			if (model != null) {
+				// test if model version is ambiguous...
+				String _service = getServiceByModelVersion(model.getVersion());
+				if (!serviceEndpoint.equals(_service)) {
+					logger.severe("Invalid service registration. ModelVersion is ambiguous for api endpoint '"
+							+ _service + "'");
+					return Response.status(Response.Status.NOT_ACCEPTABLE).build();
+				}
 				serviceRegistry.put(serviceEndpoint, model);
 			}
 		}
-		logger.finest("......parsed " + modelDefinitions.size() + " model entities in " + (System.currentTimeMillis()-l) + "ms....");
+		logger.finest("......parsed " + modelDefinitions.size() + " model entities in "
+				+ (System.currentTimeMillis() - l) + "ms....");
 
 		return Response.ok().build();
 	}
 
-	private Model getModelFromModelEntity(ItemCollection modelEntity) {
-		List<FileData> files = modelEntity.getFileData();
+	/**
+	 * This method returns a service endpoint for a given model version or null if
+	 * no service with this model version is registered.
+	 * 
+	 * @param version
+	 * @return
+	 */
+	public String getServiceByModelVersion(String version) {
+		if (version == null || version.isEmpty()) {
+			return null;
+		}
 
-		for (FileData file : files) {
-			logger.finest("......loading file:" + file.getName());
-			byte[] rawData = file.getContent();
-			InputStream bpmnInputStream = new ByteArrayInputStream(rawData);
-			try {
-				Model model = BPMNParser.parseModel(bpmnInputStream, "UTF-8");
-				return model;
-
-			} catch (Exception e) {
-				logger.warning("Failed to load model '" + file.getName() + "' : " + e.getMessage());
+		for (Map.Entry<String, BPMNModel> entry : serviceRegistry.entrySet()) {
+			String service = entry.getKey();
+			Model model = entry.getValue();
+			if (model.getVersion().contentEquals(version)) {
+				return service;
 			}
 		}
+		// no service found!
 		return null;
 	}
 
@@ -229,6 +260,75 @@ public class RegistryService {
 					"Modelversion '" + version + "' not found!");
 		}
 		return model;
+	}
+
+	/**
+	 * This method returns a sorted list of model versions matching a given regex
+	 * for a model version. The result is sorted in reverse order, so the highest
+	 * version number is the first in the result list.
+	 * 
+	 * @param modelRegex
+	 * @return
+	 */
+	public List<String> findVersionsByRegEx(String modelRegex) {
+		List<String> result = new ArrayList<String>();
+		logger.finest("......searching model versions for regex '" + modelRegex + "'...");
+		// try to find matching model version by regex
+		Collection<BPMNModel> models = modelStore.values();
+		for (Model amodel : models) {
+			if (Pattern.compile(modelRegex).matcher(amodel.getVersion()).find()) {
+				result.add(amodel.getVersion());
+			}
+		}
+		// sort result
+		Collections.sort(result, Collections.reverseOrder());
+		return result;
+	}
+	
+	
+	
+
+	/**
+	 * This method returns a sorted list of model versions matching a given workflow group.
+	 * 
+	 * @param group
+	 * @return
+	 */
+	public List<String> findModelsByGroup(String group) {
+		List<String> result = new ArrayList<String>();
+		logger.finest("......searching model versions for group '" + group + "'...");
+		// try to find matching model version by regex
+		Collection<BPMNModel> models = modelStore.values();
+		for (Model amodel : models) {
+			
+			List<String> groupList = amodel.getGroups();
+			if (groupList.contains(group)) {
+				result.add(amodel.getVersion());
+			}
+		}
+		// sort result
+		Collections.sort(result, Collections.reverseOrder());
+		return result;
+	}
+	
+	
+
+	private BPMNModel getModelFromModelEntity(ItemCollection modelEntity) {
+		List<FileData> files = modelEntity.getFileData();
+
+		for (FileData file : files) {
+			logger.finest("......loading file:" + file.getName());
+			byte[] rawData = file.getContent();
+			InputStream bpmnInputStream = new ByteArrayInputStream(rawData);
+			try {
+				BPMNModel model = BPMNParser.parseModel(bpmnInputStream, "UTF-8");
+				return model;
+
+			} catch (Exception e) {
+				logger.warning("Failed to load model '" + file.getName() + "' : " + e.getMessage());
+			}
+		}
+		return null;
 	}
 
 	/**

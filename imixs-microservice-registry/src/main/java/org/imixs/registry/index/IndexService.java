@@ -43,7 +43,7 @@ import org.imixs.workflow.WorkflowKernel;
 // @ConcurrencyManagement(ConcurrencyManagementType.BEAN)
 public class IndexService implements Serializable {
 
-	public static final String ITEM_API = "$api";
+	
 
 	@Resource
 	private TimerService timerService;
