@@ -53,13 +53,13 @@ To setup an Imixs-Microservice with the Self Registration feature the following 
  
 A client can start a new process instance by sending a business event to the Imixs-Registry. The discovery process will select a matching Imixs-Microservice and forward the business event to initialize a new workflow.
 
-Read more about the discovery process in the section [Service Discovery](doc/DISCOVERY.md).
+Read more about the discovery process in the section [Service Discovery](docs/DISCOVERY.md).
  
  
 ## Derived Index
 
 The Imixs-Registry supports a derived index over all registered Imixs-Microserives. This index allows a client to search for running process instances, regardless of where those process instances run. This index is based on Apache Solr which is a highly reliable, scalable and fault tolerant search engine.
 
-Read more about the derived index in the section [Indexing](doc/INDEX.md).
+Read more about the derived index in the section [Indexing](docs/INDEX.md).
 
 
