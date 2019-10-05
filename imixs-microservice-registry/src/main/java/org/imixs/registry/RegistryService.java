@@ -253,8 +253,8 @@ public class RegistryService {
 	 * Returns a Model by version. In case no matching model version exits, the
 	 * method throws a ModelException.
 	 **/
-	public Model getModel(String version) throws ModelException {
-		Model model = modelStore.get(version);
+	public BPMNModel getModel(String version) throws ModelException {
+		BPMNModel model = modelStore.get(version);
 		if (model == null) {
 			throw new ModelException(ModelException.UNDEFINED_MODEL_VERSION,
 					"Modelversion '" + version + "' not found!");

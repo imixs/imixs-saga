@@ -103,10 +103,10 @@ public class DiscoveryService {
 				logger.info("......service disvovery completed in " + (System.currentTimeMillis() - l) + "ms");
 				return;
 			}
-			
+
 			// 3) disovery by rule (default)
 			discoverServiceByRule(businessEvent);
-			
+
 		} catch (ModelException e) {
 			logger.warning(e.getErrorCode() + " " + e.getMessage());
 		}
@@ -207,20 +207,53 @@ public class DiscoveryService {
 
 		// We did not find a service. So we do search by regex....
 		List<String> versions = registryService.findModelsByGroup(worfklowGroup);
+
+		if (versions.size() == 0) {
+			return false;
+		}
+
 		if (versions.size() == 1) {
 			// exactly one model
+			String modelVersion=versions.get(0);
 			service = registryService.getServiceByModelVersion(versions.get(0));
-			businessEvent.setItemValue(RegistryService.ITEM_API, service);
+			
 			/*
-			 * We assume that the $taskid and $eventid is correctly set and did not perform
-			 * a validation here for performance reasons. In case the taskID or eventId is
-			 * invalid the endpoint will throw an exception. This is a configuration issue.
+			 * if no $taskid and $eventid is provided we compute it form the model
 			 */
+			if (businessEvent.getTaskID()==0) {
+				
+				BPMNModel model = registryService.getModel(modelVersion);
+				List<ItemCollection> startTasks = model.getStartTasks();
+				if (startTasks==null || startTasks.size()==0) {
+					logger.warning(
+							"Invalid model '" + model.getVersion() + "' no start task found!");
+					return false;
+				}
+				ItemCollection task = startTasks.get(0);
+				
+				int taskID=task.getItemValueInteger("numprocessid");
+				businessEvent.setTaskID(taskID);
+				if (businessEvent.getEventID() == 0) {
+					// evaluate start event....
+					List<ItemCollection> events = model.getStartEvents(taskID);
+					if (events != null && events.size() > 0) {
+						// we take the first one!
+						businessEvent.setEventID(events.get(0).getItemValueInteger("numactivityid"));
+					} else {
+						logger.warning(
+								"Invalid model '" + model.getVersion() + "' no start event defined for task " + taskID);
+						return false;
+					}
+				}
+			}
+			service = registryService.getServiceByModelVersion(modelVersion);
+			businessEvent.setItemValue(RegistryService.ITEM_API, service);
+			
 			return true;
 		}
 
 		if (versions.size() > 1) {
-			// we found more than one maching model version. So we compare the TaskID and
+			// we found more than one matching model version. So we compare the TaskID and
 			// EventID
 			for (String version : versions) {
 				Model model;
@@ -239,7 +272,8 @@ public class DiscoveryService {
 				}
 				// no match of task/event !
 			}
-			logger.warning("Invalid workflowGroup '" + worfklowGroup + "' did not match any registered model version!");
+			logger.warning("ambiguous workflowGroup '" + worfklowGroup
+					+ "' did not match any registered model version with provided $taskid!");
 
 		}
 
@@ -282,7 +316,8 @@ public class DiscoveryService {
 						// we take the first one!
 						businessEvent.setEventID(events.get(0).getItemValueInteger("numactivityid"));
 					} else {
-						logger.warning("Invalid model '" + model.getVersion() + "' no start event defined for task " +taskID);
+						logger.warning(
+								"Invalid model '" + model.getVersion() + "' no start event defined for task " + taskID);
 						continue;
 					}
 
