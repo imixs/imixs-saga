@@ -62,9 +62,7 @@ import org.imixs.workflow.ItemCollection;
 import org.imixs.workflow.Model;
 import org.imixs.workflow.bpmn.BPMNModel;
 import org.imixs.workflow.bpmn.BPMNParser;
-import org.imixs.workflow.exceptions.InvalidAccessException;
-import org.imixs.workflow.exceptions.PluginException;
-import org.imixs.workflow.exceptions.WorkflowException;
+import org.imixs.workflow.exceptions.ImixsExceptionHandler;
 import org.imixs.workflow.util.JSONParser;
 import org.imixs.workflow.xml.XMLDataCollection;
 import org.imixs.workflow.xml.XMLDataCollectionAdapter;
@@ -361,7 +359,7 @@ public class RegistryRestService {
 			workitem = workflowClient.processWorkitem(businessEvent);
 			logger.info("......new remote process instance initialized in " + (System.currentTimeMillis() - l) + "ms....");
 		} catch (RestAPIException e) {
-			businessEvent = addErrorMessage(e, businessEvent);
+			businessEvent = ImixsExceptionHandler.addErrorMessage(e, businessEvent);
 			e.printStackTrace();
 		}
 	
@@ -444,54 +442,6 @@ public class RegistryRestService {
 		}
 	}
 
-	/**
-	 * This helper method adds a error message to the given workItem, based on the
-	 * data in a WorkflowException. This kind of error message can be displayed in a
-	 * page evaluating the properties '$error_code' and '$error_message'. These
-	 * attributes will not be stored.
-	 * 
-	 * 
-	 * If a PluginException or ValidationException contains an optional object array
-	 * the message is parsed for params to be replaced
-	 * 
-	 * Example:
-	 * 
-	 * <code>
-	 * $error_message=Value should not be greater than {0} or lower as {1}.
-	 * </code>
-	 * 
-	 * @param pe
-	 */
-	private ItemCollection addErrorMessage(Exception pe, ItemCollection aworkitem) {
-
-		if (pe instanceof RuntimeException && pe.getCause() != null) {
-			pe = (RuntimeException) pe.getCause();
-		}
-
-		if (pe instanceof WorkflowException) {
-			// String message = ((WorkflowException) pe).getErrorCode();
-			String message = pe.getMessage();
-
-			// parse message for params
-			if (pe instanceof PluginException) {
-				PluginException p = (PluginException) pe;
-				if (p.getErrorParameters() != null && p.getErrorParameters().length > 0) {
-					for (int i = 0; i < p.getErrorParameters().length; i++) {
-						message = message.replace("{" + i + "}", p.getErrorParameters()[i].toString());
-					}
-				}
-			}
-			aworkitem.replaceItemValue("$error_code", ((WorkflowException) pe).getErrorCode());
-			aworkitem.replaceItemValue("$error_message", message);
-		} else if (pe instanceof InvalidAccessException) {
-			aworkitem.replaceItemValue("$error_code", ((InvalidAccessException) pe).getErrorCode());
-			aworkitem.replaceItemValue("$error_message", pe.getMessage());
-		} else {
-			aworkitem.replaceItemValue("$error_code", "INTERNAL ERROR");
-			aworkitem.replaceItemValue("$error_message", pe.getMessage());
-		}
-
-		return aworkitem;
-	}
+	
 
 }
