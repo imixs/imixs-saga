@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<glassfish-ejb-jar>
+	<property name="default-role-mapping" value="true">
+		<description>Enable default group to role mapping</description>
+	</property>
+
+	<enterprise-beans>
+		<!-- resource-ref and RunAs declaration -->
+		<ejb>
+			<ejb-name>WorkflowService</ejb-name>
+			<!--  -->
+			<resource-ref>
+				<res-ref-name>mail/org.imixs.workflow.mail</res-ref-name>
+				<jndi-name>mail/org.imixs.workflow.mail</jndi-name>
+			</resource-ref>
+			
+		</ejb>	
+		<ejb>
+			<ejb-name>AdminPService</ejb-name>
+			<principal>
+				<name>imixs-workflow-service</name>
+			</principal>
+		</ejb>
+		<ejb>
+			<ejb-name>SchedulerService</ejb-name>
+			<principal>
+				<name>imixs-workflow-service</name>
+			</principal>
+		</ejb>
+		
+		<ejb>
+			<ejb-name>SetupService</ejb-name>
+			<principal>
+				<name>imixs-workflow-service</name>
+			</principal>
+		</ejb>
+	</enterprise-beans>
+</glassfish-ejb-jar>
