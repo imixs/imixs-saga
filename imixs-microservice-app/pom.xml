@@ -264,9 +264,15 @@
 		</dependency>
 		-->
 		
+		<!-- Imixs-Microservice -->
 		<dependency>
 			<groupId>org.imixs.workflow</groupId>
 			<artifactId>imixs-microservice-core</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.imixs.workflow</groupId>
+			<artifactId>imixs-microservice-security</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 	

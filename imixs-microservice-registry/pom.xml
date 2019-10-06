@@ -230,13 +230,14 @@
 				</executions>
 			</plugin>
 		</plugins>
-
+		
 		<!-- test directory for junit -->
 		<testResources>
 			<testResource>
-				<directory>${project.basedir}/src/model</directory>
+				<directory>${project.parent.basedir}/src/model</directory>
 			</testResource>
 		</testResources>
+				
 
 		<finalName>imixs-microservice-registry</finalName>
 	</build>
