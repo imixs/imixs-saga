@@ -1,6 +1,7 @@
 package org.imixs.microservice.test;
 
 import java.util.List;
+import java.util.logging.Logger;
 
 import javax.ws.rs.core.MediaType;
 
@@ -38,6 +39,8 @@ public class RegistryTest {
 
 	private IntegrationTest integrationTest = new IntegrationTest(BASE_URL);
 
+	private static Logger logger = Logger.getLogger(RegistryTest.class.getName());
+
 	/**
 	 * The setup method creates a melman workflowClient.
 	 * 
@@ -62,7 +65,7 @@ public class RegistryTest {
 	 */
 	@Test
 	public void createNewWorkitemTest() {
-
+		long l = System.currentTimeMillis();
 		ItemCollection ticket = new ItemCollection();
 		ticket.replaceItemValue("type", "workitem");
 		ticket.replaceItemValue("$workflowGroup", "Ticket");
@@ -70,6 +73,7 @@ public class RegistryTest {
 		ticket.replaceItemValue("_subject", "Some Test Ticket Data");
 		try {
 			ticket = workflowCLient.processWorkitem(ticket);
+			logger.info("process instance created in " + (System.currentTimeMillis() - l) + "ms....");
 		} catch (Exception e) { 
 			e.printStackTrace();
 			Assert.fail();
@@ -93,7 +97,7 @@ public class RegistryTest {
 	// @Ignore
 	@Test
 	public void createNewWorkitemJSONTest() {
-
+		long l = System.currentTimeMillis();
 		ItemCollection ticket = null;
 		RestClient restClient = new RestClient();
 		// create a default basic authenticator
@@ -113,11 +117,12 @@ public class RegistryTest {
 
 		try {
 			// post json request, accept XML
-			String result = restClient.post(BASE_URL + "workflow/workitem", json, MediaType.APPLICATION_JSON,
+			String result = restClient.post(BASE_URL + "/workflow/workitem", json, MediaType.APPLICATION_JSON,
 					MediaType.APPLICATION_XML);
 
 			List<ItemCollection> tickets = XMLDataCollectionAdapter.readCollection(result.getBytes());
 
+			logger.info("process instance created in " + (System.currentTimeMillis() - l) + "ms....");
 			// extract 1st workitem...
 			Assert.assertNotNull(tickets);
 			Assert.assertTrue(tickets.size() > 0);

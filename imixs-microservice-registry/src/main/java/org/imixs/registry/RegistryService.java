@@ -33,7 +33,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
@@ -44,7 +43,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.imixs.workflow.Model;
 import org.imixs.workflow.bpmn.BPMNModel;
-import org.imixs.workflow.exceptions.AccessDeniedException;
 import org.imixs.workflow.exceptions.ModelException;
 
 /**
@@ -58,7 +56,7 @@ public class RegistryService {
 
 	public static final String ITEM_API = "$api";
 
-	private Map<String, BPMNModel> modelStore = null;
+	//private Map<String, BPMNModel> modelStore = null;
 
 	@javax.ws.rs.core.Context
 	private HttpServletRequest servletRequest;
@@ -74,7 +72,7 @@ public class RegistryService {
 	 */
 	@PostConstruct
 	void init() {
-		modelStore = new TreeMap<String, BPMNModel>();
+		//modelStore = new TreeMap<String, BPMNModel>();
 	}
 
 	/**
@@ -139,30 +137,23 @@ public class RegistryService {
 		return null;
 	}
 
-	/**
-	 * This method removes a specific ModelVersion form the internal model store. If
-	 * modelVersion is null the method will remove all models. The model will not be
-	 * removed from the database. Use deleteModel to delete the model from the
-	 * database.
-	 * 
-	 * @throws AccessDeniedException
-	 */
-	public void removeModel(String modelversion) {
-		modelStore.remove(modelversion);
-		logger.finest("......removed BPMNModel '" + modelversion + "'...");
-	}
+	
 
 	/**
 	 * Returns a Model by version. In case no matching model version exits, the
 	 * method throws a ModelException.
 	 **/
 	public BPMNModel getModel(String version) throws ModelException {
-		BPMNModel model = modelStore.get(version);
-		if (model == null) {
+		
+		Collection<BPMNModel> models = serviceRegistry.values();
+		for (BPMNModel _model: models) {
+			if (_model.getVersion().equals(version)) {
+				return _model;
+			}
+		}
+		
 			throw new ModelException(ModelException.UNDEFINED_MODEL_VERSION,
 					"Modelversion '" + version + "' not found!");
-		}
-		return model;
 	}
 
 	/**
@@ -177,7 +168,7 @@ public class RegistryService {
 		List<String> result = new ArrayList<String>();
 		logger.finest("......searching model versions for regex '" + modelRegex + "'...");
 		// try to find matching model version by regex
-		Collection<BPMNModel> models = modelStore.values();
+		Collection<BPMNModel> models = serviceRegistry.values();
 		for (Model amodel : models) {
 			if (Pattern.compile(modelRegex).matcher(amodel.getVersion()).find()) {
 				result.add(amodel.getVersion());
@@ -198,10 +189,12 @@ public class RegistryService {
 	 * @return
 	 */
 	public List<String> findModelsByGroup(String group) {
+		
+		
 		List<String> result = new ArrayList<String>();
 		logger.finest("......searching model versions for group '" + group + "'...");
 		// try to find matching model version by regex
-		Collection<BPMNModel> models = modelStore.values();
+		Collection<BPMNModel> models = serviceRegistry.values();
 		for (Model amodel : models) {
 			
 			List<String> groupList = amodel.getGroups();

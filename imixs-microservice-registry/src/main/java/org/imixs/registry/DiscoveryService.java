@@ -97,12 +97,12 @@ public class DiscoveryService {
 		try {
 			// 1) $modelversion provided
 			if (discoverServiceByModelVersion(businessEvent)) {
-				logger.info("......service disvovery completed in " + (System.currentTimeMillis() - l) + "ms");
+				logger.info("......service disvovery by model version completed in " + (System.currentTimeMillis() - l) + "ms");
 				return;
 			}
 			// 2) $workflowgroup provided
-			if (discoverServiceByModelGroup(businessEvent)) {
-				logger.info("......service disvovery completed in " + (System.currentTimeMillis() - l) + "ms");
+			if (discoverServiceByWorkflowGroup(businessEvent)) {
+				logger.info("......service disvovery by workflow group completed in " + (System.currentTimeMillis() - l) + "ms");
 				return;
 			}
 
@@ -113,7 +113,7 @@ public class DiscoveryService {
 			logger.warning(e.getErrorCode() + " " + e.getMessage());
 		}
 
-		logger.info("......service disvovery completed in " + (System.currentTimeMillis() - l) + "ms");
+		logger.info("......service disvovery by rule completed in " + (System.currentTimeMillis() - l) + "ms");
 	}
 
 	/**
@@ -203,7 +203,7 @@ public class DiscoveryService {
 	 * @return
 	 * @throws ModelException
 	 */
-	private boolean discoverServiceByModelGroup(ItemCollection businessEvent) throws ModelException {
+	private boolean discoverServiceByWorkflowGroup(ItemCollection businessEvent) throws ModelException {
 		String service = null;
 		String worfklowGroup = businessEvent.getWorkflowGroup();
 
@@ -217,39 +217,10 @@ public class DiscoveryService {
 		if (versions.size() == 1) {
 			// exactly one model
 			String modelVersion = versions.get(0);
-			service = registryService.getServiceByModelVersion(versions.get(0));
-
-			/*
-			 * if no $taskid and $eventid is provided we compute it form the model
-			 */
-			if (businessEvent.getTaskID() == 0) {
-
-				BPMNModel model = registryService.getModel(modelVersion);
-				List<ItemCollection> startTasks = model.getStartTasks();
-				if (startTasks == null || startTasks.size() == 0) {
-					logger.warning("Invalid model '" + model.getVersion() + "' no start task found!");
-					return false;
-				}
-				ItemCollection task = startTasks.get(0);
-
-				int taskID = task.getItemValueInteger("numprocessid");
-				businessEvent.setTaskID(taskID);
-				if (businessEvent.getEventID() == 0) {
-					// evaluate start event....
-					List<ItemCollection> events = model.getStartEvents(taskID);
-					if (events != null && events.size() > 0) {
-						// we take the first one!
-						businessEvent.setEventID(events.get(0).getItemValueInteger("numactivityid"));
-					} else {
-						logger.warning(
-								"Invalid model '" + model.getVersion() + "' no start event defined for task " + taskID);
-						return false;
-					}
-				}
-			}
+			BPMNModel model = registryService.getModel(modelVersion);
+			model.initStartEvent(businessEvent);
 			service = registryService.getServiceByModelVersion(modelVersion);
 			businessEvent.setItemValue(RegistryService.ITEM_API, service);
-
 			return true;
 		}
 
@@ -281,6 +252,8 @@ public class DiscoveryService {
 		// no service found!
 		return false;
 	}
+	
+	
 
 	/**
 	 * This method discovers a service by a rule.
@@ -303,7 +276,10 @@ public class DiscoveryService {
 		Collection<BPMNModel> models = registryService.getModels();
 		for (BPMNModel model : models) {
 			bpmnRuleEngine = new BPMNRuleEngine(model);
-
+			
+			
+			model.initStartEvent(businessEvent);
+			
 			int taskID = bpmnRuleEngine.eval(businessEvent);
 			// test if this is an EndTask. If the model did not match!
 			ItemCollection task = model.getTask(taskID);
