@@ -273,32 +273,20 @@ public class DiscoveryService {
 		String service = null;
 		BPMNRuleEngine bpmnRuleEngine = null;
 
+		// we need to clone the workitem to run the test in a save way
+		ItemCollection businessEventClone=(ItemCollection) businessEvent.clone();
+		
 		Collection<BPMNModel> models = registryService.getModels();
 		for (BPMNModel model : models) {
 			bpmnRuleEngine = new BPMNRuleEngine(model);
+			model.initStartEvent(businessEventClone);
 			
-			
-			model.initStartEvent(businessEvent);
-			
-			int taskID = bpmnRuleEngine.eval(businessEvent);
+			int taskID = bpmnRuleEngine.eval(businessEventClone);
 			// test if this is an EndTask. If the model did not match!
 			ItemCollection task = model.getTask(taskID);
 			if (!task.getItemValueBoolean("endTask")) {
-				businessEvent.setModelVersion(model.getVersion());
-				businessEvent.setTaskID(taskID);
-				if (businessEvent.getEventID() == 0) {
-					// evaluate start event....
-					List<ItemCollection> events = model.getStartEvents(taskID);
-					if (events != null && events.size() > 0) {
-						// we take the first one!
-						businessEvent.setEventID(events.get(0).getItemValueInteger("numactivityid"));
-					} else {
-						logger.warning(
-								"Invalid model '" + model.getVersion() + "' no start event defined for task " + taskID);
-						continue;
-					}
-
-				}
+				// assign the businessEvent with this model...
+				model.initStartEvent(businessEvent);		
 				service = registryService.getServiceByModelVersion(model.getVersion());
 				businessEvent.setItemValue(RegistryService.ITEM_API, service);
 				logger.info("......discoverd Service by rule in " + (System.currentTimeMillis() - l) + "ms");
