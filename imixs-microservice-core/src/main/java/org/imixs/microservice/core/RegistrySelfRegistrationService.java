@@ -93,9 +93,8 @@ public class RegistrySelfRegistrationService implements Serializable {
 		timerID = WorkflowKernel.generateUniqueID();
 		// do we have a imixs-registry endpoint defined?
 		if (!registryAPI.isEmpty()) {
-			registerMicroservice();
-
 			// start timer if no one is started yet....
+			// this will automatically start the registration process
 			if (findTimer() == null) {
 				logger.finest("......create new timer: " + timerID + " - timer intervall=" + registryInterval + "ms");
 				TimerConfig config = new TimerConfig();
@@ -149,9 +148,10 @@ public class RegistrySelfRegistrationService implements Serializable {
 
 		try {
 			// send all model definitions.....
-			List<String> versions = modelService.getLatestVersions();
+ 			List<String> versions = modelService.getLatestVersions();
 			List<ItemCollection> models=new ArrayList<ItemCollection>();
 			for (String version:versions) {
+				logger.info("......loading model version '" + version + "'");
 				
 				ItemCollection modelEntity=modelService.loadModelEntity(version);
 				// add the api endpoint...

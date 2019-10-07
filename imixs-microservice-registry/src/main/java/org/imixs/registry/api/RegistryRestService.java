@@ -158,6 +158,7 @@ public class RegistryRestService {
 		}
 
 		List<ItemCollection> modelDefinitions = XMLDataCollectionAdapter.putDataCollection(xmlDataCollection);
+		logger.info("...receifed " + modelDefinitions.size() + " model definitions.");
 		for (ItemCollection modelEntity : modelDefinitions) {
 
 			String serviceEndpoint = modelEntity.getItemValueString(RegistryService.ITEM_API);
@@ -176,6 +177,7 @@ public class RegistryRestService {
 							+ _service + "'");
 					return Response.status(Response.Status.NOT_ACCEPTABLE).build();
 				}
+				logger.info("... add model '" + model.getVersion() + "' at service: " + serviceEndpoint);
 				registrationService.setModelByService(serviceEndpoint, model);
 			}
 		}
@@ -359,7 +361,7 @@ public class RegistryRestService {
 			workitem = workflowClient.processWorkitem(businessEvent);
 			logger.info("......new remote process instance initialized in " + (System.currentTimeMillis() - l) + "ms....");
 		} catch (RestAPIException e) {
-			businessEvent = ImixsExceptionHandler.addErrorMessage(e, businessEvent);
+			workitem = ImixsExceptionHandler.addErrorMessage(e, businessEvent);
 			e.printStackTrace();
 		}
 	
@@ -387,7 +389,7 @@ public class RegistryRestService {
 		List<FileData> files = modelEntity.getFileData();
 
 		for (FileData file : files) {
-			logger.finest("......loading file:" + file.getName());
+			logger.info("......loading file:" + file.getName());
 			byte[] rawData = file.getContent();
 			InputStream bpmnInputStream = new ByteArrayInputStream(rawData);
 			try {
