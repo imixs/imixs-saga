@@ -350,7 +350,7 @@ public class RegistryRestService {
 	
 		serviceAPI = businessEvent.getItemValueString(RegistryService.ITEM_API);
 		if (serviceAPI.isEmpty()) {
-			logger.severe("Invalid worktiem - no service endpoint found!");
+			logger.severe("Invalid workitem - no service endpoint found!");
 			return Response.status(Response.Status.NOT_ACCEPTABLE).build();
 		}
 	
@@ -359,6 +359,8 @@ public class RegistryRestService {
 		WorkflowClient workflowClient = createWorkflowClient(serviceAPI);
 		try {
 			workitem = workflowClient.processWorkitem(businessEvent);
+			// update the api endpoint
+			workitem.setItemValue(RegistryService.ITEM_API, serviceAPI+"/workflow/workitem/" + workitem.getUniqueID());
 			logger.info("......new remote process instance initialized in " + (System.currentTimeMillis() - l) + "ms....");
 		} catch (RestAPIException e) {
 			workitem = ImixsExceptionHandler.addErrorMessage(e, businessEvent);
