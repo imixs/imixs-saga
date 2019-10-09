@@ -104,12 +104,29 @@ public class RegistryService {
 	}
 	
 	/**
-	 * Returns all registered models
+	 * Returns a sorted list of all registered models
 	 * 
 	 * @return 
 	 */
-	public Collection<BPMNModel> getModels() {
-		return serviceRegistry.values();
+	public List<BPMNModel> getModels() {
+		List<BPMNModel> result=new ArrayList<BPMNModel>();
+		result.addAll(serviceRegistry.values());
+		
+		
+		// sort result by model version 
+		
+		
+		
+		
+		Collections.sort(result, 
+                (o1, o2) -> o1.getVersion().compareTo(o2.getVersion()));
+		
+		
+		
+		
+		
+		
+		return result;
 	} 
 
 
