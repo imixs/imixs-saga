@@ -86,8 +86,10 @@ public class RegistryIndexService implements Serializable {
 		fieldList = new ArrayList<String>();
 		fieldList.add(WorkflowKernel.UNIQUEID);
 		fieldList.add(WorkflowService.READACCESS);
-		// add all static default field list
-		fieldList.addAll(SchemaService.DEFAULT_SEARCH_FIELD_LIST);
+		fieldList.add(RegistrySelfRegistrationService.ITEM_API);
+
+		// add all items form teh default field store list
+		fieldList.addAll(SchemaService.DEFAULT_STORE_FIELD_LIST);
 		if (imixsRegistryIndexFieldList != null && !imixsRegistryIndexFieldList.isEmpty()) {
 			StringTokenizer st = new StringTokenizer(imixsRegistryIndexFieldList, ",");
 			while (st.hasMoreElements()) {
@@ -128,6 +130,12 @@ public class RegistryIndexService implements Serializable {
 		}
 
 		if (documentEvent.getEventType() == DocumentEvent.ON_DOCUMENT_SAVE) {
+
+			// Ignore NOINDEX
+			if (documentEvent.getDocument().getItemValueBoolean(DocumentService.NOINDEX)) {
+				return;
+			}
+
 			// does the document math the imixsRegistryIndexTypeFilter?
 			if (!documentEvent.getDocument().getType().matches(imixsRegistryIndexTypeFilter)) {
 				return;
