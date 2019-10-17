@@ -65,15 +65,7 @@ public class RegistryService {
 
 	private Map<String, BPMNModel> serviceRegistry = new ConcurrentHashMap<String, BPMNModel>();
 
-	/**
-	 * This method initializes a new modelStore
-	 * 
-	 * @return
-	 */
-	@PostConstruct
-	void init() {
-		//modelStore = new TreeMap<String, BPMNModel>();
-	}
+	
 
 	/**
 	 * Returns all registered service API endpoints

@@ -149,6 +149,7 @@ public class RegistryRestService {
 	@Consumes({ MediaType.APPLICATION_XML, "text/xml" })
 	public Response registerService(XMLDataCollection xmlDataCollection) {
 		long l = System.currentTimeMillis();
+
 		if (servletRequest.isUserInRole("org.imixs.ACCESSLEVEL.MANAGERACCESS") == false) {
 			return Response.status(Response.Status.UNAUTHORIZED).build();
 		}
@@ -177,11 +178,11 @@ public class RegistryRestService {
 							+ _service + "'");
 					return Response.status(Response.Status.NOT_ACCEPTABLE).build();
 				}
-				logger.info("... add model '" + model.getVersion() + "' at service: " + serviceEndpoint);
+				logger.fine("... add model '" + model.getVersion() + "' at service: " + serviceEndpoint);
 				registrationService.setModelByService(serviceEndpoint, model);
 			}
 		}
-		logger.finest("......parsed " + modelDefinitions.size() + " model entities in "
+		logger.info("......registered " + modelDefinitions.size() + " model definitions in "
 				+ (System.currentTimeMillis() - l) + "ms....");
 
 		return Response.ok().build();
@@ -391,7 +392,7 @@ public class RegistryRestService {
 		List<FileData> files = modelEntity.getFileData();
 
 		for (FileData file : files) {
-			logger.info("......loading file:" + file.getName());
+			logger.finest("......loading file:" + file.getName());
 			byte[] rawData = file.getContent();
 			InputStream bpmnInputStream = new ByteArrayInputStream(rawData);
 			try {

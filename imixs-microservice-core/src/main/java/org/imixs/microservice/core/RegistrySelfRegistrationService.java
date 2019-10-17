@@ -59,7 +59,7 @@ public class RegistrySelfRegistrationService implements Serializable {
 	String registryAPI;
 
 	@Inject
-	@ConfigProperty(name = "imixs.registry.interval", defaultValue = "120000")
+	@ConfigProperty(name = "imixs.registry.autoregister.interval", defaultValue = "120000")
 	int registryInterval;
 
 	@Inject
@@ -151,7 +151,7 @@ public class RegistrySelfRegistrationService implements Serializable {
  			List<String> versions = modelService.getLatestVersions();
 			List<ItemCollection> models=new ArrayList<ItemCollection>();
 			for (String version:versions) {
-				logger.info("......loading model version '" + version + "'");
+				logger.fine("......loading model version '" + version + "'");
 				
 				ItemCollection modelEntity=modelService.loadModelEntity(version);
 				// add the api endpoint...

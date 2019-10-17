@@ -49,19 +49,19 @@ import org.imixs.melman.JWTAuthenticator;
 public class DefaultAuthenticator {
 
 	@Inject
-	@ConfigProperty(name = "imixs.registry.auth.secret", defaultValue = "")
+	@ConfigProperty(name = "imixs.auth.secret", defaultValue = "")
 	String authSecret;
 
 	@Inject
-	@ConfigProperty(name = "imixs.registry.auth.service", defaultValue = "")
+	@ConfigProperty(name = "imixs.auth.service", defaultValue = "")
 	String authService;
 
 	@Inject
-	@ConfigProperty(name = "imixs.registry.auth.userid", defaultValue = "")
+	@ConfigProperty(name = "imixs.auth.userid", defaultValue = "")
 	String authUserID;
 
 	@Inject
-	@ConfigProperty(name = "imixs.registry.auth.method", defaultValue = "CUSTOM")
+	@ConfigProperty(name = "imixs.auth.method", defaultValue = "CUSTOM")
 	String authMethod;
 
 	private static Logger logger = Logger.getLogger(DefaultAuthenticator.class.getName());
@@ -140,7 +140,7 @@ public class DefaultAuthenticator {
 		String payload = "{\"sub\":\"" + authUserID + "\",\"displayname\":\"" + authUserID
 				+ "\",\"groups\":[\"IMIXS-WORKFLOW-Manager\"]}";
 
-		System.out.println("Payload=" + payload);
+		logger.finest("......Payload=" + payload);
 		JWTBuilder builder = new JWTBuilder().setKey(secretKey).setPayload(payload);
 		try {
 			// create JWT Auth Modul....

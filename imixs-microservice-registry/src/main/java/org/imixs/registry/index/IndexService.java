@@ -21,7 +21,7 @@ import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
-import org.imixs.melman.DocumentClient;
+import org.imixs.melman.EventLogClient;
 import org.imixs.melman.RestAPIException;
 import org.imixs.microservice.core.auth.AuthEvent;
 import org.imixs.registry.RegistryService;
@@ -38,8 +38,9 @@ import org.imixs.workflow.WorkflowKernel;
  * The environment variable 'solr.api' defines the solr service endpoint and
  * lucene core. If no endpoint is defined (default) no index will be written.
  * <p>
- * The service reads all enventLogEntires from all registered Imixs-Microserivces
- * and delegates the index update to the class SolrUpdateervice.
+ * The service reads all enventLogEntires from all registered
+ * Imixs-Microserivces and delegates the index update to the class
+ * SolrUpdateervice.
  * 
  * @see SolrUpdateService
  * @version 1.0
@@ -61,7 +62,7 @@ public class IndexService implements Serializable {
 	private String api;
 
 	@Inject
-	@ConfigProperty(name = "index.interval", defaultValue = "10000")
+	@ConfigProperty(name = "imixs.index.interval", defaultValue = "10000")
 	int indexInterval;
 
 	@Inject
@@ -121,15 +122,14 @@ public class IndexService implements Serializable {
 
 			Set<String> services = registryService.getServices();
 			if (services != null && services.size() > 0) {
-				logger.info("...update Index: " + api);
-
 				for (String service : services) {
-					DocumentClient eventLogClient = createEventLogClient(service);
+					logger.info("...update Index: " + service);
+					EventLogClient eventLogClient = createEventLogClient(service);
 					List<ItemCollection> eventLog = loadEventLog(eventLogClient);
 					updateIndex(eventLog, eventLogClient);
 				}
 
-				logger.info("...updated Index in " + (System.currentTimeMillis() - l) + "ms");
+				logger.info("...full index update completed in " + (System.currentTimeMillis() - l) + "ms");
 			}
 		}
 	}
@@ -140,18 +140,15 @@ public class IndexService implements Serializable {
 	 * 
 	 * @return
 	 */
-	private List<ItemCollection> loadEventLog(DocumentClient client) {
+	private List<ItemCollection> loadEventLog(EventLogClient client) {
 		List<ItemCollection> eventLogEntries = null;
-		logger.info("...flush event log : " + client.getBaseURI());
+		logger.info("...loading event log : " + client.getBaseURI() + " ...");
 
 		try {
 			// load eventLog entries.....
-			eventLogEntries = client
-					.getCustomResource("/eventlog/" + EVENTLOG_TOPIC_INDEX_ADD + "~" + EVENTLOG_TOPIC_INDEX_REMOVE);
-			logger.info("..." + eventLogEntries.size() + " index update successfull...");
+			eventLogEntries = client.searchEventLog(EVENTLOG_TOPIC_INDEX_ADD, EVENTLOG_TOPIC_INDEX_REMOVE);
 		} catch (RestAPIException e) {
 			logger.severe("Unable to read eventlog from: " + client.getBaseURI() + " - " + e.getMessage());
-
 		}
 
 		return eventLogEntries;
@@ -174,7 +171,7 @@ public class IndexService implements Serializable {
 	 * @return true if the cache was totally flushed.
 	 */
 	@SuppressWarnings("unchecked")
-	private boolean updateIndex(List<ItemCollection> eventLogEntries, DocumentClient eventLogClient) {
+	private boolean updateIndex(List<ItemCollection> eventLogEntries, EventLogClient eventLogClient) {
 		Date lastEventDate = null;
 		boolean cacheIsEmpty = true;
 
@@ -188,15 +185,15 @@ public class IndexService implements Serializable {
 			try {
 
 				for (ItemCollection eventLogEntry : eventLogEntries) {
-
+					String id = eventLogEntry.getItemValueString("id");
 					String topic = eventLogEntry.getItemValueString("topic");
 					String uniqueid = eventLogEntry.getItemValueString("ref");
 					List<?> dataEntries = eventLogEntry.getItemValue("data");
 					if (dataEntries == null || dataEntries.size() == 0) {
-						logger.warning("wrong eventLogEntry - does not contain a data object!");
+						logger.warning("wrong eventLogEntry '" + id + "' - does not contain a data object - entry will be deleted...");
+						eventLogClient.deleteEventLogEntry(id);
 						continue;
 					}
-
 					Map<String, List<Object>> data = (Map<String, List<Object>>) dataEntries.get(0);
 					ItemCollection workitem = new ItemCollection(data);
 
@@ -222,7 +219,7 @@ public class IndexService implements Serializable {
 				// remove the eventLogEntries
 				for (ItemCollection eventLogEntry : eventLogEntries) {
 					// TODO need to be optimized - see Issue #51
-					eventLogClient.deleteDocument(eventLogEntry.getItemValueString("ref"));
+					eventLogClient.deleteEventLogEntry(eventLogEntry.getItemValueString("id"));
 				}
 
 			} catch (RestAPIException | org.imixs.workflow.services.rest.RestAPIException e) {
@@ -232,22 +229,24 @@ public class IndexService implements Serializable {
 				// NOTE: maybe throwing a IndexException would be an alternative:
 				//
 				// throw new IndexException(IndexException.INVALID_INDEX, "Unable to update
-				// lucene search index",
-				// luceneEx);
+				// lucene search index", luceneEx);
 				return true;
 			}
-		}
+			logger.info("...update index - " + eventLogEntries.size() + " events in " + (System.currentTimeMillis() - l)
+					+ " ms - last log entry: " + lastEventDate);
 
-		logger.fine("...update index - " + eventLogEntries.size() + " events in " + (System.currentTimeMillis() - l)
-				+ " ms - last log entry: " + lastEventDate);
+		} else {
+			logger.info("...no eventLog entries found. Index for " + eventLogClient.getBaseURI()
+					+ " is already synchonised!");
+		}
 
 		return cacheIsEmpty;
 
 	}
 
-	private DocumentClient createEventLogClient(String serviceAPI) {
+	private EventLogClient createEventLogClient(String serviceAPI) {
 		// create a new Instance of a DocumentClient...
-		DocumentClient client = new DocumentClient(serviceAPI);
+		EventLogClient client = new EventLogClient(serviceAPI);
 		// fire an AuthEvent to register a ClientRequestFilter
 		if (authEvents != null) {
 			AuthEvent authEvent = new AuthEvent(client);

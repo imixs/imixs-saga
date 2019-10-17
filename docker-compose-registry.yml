@@ -16,16 +16,16 @@ services:
       POSTGRES_USER: "postgres"
       POSTGRES_PASSWORD: "adminadmin"
       POSTGRES_CONNECTION: "jdbc:postgresql://db/workflow"
-      IMIXS_MODEL: "/home/imixs/model/ticket-en-1.0.0.bpmn"
+      
       MODEL_DEFAULT_DATA: "/home/imixs/model/ticket-en-1.0.0.bpmn"
       IMIXS_REGISTRY_API: "http://registry:8080/api"
-      IMIXS_REGISTRY_AUTH_METHOD: "BASIC"
-      IMIXS_REGISTRY_AUTH_USERID: "admin"
-      IMIXS_REGISTRY_AUTH_SECRET: "adminadmin"
-      IMIXS_REGISTRY_INTERVAL: 10000
-#      IMIXS_REGISTRY_INDEX_ENABLED: "true"
+      IMIXS_AUTH_METHOD: "BASIC"
+      IMIXS_AUTH_USERID: "admin"
+      IMIXS_AUTH_SECRET: "adminadmin"
+      IMIXS_INTERVAL: 10000
       IMIXS_REGISTRY_INDEX_ENABLED: "false"
       IMIXS-REGISTRY_INDEX_FIELDS: ""
+      #IMIXS_REGISTRY_AUTOREGISTER_INTERVAL: 120000
       IMIXS_API: "http://app:8080/api"
     ports:
       - "8080:8080"
@@ -46,11 +46,11 @@ services:
       WILDFLY_PASS: adminadmin
       DEBUG: "true"
       TZ: "Europe/Berlin"
-#      SOLR_API: "http://registry-solr:8080"    
+      #SOLR_API: "http://registry-solr:8080"    
       INDEX_INTERVAL: 60000
-      IMIXS_REGISTRY_AUTH_METHOD: "BASIC"
-      IMIXS_REGISTRY_AUTH_USERID: "admin"
-      IMIXS_REGISTRY_AUTH_SECRET: "adminadmin"      
+      IMIXS_AUTH_METHOD: "BASIC"
+      IMIXS_AUTH_USERID: "admin"
+      IMIXS_AUTH_SECRET: "adminadmin"      
     ports:
       - "8081:8080"
       - "9991:9990"

@@ -58,15 +58,15 @@ public class SolrUpdateService implements Serializable {
 	private String password;
 
 	@Inject
-	@ConfigProperty(name = "solr.api", defaultValue = "http://solr:8983")
+	@ConfigProperty(name = "solr.api", defaultValue = "")
 	private String api;
 
 	@Inject
 	@ConfigProperty(name = "solr.core", defaultValue = "imixs-registry")
 	private String core;
-
+	
 	@Inject
-	@ConfigProperty(name = "index.fields", defaultValue = "")
+	@ConfigProperty(name = "imixs.registry.index.fields", defaultValue = "")
 	String imixsIndexFieldList;
 
 	private RestClient restClient;
@@ -76,8 +76,12 @@ public class SolrUpdateService implements Serializable {
 	 * @throws org.imixs.workflow.services.rest.RestAPIException 
 	 */
 	@PostConstruct
-	public void init() throws RestAPIException {
+	public void init()  {
 
+		if (api.isEmpty()) {
+			// no solr index!
+			return;
+		}
 		// crate unique index fields
 		schemaFieldList = new ArrayList<String>();
 		schemaFieldList.add(WorkflowKernel.UNIQUEID);
@@ -109,7 +113,7 @@ public class SolrUpdateService implements Serializable {
 		} catch ( org.imixs.workflow.services.rest.RestAPIException e) {
 			// no schema found
 			logger.severe("...no solr core '" + core + "' found - " + e.getMessage() + ": verify the solr instance!");
-			throw e;
+			
 		}
 
 	}

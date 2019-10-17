@@ -58,15 +58,15 @@ public class RegistryIndexService implements Serializable {
 	String registryAPI;
 
 	@Inject
-	@ConfigProperty(name = "imixs-registry.index.enabled", defaultValue = "false")
+	@ConfigProperty(name = "imixs.registry.index.enabled", defaultValue = "false")
 	boolean imixsRegistryIndex;
 
 	@Inject
-	@ConfigProperty(name = "imixs-registry.index.fields", defaultValue = "")
+	@ConfigProperty(name = "imixs.registry.index.fields", defaultValue = "")
 	String imixsRegistryIndexFieldList;
 
 	@Inject
-	@ConfigProperty(name = "imixs-registry.index.typefilter", defaultValue = "(workitem|workitemarchive)")
+	@ConfigProperty(name = "imixs.registry.index.typefilter", defaultValue = "(workitem|workitemarchive)")
 	String imixsRegistryIndexTypeFilter;
 
 	private static final long serialVersionUID = 1L;
