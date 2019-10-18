@@ -25,11 +25,13 @@ import org.imixs.melman.EventLogClient;
 import org.imixs.melman.RestAPIException;
 import org.imixs.microservice.core.auth.AuthEvent;
 import org.imixs.registry.RegistryService;
+import org.imixs.registry.index.solr.SolrIndexService;
+import org.imixs.registry.index.solr.SolrUpdateService;
 import org.imixs.workflow.ItemCollection;
 import org.imixs.workflow.WorkflowKernel;
 
 /**
- * The Index service is a singleton EJB which maintains a solr index based on
+ * The UpdateService is a singleton EJB which maintains a solr index based on
  * event log entries provided by a registered Imixs-Microservice. At startup the
  * service starts a timer service to update the index in the
  * 'imixs.index.intervall' (defined in ms). This feature will ensure that the
@@ -49,7 +51,7 @@ import org.imixs.workflow.WorkflowKernel;
 @Startup
 @Singleton
 // @ConcurrencyManagement(ConcurrencyManagementType.BEAN)
-public class IndexService implements Serializable {
+public class UpdateService implements Serializable {
 
 	public static final String EVENTLOG_TOPIC_INDEX_ADD = "imixs-registry.index.add";
 	public static final String EVENTLOG_TOPIC_INDEX_REMOVE = "imixs-registry.index.remove";
@@ -73,9 +75,12 @@ public class IndexService implements Serializable {
 
 	@Inject
 	SolrUpdateService solrUpdateService;
+	
+	@Inject
+	SolrIndexService solrIndexService;
 
 	private static final long serialVersionUID = 1L;
-	private static Logger logger = Logger.getLogger(IndexService.class.getName());
+	private static Logger logger = Logger.getLogger(UpdateService.class.getName());
 
 	private String timerID = null;
 
@@ -106,7 +111,6 @@ public class IndexService implements Serializable {
 			}
 
 		}
-
 	}
 
 	/**
@@ -274,4 +278,11 @@ public class IndexService implements Serializable {
 		}
 		return null;
 	}
+	
+
+	
+	
+	
+
+
 }

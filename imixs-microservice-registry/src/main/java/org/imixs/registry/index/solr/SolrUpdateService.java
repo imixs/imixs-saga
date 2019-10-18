@@ -1,6 +1,8 @@
-package org.imixs.registry.index;
+package org.imixs.registry.index.solr;
 
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -19,9 +21,11 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
-
+import org.imixs.registry.index.DefaultOperator;
+import org.imixs.registry.index.SortOrder;
 import org.imixs.workflow.ItemCollection;
 import org.imixs.workflow.WorkflowKernel;
+import org.imixs.workflow.exceptions.QueryException;
 import org.imixs.workflow.services.rest.BasicAuthenticator;
 import org.imixs.workflow.services.rest.RestAPIException;
 import org.imixs.workflow.services.rest.RestClient;
@@ -39,6 +43,10 @@ public class SolrUpdateService implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private static Logger logger = Logger.getLogger(SolrUpdateService.class.getName());
+	
+	// number of hits
+	public static final int DEFAULT_PAGE_SIZE = 100; // default docs in one page
+
 	public static List<String> DEFAULT_STORE_FIELD_LIST = Arrays.asList("type", "$taskid", "$writeaccess",
 			"$workflowsummary", "$workflowabstract", "$workflowgroup", "$workflowstatus", "$modified", "$created",
 			"$lasteventdate", "$creator", "$editor", "$lasteditor", "$owner", "namowner");
@@ -118,6 +126,10 @@ public class SolrUpdateService implements Serializable {
 
 	}
 
+	public List<String> getSchemaFieldList() {
+		return schemaFieldList;
+	}
+
 	/**
 	 * This method adds a collection of documents to the Lucene Solr index. The
 	 * documents are added immediately to the index. Calling this method within a
@@ -185,6 +197,85 @@ public class SolrUpdateService implements Serializable {
 			logger.fine("... update index block in " + (System.currentTimeMillis() - ltime) + " ms (" + documents.size()
 					+ " workitems total)");
 		}
+	}
+	
+	
+	
+	
+	/**
+	 * This method post a search query and returns the result.
+	 * <p>
+	 * The method will return the documents containing all stored or DocValues
+	 * fields. 
+	 * 
+	 * 
+	 * @param searchterm
+	 * @return
+	 * @throws QueryException
+	 */
+	public String query(String searchTerm, int pageSize, int pageIndex, SortOrder sortOrder,
+			DefaultOperator defaultOperator) throws QueryException {
+
+		logger.fine("...search solr index: " + searchTerm + "...");
+
+		StringBuffer uri = new StringBuffer();
+
+		// URL Encode the query string....
+		try {
+			uri.append(api + "/solr/" + core + "/query");
+
+			// set default operator?
+			if (defaultOperator == DefaultOperator.OR) {
+				uri.append("?q.op=" + defaultOperator);
+			} else {
+				// if not define we default in any case to AND
+				uri.append("?q.op=AND");
+			}
+
+			// set sort order....
+			if (sortOrder != null) {
+				// sorted by sortoder
+				String sortField = sortOrder.getField();
+				// for Solr we need to replace the leading $ with _
+				if (sortField.startsWith("$")) {
+					sortField = "_" + sortField.substring(1);
+				}
+				if (sortOrder.isReverse()) {
+					uri.append("&sort=" + sortField + "%20desc");
+				} else {
+					uri.append("&sort=" + sortField + "%20asc");
+				}
+			}
+
+			// page size of 0 is allowed here - this will be used by the getTotalHits method
+			// of the SolrSearchService
+			if (pageSize < 0) {
+				pageSize = DEFAULT_PAGE_SIZE;
+			}
+
+			if (pageIndex < 0) {
+				pageIndex = 0;
+			}
+
+			uri.append("&rows=" + (pageSize));
+			if (pageIndex > 0) {
+				uri.append("&start=" + (pageIndex * pageSize));
+			}
+
+
+			// append query
+			uri.append("&q=" + URLEncoder.encode(searchTerm, "UTF-8"));
+
+			logger.finest("...... uri=" + uri.toString());
+			String result = restClient.get(uri.toString());
+
+			return result;
+		} catch (RestAPIException | UnsupportedEncodingException e) {
+
+			logger.severe("Solr search error: " + e.getMessage());
+			throw new QueryException(QueryException.QUERY_NOT_UNDERSTANDABLE, e.getMessage(), e);
+		}
+
 	}
 
 	/**
@@ -396,7 +487,7 @@ public class SolrUpdateService implements Serializable {
 	 * 
 	 * @return xml content to update documents
 	 */
-	protected String buildAddDoc(Collection<ItemCollection> documents) {
+	private String buildAddDoc(Collection<ItemCollection> documents) {
 
 		StringBuffer xmlContent = new StringBuffer();
 
@@ -446,7 +537,7 @@ public class SolrUpdateService implements Serializable {
 	 * @param include
 	 * @return
 	 */
-	protected String stripControlCodes(String s) {
+	private String stripControlCodes(String s) {
 
 		// control codes stripped (but extended characters not stripped)
 		// IntPredicate include=c -> c > '\u001F' && c != '\u007F';
@@ -465,7 +556,7 @@ public class SolrUpdateService implements Serializable {
 	 * @param s
 	 * @return
 	 */
-	protected String stripCDATA(String s) {
+	private String stripCDATA(String s) {
 
 		if (s.contains("<![CDATA[")) {
 			String result = s.replaceAll("<!\\[CDATA\\[", "");

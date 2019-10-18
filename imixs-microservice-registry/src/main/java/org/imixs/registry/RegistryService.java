@@ -37,7 +37,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
-import javax.annotation.PostConstruct;
 import javax.ejb.Singleton;
 import javax.servlet.http.HttpServletRequest;
 

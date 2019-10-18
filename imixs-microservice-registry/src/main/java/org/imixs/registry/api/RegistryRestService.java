@@ -307,14 +307,13 @@ public class RegistryRestService {
 	
 	
 	
-	
 
 	/**
 	 * creates a new Instance of a WorkflowClient...
 	 * 
 	 * @return
 	 */
-	public WorkflowClient createWorkflowClient(String serviceAPI) {
+	private WorkflowClient createWorkflowClient(String serviceAPI) {
 
 		WorkflowClient client = new WorkflowClient(serviceAPI);
 		// fire an AuthEvent to register a ClientRequestFilter
