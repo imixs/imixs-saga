@@ -58,7 +58,7 @@ import org.imixs.workflow.exceptions.ModelException;
  * </ul>
  * <p>
  * The method discoverService starts the process.
-
+ * 
  * 
  * @author Ralph Soika
  * @version 1.0
@@ -97,12 +97,14 @@ public class DiscoveryService {
 		try {
 			// 1) $modelversion provided
 			if (discoverServiceByModelVersion(businessEvent)) {
-				logger.info("......service disvovery by model version completed in " + (System.currentTimeMillis() - l) + "ms");
+				logger.info("......service disvovery by model version completed in " + (System.currentTimeMillis() - l)
+						+ "ms");
 				return;
 			}
 			// 2) $workflowgroup provided
 			if (discoverServiceByWorkflowGroup(businessEvent)) {
-				logger.info("......service disvovery by workflow group completed in " + (System.currentTimeMillis() - l) + "ms");
+				logger.info("......service disvovery by workflow group completed in " + (System.currentTimeMillis() - l)
+						+ "ms");
 				return;
 			}
 
@@ -252,8 +254,6 @@ public class DiscoveryService {
 		// no service found!
 		return false;
 	}
-	
-	
 
 	/**
 	 * This method discovers a service by a rule.
@@ -274,19 +274,19 @@ public class DiscoveryService {
 		BPMNRuleEngine bpmnRuleEngine = null;
 
 		// we need to clone the workitem to run the test in a save way
-		ItemCollection businessEventClone=(ItemCollection) businessEvent.clone();
-		
+		ItemCollection businessEventClone = (ItemCollection) businessEvent.clone();
+
 		Collection<BPMNModel> models = registryService.getModels();
 		for (BPMNModel model : models) {
 			bpmnRuleEngine = new BPMNRuleEngine(model);
 			model.initStartEvent(businessEventClone);
-			
+
 			int taskID = bpmnRuleEngine.eval(businessEventClone);
 			// test if this is an EndTask. If the model did not match!
 			ItemCollection task = model.getTask(taskID);
 			if (!task.getItemValueBoolean("endTask")) {
 				// assign the businessEvent with this model...
-				model.initStartEvent(businessEvent);		
+				model.initStartEvent(businessEvent);
 				service = registryService.getServiceByModelVersion(model.getVersion());
 				businessEvent.setItemValue(RegistryService.ITEM_API, service);
 				logger.info("......discoverd Service by rule in " + (System.currentTimeMillis() - l) + "ms");

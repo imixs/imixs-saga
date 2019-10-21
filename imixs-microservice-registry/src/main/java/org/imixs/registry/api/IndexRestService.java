@@ -52,7 +52,6 @@ import org.imixs.registry.index.DefaultOperator;
 import org.imixs.registry.index.SearchService;
 import org.imixs.registry.index.SortOrder;
 import org.imixs.workflow.ItemCollection;
-import org.imixs.workflow.WorkflowKernel;
 import org.imixs.workflow.xml.XMLDataCollectionAdapter;
 
 /**
@@ -94,15 +93,11 @@ public class IndexRestService {
 	public Response getDocument(@PathParam("uniqueid") String uniqueid, @QueryParam("items") String items,
 			@QueryParam("format") String format) {
 		try {
-			// build search term by uniqueid....
-			String searchTerm = WorkflowKernel.UNIQUEID + ":\"" + uniqueid + "\"";
-			List<ItemCollection> result = searchService.search(searchTerm, 1, 0, null, DefaultOperator.AND);
-			if (result != null && result.size() > 0) {
-				ItemCollection doc = result.get(0);
 
+			ItemCollection doc = searchService.getDocument(uniqueid);
+			if (doc != null) {
 				return convertResult(doc, items, format);
 			}
-
 			// not found
 			return Response.status(Response.Status.NOT_FOUND).build();
 
@@ -114,6 +109,7 @@ public class IndexRestService {
 
 	/**
 	 * Just an alternative GET method for documents/unqiueid
+	 * 
 	 * @param uniqueid
 	 * @param items
 	 * @param format
@@ -153,8 +149,8 @@ public class IndexRestService {
 			searchTerm += " $creator:\"" + creator + "\" )";
 
 			SortOrder sortOrder = null;
-			if (sortBy!=null && !sortBy.isEmpty()) {
-				sortOrder=new SortOrder(sortBy, sortReverse);
+			if (sortBy != null && !sortBy.isEmpty()) {
+				sortOrder = new SortOrder(sortBy, sortReverse);
 			}
 
 			result = searchService.search(searchTerm, pageSize, pageIndex, sortOrder, DefaultOperator.AND);

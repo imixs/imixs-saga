@@ -22,6 +22,7 @@ import org.imixs.microservice.core.auth.AuthEvent;
 import org.imixs.registry.index.solr.SolrIndexService;
 import org.imixs.registry.index.solr.SolrUpdateService;
 import org.imixs.workflow.ItemCollection;
+import org.imixs.workflow.WorkflowKernel;
 import org.imixs.workflow.exceptions.QueryException;
 
 /**
@@ -49,7 +50,6 @@ public class SearchService implements Serializable {
 
 	public static final String ANONYMOUS = "ANONYMOUS";
 
-	
 	public static List<String> ACCESS_ROLES = Arrays.asList(ACCESSLEVEL_READERACCESS, ACCESSLEVEL_AUTHORACCESS,
 			ACCESSLEVEL_EDITORACCESS, ACCESSLEVEL_MANAGERACCESS);
 
@@ -149,6 +149,24 @@ public class SearchService implements Serializable {
 				+ (System.currentTimeMillis() - ltime) + " ms");
 
 		return workitems;
+	}
+
+	
+	/**
+	 * This method lookups a document by its $uniqueid in the search index.
+	 * 
+	 * @param uniqueid
+	 * @return document or null if no document was found!
+	 * @throws QueryException
+	 */
+	public ItemCollection getDocument(String uniqueid) throws QueryException {
+		String searchTerm = WorkflowKernel.UNIQUEID + ":\"" + uniqueid + "\"";
+		List<ItemCollection> result = search(searchTerm, 1, 0, null, DefaultOperator.AND);
+		if (result != null && result.size() > 0) {
+			ItemCollection doc = result.get(0);
+			return doc;
+		}
+		return null;
 	}
 
 	/**
