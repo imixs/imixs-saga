@@ -46,6 +46,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.HttpHeaders;
@@ -57,12 +58,15 @@ import org.imixs.melman.WorkflowClient;
 import org.imixs.microservice.core.auth.AuthEvent;
 import org.imixs.registry.DiscoveryService;
 import org.imixs.registry.RegistryService;
+import org.imixs.registry.index.SearchService;
 import org.imixs.workflow.FileData;
 import org.imixs.workflow.ItemCollection;
 import org.imixs.workflow.Model;
+import org.imixs.workflow.WorkflowKernel;
 import org.imixs.workflow.bpmn.BPMNModel;
 import org.imixs.workflow.bpmn.BPMNParser;
 import org.imixs.workflow.exceptions.ImixsExceptionHandler;
+import org.imixs.workflow.exceptions.QueryException;
 import org.imixs.workflow.util.JSONParser;
 import org.imixs.workflow.xml.XMLDataCollection;
 import org.imixs.workflow.xml.XMLDataCollectionAdapter;
@@ -103,6 +107,9 @@ public class RegistryRestService {
 
 	@Inject
 	protected DiscoveryService discoveryService;
+
+	@Inject
+	protected SearchService searchService;
 
 	@Inject
 	protected Event<AuthEvent> authEvents;
@@ -217,11 +224,19 @@ public class RegistryRestService {
 			return Response.status(Response.Status.NOT_ACCEPTABLE).build();
 		}
 		ItemCollection businessEvent = XMLDocumentAdapter.putDocument(xmlBusinessEvent);
-		return processBusinessEvent(businessEvent);
+		return processBusinessEvent(businessEvent, null);
 	}
-	
-	
-	
+
+	@POST
+	@Path("/workflow/workitem/{uniqueid : ([0-9a-f]{8}-.*|[0-9a-f]{11}-.*)}")
+	@Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
+	public Response postXMLWorkitemByUniqueID(@PathParam("uniqueid") String uniqueid, XMLDocument xmlworkitem) {
+		logger.fine("postXMLWorkitemByUniqueID @POST /workitem/" + uniqueid + "  method:postWorkitemXML....");
+		ItemCollection workitem;
+		workitem = XMLDocumentAdapter.putDocument(xmlworkitem);
+		return processBusinessEvent(workitem, uniqueid);
+	}
+
 	/**
 	 * This method expects a form post and processes the WorkItem by the
 	 * WorkflowService EJB.
@@ -276,10 +291,9 @@ public class RegistryRestService {
 			return Response.status(Response.Status.NOT_ACCEPTABLE).build();
 		}
 
-		return processBusinessEvent(workitem);
+		return processBusinessEvent(workitem, null);
 	}
 
-	
 	/**
 	 * Delegater for PUT postXMLWorkitemByUniqueID
 	 * 
@@ -295,18 +309,41 @@ public class RegistryRestService {
 		logger.fine("putJSONWorkitem @PUT /workitem/{uniqueid}  delegate to POST....");
 		return postJSONWorkitem(requestBodyStream, error, encoding);
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
+	@POST
+	@Path("/workflow/workitem/{uniqueid : ([0-9a-f]{8}-.*|[0-9a-f]{11}-.*)}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response postJSONWorkitemByUniqueID(InputStream requestBodyStream, @PathParam("uniqueid") String uniqueid,
+			@QueryParam("encoding") String encoding) {
+		logger.fine("postJSONWorkitemByUniqueID @POST /workitem/" + uniqueid + "  method:postWorkitemJSON....");
+
+		// determine encoding from servlet request ....
+		if (encoding == null || encoding.isEmpty()) {
+			encoding = servletRequest.getCharacterEncoding();
+			logger.fine("postJSONWorkitem using request econding=" + encoding);
+		} else {
+			logger.fine("postJSONWorkitem set econding=" + encoding);
+		}
+
+		ItemCollection workitem = null;
+		try {
+			workitem = JSONParser.parseWorkitem(requestBodyStream, encoding);
+		} catch (ParseException e) {
+			logger.severe("postJSONWorkitem wrong json format!");
+			e.printStackTrace();
+			return Response.status(Response.Status.NOT_ACCEPTABLE).build();
+		} catch (UnsupportedEncodingException e) {
+			logger.severe("postJSONWorkitem wrong json format!");
+			e.printStackTrace();
+			return Response.status(Response.Status.NOT_ACCEPTABLE).build();
+		}
+		if (workitem == null) {
+			return Response.status(Response.Status.NOT_ACCEPTABLE).build();
+		}
+
+		return processBusinessEvent(workitem, uniqueid);
+
+	}
 
 	/**
 	 * creates a new Instance of a WorkflowClient...
@@ -327,12 +364,19 @@ public class RegistryRestService {
 	}
 
 	/**
-	 * This helper method processes a workitem. The response code of the response
-	 * object is set to 200 if case the processing was successful. In case of an
-	 * Exception a error message is generated and the status NOT_ACCEPTABLE is
-	 * returned.
+	 * This helper method processes a workitem.
 	 * <p>
-	 * The param 'uid' is optional and will be validated against the workitem data
+	 * In case the businessEvent contains a uid than a search request is delegated
+	 * to the Solr Index to lookup the existing instance and extract the $api item.
+	 * <p>
+	 * In case the businessEvent contains no uid the service will be discovered by
+	 * the provided business data (e.g. $modelversion, $workflowgroup or business
+	 * rules). If a service was found the item $api will contain the service
+	 * endpoint.
+	 * <p>
+	 * The response code of the response object is set to 200 if case the processing
+	 * was successful. In case of an Exception a error message is generated and the
+	 * status NOT_ACCEPTABLE is returned.
 	 * <p>
 	 * This method is called by the POST/PUT methods.
 	 * 
@@ -341,32 +385,65 @@ public class RegistryRestService {
 	 *            - optional $uniqueid, will be validated.
 	 * @return
 	 */
-	private Response processBusinessEvent(ItemCollection businessEvent) {
+	private Response processBusinessEvent(ItemCollection businessEvent, String uid) {
 		long l = System.currentTimeMillis();
 		logger.info("...discover registry.....");
 		String serviceAPI = null;
-	
-		discoveryService.discoverService(businessEvent);
-	
+
+		// validate optional uniqueId
+		if (uid != null && !uid.isEmpty() && !businessEvent.getUniqueID().isEmpty()
+				&& !uid.equals(businessEvent.getUniqueID())) {
+			logger.severe("@POST/@PUT workitem/" + uid
+					+ " : $UNIQUEID did not match, remove $uniqueid to create a new instnace!");
+			return Response.status(Response.Status.NOT_ACCEPTABLE).build();
+		}
+
+		if (uid != null && !uid.isEmpty()) {
+			// set provided uniqueid
+
+			businessEvent.replaceItemValue(WorkflowKernel.UNIQUEID, uid);
+		}
+
+		if (!businessEvent.getUniqueID().isEmpty()) {
+			// lookup process instance by search index!
+			try {
+				ItemCollection _tmp = searchService.getDocument(businessEvent.getUniqueID());
+				if (_tmp != null) {
+					logger.info("...existing business object found in index");
+					// update $api information
+					businessEvent.setItemValue(RegistryService.ITEM_API,
+							_tmp.getItemValueString(RegistryService.ITEM_API));
+				}
+			} catch (QueryException e) {
+				// no corresponding document found!
+				logger.severe(uid + " not found or invalid read access!");
+				Response.status(Response.Status.NOT_ACCEPTABLE).build();
+			}
+
+		} else {
+			discoveryService.discoverService(businessEvent);
+		}
 		serviceAPI = businessEvent.getItemValueString(RegistryService.ITEM_API);
 		if (serviceAPI.isEmpty()) {
 			logger.severe("Invalid workitem - no service endpoint found!");
 			return Response.status(Response.Status.NOT_ACCEPTABLE).build();
 		}
-	
+
 		// post workitem
 		ItemCollection workitem = null;
 		WorkflowClient workflowClient = createWorkflowClient(serviceAPI);
 		try {
 			workitem = workflowClient.processWorkitem(businessEvent);
 			// update the api endpoint
-			workitem.setItemValue(RegistryService.ITEM_API, serviceAPI+"/workflow/workitem/" + workitem.getUniqueID());
-			logger.info("......new remote process instance initialized in " + (System.currentTimeMillis() - l) + "ms....");
+			workitem.setItemValue(RegistryService.ITEM_API,
+					serviceAPI + "/workflow/workitem/" + workitem.getUniqueID());
+			logger.info(
+					"......new remote process instance initialized in " + (System.currentTimeMillis() - l) + "ms....");
 		} catch (RestAPIException e) {
 			workitem = ImixsExceptionHandler.addErrorMessage(e, businessEvent);
 			e.printStackTrace();
 		}
-	
+
 		// return workitem
 		try {
 			if (workitem == null) {
@@ -445,7 +522,5 @@ public class RegistryRestService {
 					.ok(XMLDataCollectionAdapter.getDataCollection(result)).build();
 		}
 	}
-
-	
 
 }
