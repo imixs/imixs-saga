@@ -1,21 +1,50 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.imixs.workflow</groupId>
-    <artifactId>imixs-microservice</artifactId>
-    <version>2.0.0-SNAPSHOT</version>
-  </parent>
-  <artifactId>imixs-microservice-registry</artifactId>
-  <packaging>war</packaging>
-  
-  
-  
-  <profiles>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.imixs.workflow</groupId>
+		<artifactId>imixs-microservice</artifactId>
+		<version>2.0.0-SNAPSHOT</version>
+	</parent>
+	<artifactId>imixs-microservice-registry</artifactId>
+	<packaging>war</packaging>
+
+
+
+	<profiles>
 
 		<profile>
 			<id>docker</id>
 			<build>
 				<plugins>
+					<!-- copy artifact into docker/apps -->
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-dependency-plugin</artifactId>
+						<version>2.8</version>
+						<executions>
+							<execution>
+								<id>copy-installed</id>
+								<phase>install</phase>
+								<goals>
+									<goal>copy</goal>
+								</goals>
+								<configuration>
+									<artifactItems>
+										<artifactItem>
+											<groupId>${project.groupId}</groupId>
+											<artifactId>${project.artifactId}</artifactId>
+											<version>${project.version}</version>
+											<type>${project.packaging}</type>
+										</artifactItem>
+									</artifactItems>
+									<outputDirectory>${project.basedir}/src/docker/apps</outputDirectory>
+									<stripVersion>true</stripVersion>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-antrun-plugin</artifactId>
@@ -46,6 +75,33 @@
 			<id>docker-build</id>
 			<build>
 				<plugins>
+					<!-- copy artifact into docker/apps -->
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-dependency-plugin</artifactId>
+						<version>2.8</version>
+						<executions>
+							<execution>
+								<id>copy-installed</id>
+								<phase>install</phase>
+								<goals>
+									<goal>copy</goal>
+								</goals>
+								<configuration>
+									<artifactItems>
+										<artifactItem>
+											<groupId>${project.groupId}</groupId>
+											<artifactId>${project.artifactId}</artifactId>
+											<version>${project.version}</version>
+											<type>${project.packaging}</type>
+										</artifactItem>
+									</artifactItems>
+									<outputDirectory>${project.basedir}/src/docker/apps</outputDirectory>
+									<stripVersion>true</stripVersion>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-antrun-plugin</artifactId>
@@ -58,8 +114,7 @@
 										<exec executable="docker">
 											<arg value="build" />
 											<arg value="-t" />
-											<arg
-												value="imixs/imixs-registry:${project.version}" />
+											<arg value="imixs/imixs-registry:${project.version}" />
 											<arg value="." />
 										</exec>
 									</target>
@@ -77,6 +132,33 @@
 			<id>docker-push</id>
 			<build>
 				<plugins>
+					<!-- copy artifact into docker/apps -->
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-dependency-plugin</artifactId>
+						<version>2.8</version>
+						<executions>
+							<execution>
+								<id>copy-installed</id>
+								<phase>install</phase>
+								<goals>
+									<goal>copy</goal>
+								</goals>
+								<configuration>
+									<artifactItems>
+										<artifactItem>
+											<groupId>${project.groupId}</groupId>
+											<artifactId>${project.artifactId}</artifactId>
+											<version>${project.version}</version>
+											<type>${project.packaging}</type>
+										</artifactItem>
+									</artifactItems>
+									<outputDirectory>${project.basedir}/src/docker/apps</outputDirectory>
+									<stripVersion>true</stripVersion>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-antrun-plugin</artifactId>
@@ -89,14 +171,12 @@
 										<exec executable="docker">
 											<arg value="build" />
 											<arg value="-t" />
-											<arg
-												value="imixs/imixs-registry:${project.version}" />
+											<arg value="imixs/imixs-registry:${project.version}" />
 											<arg value="." />
 										</exec>
 										<exec executable="docker">
 											<arg value="tag" />
-											<arg
-												value="imixs/imixs-registry:${project.version}" />
+											<arg value="imixs/imixs-registry:${project.version}" />
 											<arg
 												value="${org.imixs.docker.registry}/imixs/imixs-registry:${project.version}" />
 										</exec>
@@ -120,6 +200,33 @@
 			<id>docker-hub</id>
 			<build>
 				<plugins>
+					<!-- copy artifact into docker/apps -->
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-dependency-plugin</artifactId>
+						<version>2.8</version>
+						<executions>
+							<execution>
+								<id>copy-installed</id>
+								<phase>install</phase>
+								<goals>
+									<goal>copy</goal>
+								</goals>
+								<configuration>
+									<artifactItems>
+										<artifactItem>
+											<groupId>${project.groupId}</groupId>
+											<artifactId>${project.artifactId}</artifactId>
+											<version>${project.version}</version>
+											<type>${project.packaging}</type>
+										</artifactItem>
+									</artifactItems>
+									<outputDirectory>${project.basedir}/src/docker/apps</outputDirectory>
+									<stripVersion>true</stripVersion>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-antrun-plugin</artifactId>
@@ -132,14 +239,12 @@
 										<exec executable="docker">
 											<arg value="build" />
 											<arg value="-t" />
-											<arg
-												value="imixs/imixs-registry:${project.version}" />
+											<arg value="imixs/imixs-registry:${project.version}" />
 											<arg value="." />
 										</exec>
 										<exec executable="docker">
 											<arg value="push" />
-											<arg
-												value="imixs/imixs-registry:${project.version}" />
+											<arg value="imixs/imixs-registry:${project.version}" />
 										</exec>
 									</target>
 								</configuration>
@@ -171,10 +276,10 @@
 			</properties>
 		</profile>
 	</profiles>
-	
-	
-	
-	
+
+
+
+
 	<build>
 
 		<plugins>
@@ -201,62 +306,36 @@
 					<encoding>${project.build.sourceEncoding}</encoding>
 				</configuration>
 			</plugin>
-			
-			<!-- copy artifact into docker/apps -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-dependency-plugin</artifactId>
-				<version>2.8</version>
-				<executions>
-					<execution>
-						<id>copy-installed</id>
-						<phase>install</phase>
-						<goals>
-							<goal>copy</goal>
-						</goals>
-						<configuration>
-							<artifactItems>
-								<artifactItem>
-									<groupId>${project.groupId}</groupId>
-									<artifactId>${project.artifactId}</artifactId>
-									<version>${project.version}</version>
-									<type>${project.packaging}</type>
-								</artifactItem>
-							</artifactItems>
-							<outputDirectory>${project.basedir}/src/docker/apps</outputDirectory>
-							<stripVersion>true</stripVersion>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
+
+
 		</plugins>
-		
+
 		<!-- test directory for junit -->
 		<testResources>
 			<testResource>
 				<directory>${project.parent.basedir}/src/model</directory>
 			</testResource>
 		</testResources>
-				
+
 
 		<finalName>imixs-microservice-registry</finalName>
 	</build>
-	
-	
+
+
 	<dependencies>
-	
+
 		<!-- Imixs Workflow -->
 		<dependency>
 			<groupId>org.imixs.workflow</groupId>
 			<artifactId>imixs-workflow-core</artifactId>
 		</dependency>
-		
+
 		<!-- Imixs Melman -->
 		<dependency>
 			<groupId>org.imixs.workflow</groupId>
 			<artifactId>imixs-melman</artifactId>
 		</dependency>
-		
+
 		<!-- Imixs-Microservice-Security -->
 		<dependency>
 			<groupId>org.imixs.workflow</groupId>
@@ -264,5 +343,5 @@
 			<version>${project.version}</version>
 		</dependency>
 	</dependencies>
-	
+
 </project>
