@@ -66,10 +66,10 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<org.imixs.workflow.version>5.1.0-SNAPSHOT</org.imixs.workflow.version>
+		<org.imixs.workflow.version>5.1.0</org.imixs.workflow.version>
 		<org.imixs.adapters.version>2.1.0</org.imixs.adapters.version>
-		<org.imixs.melman.version>1.0.12-SNAPSHOT</org.imixs.melman.version>
-		<org.imixs.jwt.version>1.0.2-SNAPSHOT</org.imixs.jwt.version>
+		<org.imixs.melman.version>1.0.12</org.imixs.melman.version>
+		<org.imixs.jwt.version>1.0.2</org.imixs.jwt.version>
 		<custom.webResources>src/main/webapp</custom.webResources>
 	</properties>
 
