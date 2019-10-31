@@ -217,7 +217,6 @@ The following docker-compose.yml file defines the application stack consisting o
 	      POSTGRES_USER: "postgres"
 	      POSTGRES_PASSWORD: "adminadmin"
 	      POSTGRES_CONNECTION: "jdbc:postgresql://db/workflow"
-	      IMIXS_MODEL: "ticket-en-1.0.0.bpmn"
 	    ports:
 	      - "8080:8080"
 
@@ -247,7 +246,7 @@ You can define a model file to be updloaded during startup of the service. See t
 	      POSTGRES_USER: "postgres"
 	      POSTGRES_PASSWORD: "adminadmin"
 	      POSTGRES_CONNECTION: "jdbc:postgresql://db/workflow"
-	      IMIXS_MODEL: "/home/imixs/model/my-model-1.0.0.bpmn"
+	      MODEL_DEFAULT_DATA: "/home/imixs/model/ticket-en-1.0.0.bpmn"
 	    ports:
 	      - "8080:8080"
 	      - "9990:9990"

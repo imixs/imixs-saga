@@ -16,7 +16,6 @@ services:
       POSTGRES_USER: "postgres"
       POSTGRES_PASSWORD: "adminadmin"
       POSTGRES_CONNECTION: "jdbc:postgresql://db/workflow"
-      IMIXS_MODEL: "/home/imixs/model/ticket-en-1.0.0.bpmn"
       MODEL_DEFAULT_DATA: "/home/imixs/model/ticket-en-1.0.0.bpmn"
     ports:
       - "8080:8080"

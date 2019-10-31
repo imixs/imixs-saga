@@ -39,7 +39,7 @@ import org.imixs.workflow.exceptions.AccessDeniedException;
  * 
  * @version 1.0
  * @author rsoika
- * 
+ *  
  */
 @DeclareRoles({ "org.imixs.ACCESSLEVEL.NOACCESS", "org.imixs.ACCESSLEVEL.READERACCESS",
 		"org.imixs.ACCESSLEVEL.AUTHORACCESS", "org.imixs.ACCESSLEVEL.EDITORACCESS",

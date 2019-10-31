@@ -32,20 +32,22 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import javax.ejb.Singleton;
 import javax.servlet.http.HttpServletRequest;
 
-import org.imixs.workflow.Model;
 import org.imixs.workflow.bpmn.BPMNModel;
 import org.imixs.workflow.exceptions.ModelException;
 
 /**
- * This RegistryService provides methods to manage the service registry and its models.
+ * This RegistryService provides methods to manage the service registry and its
+ * models.
  *
  * @author rsoika
  * @version 1.0
@@ -55,16 +57,14 @@ public class RegistryService {
 
 	public static final String ITEM_API = "$api";
 
-	//private Map<String, BPMNModel> modelStore = null;
+	// private Map<String, BPMNModel> modelStore = null;
 
 	@javax.ws.rs.core.Context
 	private HttpServletRequest servletRequest;
 
 	private static Logger logger = Logger.getLogger(RegistryService.class.getName());
 
-	private Map<String, BPMNModel> serviceRegistry = new ConcurrentHashMap<String, BPMNModel>();
-
-	
+	private Map<String, List<BPMNModel>> serviceRegistry = new ConcurrentHashMap<String, List<BPMNModel>>();
 
 	/**
 	 * Returns all registered service API endpoints
@@ -77,50 +77,64 @@ public class RegistryService {
 
 	/**
 	 * Returns the model by a service
+	 * 
 	 * @param service
 	 * @return
 	 */
-	public BPMNModel getModelByService(String service) {
-		BPMNModel model = serviceRegistry.get(service);
+	public List<BPMNModel> getModelByService(String service) {
+		List<BPMNModel> model = serviceRegistry.get(service);
 		return model;
 	}
-	
+
 	/**
-	 * Puts a model into the registry
+	 * Puts a model into the registry.
+	 * <p>
+	 * The method verifies if the same model version already exists. If so, we
+	 * remove the deprecated version and replace it with the current
+	 * 
 	 * @param serviceEndpoint
 	 * @param model
 	 */
 	public void setModelByService(String serviceEndpoint, BPMNModel model) {
-		serviceRegistry.put(serviceEndpoint, model);
+
+		// look if we already have a model list for this endpoint
+		List<BPMNModel> models = getModelByService(serviceEndpoint);
+		if (models == null) {
+			// no - so lets create one...
+			models = new ArrayList<BPMNModel>();
+		}
+
+		// lets see if we already have the same model version
+		List<BPMNModel> result = models.stream() // convert list to stream
+				.filter(_tempmodel -> !model.getVersion().equals(_tempmodel.getVersion())) // remove same version if
+																							// already cached
+				.collect(Collectors.toList()); // collect the output and convert streams to a List
+
+		// now add the new model
+		result.add(model);
+		serviceRegistry.put(serviceEndpoint, result);
 	}
-	
+
 	/**
 	 * Returns a sorted list of all registered models
 	 * 
-	 * @return 
+	 * @return
 	 */
 	public List<BPMNModel> getModels() {
-		List<BPMNModel> result=new ArrayList<BPMNModel>();
-		result.addAll(serviceRegistry.values());
-		
-		
-		// sort result by model version 
-		
-		
-		
-		
-		Collections.sort(result, 
-                (o1, o2) -> o1.getVersion().compareTo(o2.getVersion()));
-		
-		
-		
-		
-		
-		
+		List<BPMNModel> result = new ArrayList<BPMNModel>();
+
+		Collection<List<BPMNModel>> allModels = serviceRegistry.values();
+
+		for (List<BPMNModel> modelList : allModels) {
+			result.addAll(modelList);
+		}
+
+		// sort result by model version
+
+		Collections.sort(result, (o1, o2) -> o1.getVersion().compareTo(o2.getVersion()));
+
 		return result;
-	} 
-
-
+	}
 
 	/**
 	 * This method returns a service endpoint for a given model version or null if
@@ -134,34 +148,37 @@ public class RegistryService {
 			return null;
 		}
 
-		for (Map.Entry<String, BPMNModel> entry : serviceRegistry.entrySet()) {
+		for (Entry<String, List<BPMNModel>> entry : serviceRegistry.entrySet()) {
 			String service = entry.getKey();
-			Model model = entry.getValue();
-			if (model.getVersion().contentEquals(version)) {
-				return service;
+			List<BPMNModel> models = entry.getValue();
+
+			for (BPMNModel aModel : models) {
+				if (version.contentEquals(aModel.getVersion())) {
+					return service;
+				}
 			}
 		}
 		// no service found!
 		return null;
 	}
 
-	
-
 	/**
 	 * Returns a Model by version. In case no matching model version exits, the
 	 * method throws a ModelException.
 	 **/
 	public BPMNModel getModel(String version) throws ModelException {
-		
-		Collection<BPMNModel> models = serviceRegistry.values();
-		for (BPMNModel _model: models) {
-			if (_model.getVersion().equals(version)) {
-				return _model;
+
+		Collection<List<BPMNModel>> models = serviceRegistry.values();
+		for (List<BPMNModel> _modelList : models) {
+
+			for (BPMNModel aModel : _modelList) {
+				if (aModel.getVersion().equals(version)) {
+					return aModel;
+				}
 			}
 		}
-		
-			throw new ModelException(ModelException.UNDEFINED_MODEL_VERSION,
-					"Modelversion '" + version + "' not found!");
+
+		throw new ModelException(ModelException.UNDEFINED_MODEL_VERSION, "Modelversion '" + version + "' not found!");
 	}
 
 	/**
@@ -176,48 +193,49 @@ public class RegistryService {
 		List<String> result = new ArrayList<String>();
 		logger.finest("......searching model versions for regex '" + modelRegex + "'...");
 		// try to find matching model version by regex
-		Collection<BPMNModel> models = serviceRegistry.values();
-		for (Model amodel : models) {
-			if (Pattern.compile(modelRegex).matcher(amodel.getVersion()).find()) {
-				result.add(amodel.getVersion());
+		Collection<List<BPMNModel>> models = serviceRegistry.values();
+		for (List<BPMNModel> _modelList : models) {
+			
+			for (BPMNModel amodel : _modelList) {
+				if (Pattern.compile(modelRegex).matcher(amodel.getVersion()).find()) {
+					result.add(amodel.getVersion());
+				}
 			}
+			
+			
 		}
 		// sort result
 		Collections.sort(result, Collections.reverseOrder());
 		return result;
 	}
-	
-	
-	
 
 	/**
-	 * This method returns a sorted list of model versions matching a given workflow group.
+	 * This method returns a sorted list of model versions matching a given workflow
+	 * group.
 	 * 
 	 * @param group
 	 * @return
 	 */
 	public List<String> findModelsByGroup(String group) {
-		
-		
+
 		List<String> result = new ArrayList<String>();
 		logger.finest("......searching model versions for group '" + group + "'...");
 		// try to find matching model version by regex
-		Collection<BPMNModel> models = serviceRegistry.values();
-		for (Model amodel : models) {
+		Collection<List<BPMNModel>> models = serviceRegistry.values();
+		for (List<BPMNModel> _modelList : models) {
 			
-			List<String> groupList = amodel.getGroups();
-			if (groupList.contains(group)) {
-				result.add(amodel.getVersion());
+			for (BPMNModel amodel : _modelList) {
+				List<String> groupList = amodel.getGroups();
+				if (groupList.contains(group)) {
+					result.add(amodel.getVersion());
+				}
 			}
+
+			
 		}
 		// sort result
 		Collections.sort(result, Collections.reverseOrder());
 		return result;
 	}
-	
-	
-
-
-	
 
 }

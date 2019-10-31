@@ -133,7 +133,7 @@ public class UpdateService implements Serializable {
 					updateIndex(eventLog, eventLogClient);
 				}
 
-				logger.info("...full index update completed in " + (System.currentTimeMillis() - l) + "ms");
+				logger.fine("...full index update completed in " + (System.currentTimeMillis() - l) + "ms");
 			}
 		}
 	}
@@ -240,7 +240,7 @@ public class UpdateService implements Serializable {
 					+ " ms - last log entry: " + lastEventDate);
 
 		} else {
-			logger.info("...no eventLog entries found. Index for " + eventLogClient.getBaseURI()
+			logger.fine("...no eventLog entries found. Index for " + eventLogClient.getBaseURI()
 					+ " is already synchonised!");
 		}
 

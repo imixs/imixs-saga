@@ -61,7 +61,6 @@ import org.imixs.registry.RegistryService;
 import org.imixs.registry.index.SearchService;
 import org.imixs.workflow.FileData;
 import org.imixs.workflow.ItemCollection;
-import org.imixs.workflow.Model;
 import org.imixs.workflow.WorkflowKernel;
 import org.imixs.workflow.bpmn.BPMNModel;
 import org.imixs.workflow.bpmn.BPMNParser;
@@ -126,13 +125,18 @@ public class RegistryRestService {
 		List<ItemCollection> result = new ArrayList<ItemCollection>();
 		Set<String> services = registrationService.getServices();
 		for (String service : services) {
-			ItemCollection def = new ItemCollection();
-			def.setItemValue(RegistryService.ITEM_API, service);
+			List<BPMNModel> _modelList = registrationService.getModelByService(service);
 
-			Model model = registrationService.getModelByService(service);
-			def.model(model.getVersion());
-			def.setItemValue("$workflowgroups", model.getGroups());
-			result.add(def);
+			for (BPMNModel amodel : _modelList) {
+				ItemCollection def = new ItemCollection();
+				def.setItemValue(RegistryService.ITEM_API, service);
+
+				def.model(amodel.getVersion());
+				def.setItemValue("$workflowgroups", amodel.getGroups());
+				result.add(def);
+			}
+			
+			
 		}
 		return convertResultList(result, format);
 	}
