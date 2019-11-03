@@ -1,4 +1,4 @@
-package org.imixs.microservice.core;
+package org.imixs.microservice.registry;
 
 import java.io.Serializable;
 import java.util.ArrayList;
