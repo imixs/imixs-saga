@@ -64,6 +64,8 @@ public class BatchEventService {
 	
 	public static final String EVENTLOG_TOPIC_BATCH_EVENT = "batch.event";
 	public static final String EVENTLOG_TOPIC_BATCH_EVENT_LOCK = "batch.event.lock";
+	
+	public static final String ITEM_BATCH_EVENT_LOCK_DATE = "batch.event.lock.date";
 
 	// deadlock timeout interval in ms
 	@Inject
@@ -146,12 +148,12 @@ public class BatchEventService {
 		Date now = new Date();
 		for (EventLog eventLogEntry : events) {
 
-			// test if lock.date is older than 1 minute
+			// test if batch.event.lock.date is older than 1 minute
 			ItemCollection data = new ItemCollection(eventLogEntry.getData());
-			Date lockDate = data.getItemValueDate("lock.date");
+			Date lockDate = data.getItemValueDate(ITEM_BATCH_EVENT_LOCK_DATE);
 			long age = now.getTime() - lockDate.getTime();
 			if (lockDate == null || age > deadLockInterval) {
-				logger.warning("Deadlock detected! - batch.event.lock=" + eventLogEntry.getId()
+				logger.warning("Deadlock detected! - batch.event.id=" + eventLogEntry.getId()
 						+ " will be unlocked! (deadlock since " + age + "ms)");
 				unlock(eventLogEntry);
 			}
@@ -163,7 +165,7 @@ public class BatchEventService {
 	 * 'batch.process.lock'. If the lock is successful we can process the eventLog
 	 * entry.
 	 * <p>
-	 * The method also adds a item 'lock.date' with a timestamp. This timestamp is
+	 * The method also adds a item 'batch.event.lock.date' with a timestamp. This timestamp is
 	 * used by the method 'autoUnlock' to release locked entries.
 	 * 
 	 * @param eventLogEntry
@@ -175,7 +177,7 @@ public class BatchEventService {
 		if (eventLog != null) {
 			eventLog.setTopic(EVENTLOG_TOPIC_BATCH_EVENT_LOCK);
 			ItemCollection data = new ItemCollection(eventLog.getData());
-			data.setItemValue("lock.date", new Date());
+			data.setItemValue(ITEM_BATCH_EVENT_LOCK_DATE, new Date());
 			manager.merge(eventLog);
 		}
 	}
