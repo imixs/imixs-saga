@@ -20,6 +20,7 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
  * interval 'BATCH_PROCESSOR_INTERVAL' and an optional delay defined by
  * 'BATCH_PROCESSOR_INITIALDELAY'. To enable the batchPorcessor
  * 'BATCH_PROCESSOR_ENABLED' must be set to true (default=false).
+ * 'BATCH_PROCESSOR_DEADLOCK' deadlock timeout
  * <p>
  *
  * @see BatchEventService
