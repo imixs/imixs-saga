@@ -17,7 +17,7 @@ services:
       POSTGRES_PASSWORD: "adminadmin"
       POSTGRES_CONNECTION: "jdbc:postgresql://db/workflow"
       
-      MODEL_DEFAULT_DATA: "/home/imixs/model/ticket-en-1.0.0.bpmn;/home/imixs/model/demo-en-1.0.0.bpmn"
+      MODEL_DEFAULT_DATA: "/home/imixs/model/ticket-en-1.0.0.bpmn;/home/imixs/model/order-en-1.0.0.bpmn"
       MODEL_DEFAULT_DATA_OVERWRITE: "true"
       IMIXS_REGISTRY_API: "http://registry:8080/api"
       IMIXS_AUTH_METHOD: "BASIC"
@@ -28,6 +28,9 @@ services:
       IMIXS-REGISTRY_INDEX_FIELDS: ""
       #IMIXS_REGISTRY_AUTOREGISTER_INTERVAL: 120000
       IMIXS_API: "http://app:8080/api"
+      
+      BATCH_PROCESSOR_ENABLED: "true"
+      BATCH_PROCESSOR_INTERVAL: 2000
     ports:
       - "8080:8080"
       - "9990:9990"

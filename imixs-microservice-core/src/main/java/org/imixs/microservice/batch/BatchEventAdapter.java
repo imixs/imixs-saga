@@ -55,7 +55,7 @@ public class BatchEventAdapter implements GenericAdapter {
 				logger.info("...create new batch event - eventId=" + batchEventID);
 				// ceate EventLogEntry....
 				ItemCollection batchData = new ItemCollection().event(batchEventID);
-				eventLogService.createEvent(BatchEventProcessor.EVENTLOG_TOPIC_BATCH_EVENT, document.getUniqueID(),
+				eventLogService.createEvent(BatchEventService.EVENTLOG_TOPIC_BATCH_EVENT, document.getUniqueID(),
 						batchData);
 			}
 
