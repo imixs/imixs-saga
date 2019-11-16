@@ -87,11 +87,8 @@ public class WorkflowTest {
 	@Test
 	public void createNewWorkitemTest() {
 
-		ItemCollection ticket = new ItemCollection();
-		ticket.replaceItemValue("type", "workitem");
-		ticket.replaceItemValue("$ModelVersion", MODEL_VERSION);
-		ticket.replaceItemValue("$taskid", 1000);
-		ticket.replaceItemValue("$eventid", 10);
+		ItemCollection ticket = new ItemCollection().model(MODEL_VERSION).task(1000).event(10);
+
 		ticket.replaceItemValue("txtName", "Test");
 		ticket.replaceItemValue("namTeam", Arrays.asList(new String[] { "admin", "alex", "marty" }));
 		try {
