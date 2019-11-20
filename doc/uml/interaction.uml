@@ -1,0 +1,52 @@
+@startuml
+
+ 
+
+
+participant App order 1
+participant Service1 order 91
+participant Service2 order 92
+participant Service3 order 93
+
+box "       Business Transaction       " #White
+	participant App 
+
+end box
+
+box "       Saga Participants       " #LightBlue
+	participant Service1
+	participant Service2
+	participant Service3
+end box
+
+hide footbox
+
+activate App
+
+App -> Service1: Request
+activate Service1
+Service1 -> Service1: process
+Service1 -> App: Response
+deactivate Service1
+
+App -> Service2: Asynchronous Request
+activate Service2
+Service2 --> App: Response
+Service2 -> Service2: process
+activate Service2 #DarkSalmon
+
+Service2 -> App: send Event
+deactivate Service2
+deactivate Service2
+
+
+
+App -> Service3: One Way Request
+activate Service3
+Service3 -> Service3: process
+deactivate Service3
+
+
+deactivate App
+
+@enduml

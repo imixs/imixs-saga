@@ -1,0 +1,36 @@
+@startuml
+
+ 
+
+participant OAP order 1
+participant CarConnector order 1
+participant ExperienceRegistry order 91
+participant Experience1 order 92
+participant Experience2 order 93
+
+
+hide footbox
+
+OAP -> CarConnector: send trigger
+
+
+activate CarConnector
+
+
+CarConnector -> CarConnector: validate and filter
+
+CarConnector -> ExperienceRegistry: request experience
+activate ExperienceRegistry
+ExperienceRegistry -> ExperienceRegistry: apply business rules
+
+
+
+ExperienceRegistry -> CarConnector: response 404 (no experience found)
+deactivate ExperienceRegistry
+
+
+CarConnector -> OAP: response 404
+
+deactivate CarConnector
+
+@enduml

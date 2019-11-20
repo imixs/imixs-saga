@@ -1,0 +1,38 @@
+@startuml
+
+ 
+
+participant OAP order 1
+participant CarConnector order 1
+participant Experience order 92
+
+
+hide footbox
+
+OAP -> CarConnector: send a dialog action
+
+note right
+	status 
+	screen input 
+	endpoint url
+end note
+
+activate OAP
+activate CarConnector
+
+CarConnector -> Experience: post action data
+
+activate Experience
+Experience -> Experience: process action
+
+Experience -> CarConnector: response (dialog page)
+deactivate Experience
+
+
+
+CarConnector -> OAP: send dialog page
+
+deactivate CarConnector
+deactivate OAP
+
+@enduml

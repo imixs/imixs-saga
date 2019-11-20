@@ -1,0 +1,45 @@
+@startuml
+
+ 
+
+
+participant App order 1
+collections Service order 99
+
+box "       Application       " #White
+	participant App 
+
+end box
+
+box "       Microservice       " #LightBlue
+	participant Service
+end box
+
+hide footbox
+
+activate App
+
+App -> Service: API call
+activate Service
+
+
+Service -> App: response (conversation ID)
+
+App --> Service: poll status (conversation ID)
+App --> Service: poll status (conversation ID)
+App --> Service: poll status (conversation ID)
+
+Service -> Service: processing \nrequest
+Service -> App: response
+deactivate Service
+
+
+
+App -> App: processing \nanswer
+
+
+App --> Service: API call
+
+deactivate App
+
+@enduml

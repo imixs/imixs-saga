@@ -1,0 +1,57 @@
+@startuml
+
+ 
+
+
+participant App order 1
+participant Service1 order 91
+participant Service2 order 92
+participant Service3 order 93
+
+box "       Business Transaction       " #White
+	participant App 
+
+end box
+
+box "       Saga Participants       " #LightBlue
+	participant Service1
+	participant Service2
+	participant Service3
+end box
+
+hide footbox
+
+activate App
+
+App -> Service1: API call
+activate Service1
+Service1 --> App
+deactivate Service1
+
+App -> Service2: API call
+activate Service2
+Service2 --> App
+deactivate Service2
+
+App -> Service3: API call
+activate Service3
+Service3 ->x Service3: Failure
+Service3 --> App: Error
+destroy Service3
+
+
+
+App -> Service2: Compensation API call
+activate Service2
+Service2 --> App
+deactivate Service2
+
+
+App -> Service1: Compensation API call
+activate Service1
+Service1 --> App
+deactivate Service1
+
+deactivate App
+
+@enduml

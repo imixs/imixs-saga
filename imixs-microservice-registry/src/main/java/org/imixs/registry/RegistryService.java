@@ -57,8 +57,6 @@ public class RegistryService {
 
 	public static final String ITEM_API = "$api";
 
-	// private Map<String, BPMNModel> modelStore = null;
-
 	@javax.ws.rs.core.Context
 	private HttpServletRequest servletRequest;
 

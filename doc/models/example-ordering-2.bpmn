@@ -176,7 +176,7 @@
       <bpmn2:signalEventDefinition id="SignalEventDefinition_2"/>
     </bpmn2:intermediateCatchEvent>
     <bpmn2:sequenceFlow id="SequenceFlow_10" name="success " sourceRef="ExclusiveGateway_1" targetRef="Task_3"/>
-    <bpmn2:task id="Task_2" imixs:processid="500" name="Caceled">
+    <bpmn2:task id="Task_2" imixs:processid="500" name="Canceled">
       <bpmn2:extensionElements>
         <imixs:item name="txteditorid" type="xs:string">
           <imixs:value><![CDATA[]]></imixs:value>
@@ -232,7 +232,7 @@
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_1">
       <bpmndi:BPMNShape id="BPMNShape_Participant_2" bpmnElement="Participant_3" isHorizontal="true">
         <dc:Bounds height="251.0" width="1051.0" x="100.0" y="50.0"/>
-        <bpmndi:BPMNLabel id="BPMNLabel_45">
+        <bpmndi:BPMNLabel id="BPMNLabel_45" labelStyle="BPMNLabelStyle_1">
           <dc:Bounds height="117.0" width="14.0" x="106.0" y="117.0"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
@@ -256,7 +256,7 @@
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_CallConversation_2" bpmnElement="CallConversation_2">
         <dc:Bounds height="50.0" width="58.0" x="410.0" y="340.0"/>
-        <bpmndi:BPMNLabel id="BPMNLabel_106">
+        <bpmndi:BPMNLabel id="BPMNLabel_106" labelStyle="BPMNLabelStyle_1">
           <dc:Bounds height="14.0" width="75.0" x="402.0" y="390.0"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
@@ -286,7 +286,7 @@
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_CallConversation_1" bpmnElement="CallConversation_1">
         <dc:Bounds height="50.0" width="58.0" x="663.0" y="340.0"/>
-        <bpmndi:BPMNLabel id="BPMNLabel_10">
+        <bpmndi:BPMNLabel id="BPMNLabel_10" labelStyle="BPMNLabelStyle_1">
           <dc:Bounds height="28.0" width="54.0" x="665.0" y="390.0"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
@@ -303,7 +303,7 @@
       <bpmndi:BPMNShape id="BPMNShape_Task_2" bpmnElement="Task_2">
         <dc:Bounds height="50.0" width="110.0" x="910.0" y="218.0"/>
         <bpmndi:BPMNLabel id="BPMNLabel_20" labelStyle="BPMNLabelStyle_1">
-          <dc:Bounds height="14.0" width="46.0" x="942.0" y="236.0"/>
+          <dc:Bounds height="14.0" width="53.0" x="938.0" y="236.0"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_EndEvent_2" bpmnElement="EndEvent_2">
