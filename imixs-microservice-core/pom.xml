@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>org.imixs.workflow</groupId>
 		<artifactId>imixs-microservice</artifactId>
-		<version>2.0.1-SNAPSHOT</version>
+		<version>2.0.1</version>
 	</parent>
 	<artifactId>imixs-microservice-core</artifactId>
 
