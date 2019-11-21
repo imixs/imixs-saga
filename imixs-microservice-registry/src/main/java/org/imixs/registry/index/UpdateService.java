@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
@@ -64,9 +65,9 @@ public class UpdateService implements Serializable {
 	private String api;
 
 	@Inject
-	@ConfigProperty(name = "imixs.index.interval", defaultValue = "10000")
-	int indexInterval;
-
+	@ConfigProperty(name = "imixs.index.interval", defaultValue = "1000")
+	int indexInterval; // default 1sec
+	
 	@Inject
 	protected Event<AuthEvent> authEvents;
 
@@ -75,7 +76,7 @@ public class UpdateService implements Serializable {
 
 	@Inject
 	SolrUpdateService solrUpdateService;
-	
+
 	@Inject
 	SolrIndexService solrIndexService;
 
@@ -97,13 +98,15 @@ public class UpdateService implements Serializable {
 	void init() {
 		// do we have a imixs-registry endpoint defined?
 		if (!api.isEmpty()) {
-			logger.info("Starting IndexService...");
+			boolean debug = logger.isLoggable(Level.FINE);
 
 			timerID = WorkflowKernel.generateUniqueID();
-			logger.info("...index service endpoint: " + api);
+			logger.info("IndexService endpoint: " + api);
 			// start timer if no one is started yet....
 			if (findTimer() == null) {
-				logger.finest("......create new timer: " + timerID + " - timer intervall=" + indexInterval + "ms");
+				if (debug) {
+					logger.finest("......create new timer: " + timerID + " - timer intervall=" + indexInterval + "ms");
+				}
 				TimerConfig config = new TimerConfig();
 				// config.set
 				config.setPersistent(false);
@@ -121,19 +124,23 @@ public class UpdateService implements Serializable {
 	@Timeout
 	private synchronized void onTimer() {
 		if (!api.isEmpty()) {
+			boolean debug = logger.isLoggable(Level.FINE);
 			long l = System.currentTimeMillis();
 			// iterate over all registered Imixs-Microserives and read the eventLog entries
 
 			Set<String> services = registryService.getServices();
 			if (services != null && services.size() > 0) {
 				for (String service : services) {
-					logger.info("...update Index: " + service);
+					if (debug) {
+						logger.finest("...update Index: " + service);
+					}
 					EventLogClient eventLogClient = createEventLogClient(service);
 					List<ItemCollection> eventLog = loadEventLog(eventLogClient);
 					updateIndex(eventLog, eventLogClient);
 				}
-
-				logger.fine("...full index update completed in " + (System.currentTimeMillis() - l) + "ms");
+				if (debug) {
+					logger.fine("...full index update completed in " + (System.currentTimeMillis() - l) + "ms");
+				}
 			}
 		}
 	}
@@ -145,9 +152,11 @@ public class UpdateService implements Serializable {
 	 * @return
 	 */
 	private List<ItemCollection> loadEventLog(EventLogClient client) {
+		boolean debug = logger.isLoggable(Level.FINE);
 		List<ItemCollection> eventLogEntries = null;
-		logger.info("...loading event log : " + client.getBaseURI() + " ...");
-
+		if (debug) {
+			logger.finest("...loading event log : " + client.getBaseURI() + " ...");
+		}
 		try {
 			// load eventLog entries.....
 			eventLogEntries = client.searchEventLog(EVENTLOG_TOPIC_INDEX_ADD, EVENTLOG_TOPIC_INDEX_REMOVE);
@@ -178,13 +187,15 @@ public class UpdateService implements Serializable {
 	private boolean updateIndex(List<ItemCollection> eventLogEntries, EventLogClient eventLogClient) {
 		Date lastEventDate = null;
 		boolean cacheIsEmpty = true;
+		boolean debug = logger.isLoggable(Level.FINE);
 
 		Map<String, ItemCollection> distinctUpdates = new HashMap<String, ItemCollection>();
 		Set<String> distinctDeletions = new HashSet<String>();
 
 		long l = System.currentTimeMillis();
-		logger.finest("......flush eventlog cache....");
-
+		if (debug) {
+			logger.finest("......flush eventlog cache....");
+		}
 		if (eventLogEntries != null && eventLogEntries.size() > 0) {
 			try {
 
@@ -194,7 +205,8 @@ public class UpdateService implements Serializable {
 					String uniqueid = eventLogEntry.getItemValueString("ref");
 					List<?> dataEntries = eventLogEntry.getItemValue("data");
 					if (dataEntries == null || dataEntries.size() == 0) {
-						logger.warning("wrong eventLogEntry '" + id + "' - does not contain a data object - entry will be deleted...");
+						logger.warning("wrong eventLogEntry '" + id
+								+ "' - does not contain a data object - entry will be deleted...");
 						eventLogClient.deleteEventLogEntry(id);
 						continue;
 					}
@@ -236,12 +248,15 @@ public class UpdateService implements Serializable {
 				// lucene search index", luceneEx);
 				return true;
 			}
-			logger.info("...update index - " + eventLogEntries.size() + " events in " + (System.currentTimeMillis() - l)
-					+ " ms - last log entry: " + lastEventDate);
-
+			if (debug) {
+				logger.fine("...update index - " + eventLogEntries.size() + " events in "
+						+ (System.currentTimeMillis() - l) + " ms - last log entry: " + lastEventDate);
+			}
 		} else {
-			logger.fine("...no eventLog entries found. Index for " + eventLogClient.getBaseURI()
-					+ " is already synchonised!");
+			if (debug) {
+				logger.fine("...no eventLog entries found. Index for " + eventLogClient.getBaseURI()
+						+ " is already synchonised!");
+			}
 		}
 
 		return cacheIsEmpty;
@@ -278,11 +293,5 @@ public class UpdateService implements Serializable {
 		}
 		return null;
 	}
-	
-
-	
-	
-	
-
 
 }

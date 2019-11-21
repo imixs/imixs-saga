@@ -35,6 +35,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -189,18 +190,20 @@ public class RegistryService {
 	 */
 	public List<String> findVersionsByRegEx(String modelRegex) {
 		List<String> result = new ArrayList<String>();
-		logger.finest("......searching model versions for regex '" + modelRegex + "'...");
+		boolean debug = logger.isLoggable(Level.FINE);
+		if (debug) {
+			logger.finest("......searching model versions for regex '" + modelRegex + "'...");
+		}
 		// try to find matching model version by regex
 		Collection<List<BPMNModel>> models = serviceRegistry.values();
 		for (List<BPMNModel> _modelList : models) {
-			
+
 			for (BPMNModel amodel : _modelList) {
 				if (Pattern.compile(modelRegex).matcher(amodel.getVersion()).find()) {
 					result.add(amodel.getVersion());
 				}
 			}
-			
-			
+
 		}
 		// sort result
 		Collections.sort(result, Collections.reverseOrder());
@@ -215,13 +218,16 @@ public class RegistryService {
 	 * @return
 	 */
 	public List<String> findModelsByGroup(String group) {
+		boolean debug = logger.isLoggable(Level.FINE);
 
 		List<String> result = new ArrayList<String>();
-		logger.finest("......searching model versions for group '" + group + "'...");
+		if (debug) {
+			logger.finest("......searching model versions for group '" + group + "'...");
+		}
 		// try to find matching model version by regex
 		Collection<List<BPMNModel>> models = serviceRegistry.values();
 		for (List<BPMNModel> _modelList : models) {
-			
+
 			for (BPMNModel amodel : _modelList) {
 				List<String> groupList = amodel.getGroups();
 				if (groupList.contains(group)) {
@@ -229,7 +235,6 @@ public class RegistryService {
 				}
 			}
 
-			
 		}
 		// sort result
 		Collections.sort(result, Collections.reverseOrder());

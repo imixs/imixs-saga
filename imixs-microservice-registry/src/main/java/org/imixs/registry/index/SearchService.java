@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Vector;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
@@ -122,7 +123,7 @@ public class SearchService implements Serializable {
 	 */
 	public List<ItemCollection> search(String _searchTerm, int pageSize, int pageIndex, SortOrder sortOrder,
 			DefaultOperator defaultOperator) throws QueryException {
-
+		boolean debug = logger.isLoggable(Level.FINE);
 		long ltime = System.currentTimeMillis();
 		List<ItemCollection> workitems = new ArrayList<ItemCollection>();
 
@@ -145,13 +146,13 @@ public class SearchService implements Serializable {
 		// post query....
 		workitems = solrIndexService.query(searchTerm, pageSize, pageIndex, sortOrder, defaultOperator);
 
-		logger.info("...search result computed - " + workitems.size() + " workitems found in "
-				+ (System.currentTimeMillis() - ltime) + " ms");
-
+		if (debug) {
+			logger.fine("...search result computed - " + workitems.size() + " workitems found in "
+					+ (System.currentTimeMillis() - ltime) + " ms");
+		}
 		return workitems;
 	}
 
-	
 	/**
 	 * This method lookups a document by its $uniqueid in the search index.
 	 * 
@@ -205,6 +206,7 @@ public class SearchService implements Serializable {
 	 */
 	private String getExtendedSearchTerm(String sSearchTerm) throws QueryException {
 		// test if searchtem is provided
+		boolean debug = logger.isLoggable(Level.FINE);
 		if (sSearchTerm == null || "".equals(sSearchTerm)) {
 			logger.warning("No search term provided!");
 			return "";
@@ -222,8 +224,9 @@ public class SearchService implements Serializable {
 			sAccessTerm += ") AND ";
 			sSearchTerm = sAccessTerm + sSearchTerm;
 		}
-		logger.finest("......lucene final searchTerm=" + sSearchTerm);
-
+		if (debug) {
+			logger.finest("......lucene final searchTerm=" + sSearchTerm);
+		}
 		return sSearchTerm;
 	}
 

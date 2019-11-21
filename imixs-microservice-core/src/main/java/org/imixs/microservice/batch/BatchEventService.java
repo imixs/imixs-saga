@@ -2,6 +2,7 @@ package org.imixs.microservice.batch;
 
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.annotation.security.DeclareRoles;
@@ -61,10 +62,9 @@ import org.imixs.workflow.exceptions.ProcessingErrorException;
 @LocalBean
 public class BatchEventService {
 
-	
 	public static final String EVENTLOG_TOPIC_BATCH_EVENT = "batch.event";
 	public static final String EVENTLOG_TOPIC_BATCH_EVENT_LOCK = "batch.event.lock";
-	
+
 	public static final String ITEM_BATCH_EVENT_LOCK_DATE = "batch.event.lock.date";
 
 	// deadlock timeout interval in ms
@@ -95,6 +95,7 @@ public class BatchEventService {
 	 */
 	public void processEventLog() {
 		long l = System.currentTimeMillis();
+		boolean debug = logger.isLoggable(Level.FINE);
 		// test for new event log entries...
 		List<EventLog> events = eventLogService.findEventsByTopic(100, EVENTLOG_TOPIC_BATCH_EVENT);
 		for (EventLog eventLogEntry : events) {
@@ -132,9 +133,9 @@ public class BatchEventService {
 		}
 
 		releaseDeadLocks();
-		logger.finest(
-				"......" + events.size() + " batchEvents processed in " + (System.currentTimeMillis() - l) + "ms");
-
+		if (debug) {
+			logger.fine("..." + events.size() + " batchEvents processed in " + (System.currentTimeMillis() - l) + "ms");
+		}
 	}
 
 	/**
@@ -165,8 +166,8 @@ public class BatchEventService {
 	 * 'batch.process.lock'. If the lock is successful we can process the eventLog
 	 * entry.
 	 * <p>
-	 * The method also adds a item 'batch.event.lock.date' with a timestamp. This timestamp is
-	 * used by the method 'autoUnlock' to release locked entries.
+	 * The method also adds a item 'batch.event.lock.date' with a timestamp. This
+	 * timestamp is used by the method 'autoUnlock' to release locked entries.
 	 * 
 	 * @param eventLogEntry
 	 * @return

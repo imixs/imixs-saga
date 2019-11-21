@@ -9,6 +9,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
@@ -105,9 +106,11 @@ public class SolrIndexService implements Serializable {
 	 */
 	public List<ItemCollection> query(String searchTerm, int pageSize, int pageIndex, SortOrder sortOrder,
 			DefaultOperator defaultOperator) throws QueryException {
+		boolean debug = logger.isLoggable(Level.FINE);
 
-		logger.fine("...search solr index: " + searchTerm + "...");
-
+		if (debug) {
+			logger.finest("...search solr index: " + searchTerm + "...");
+		}
 		StringBuffer uri = new StringBuffer();
 
 		// URL Encode the query string....
@@ -156,14 +159,13 @@ public class SolrIndexService implements Serializable {
 
 			// append query
 			uri.append("&q=" + URLEncoder.encode(searchTerm, "UTF-8"));
-
-			logger.finest("...... uri=" + uri.toString());
+			if (debug) {
+				logger.finest("...... uri=" + uri.toString());
+			}
 			String result = restClient.get(uri.toString());
-
 			return parseQueryResult(result);
 
 		} catch (RestAPIException | UnsupportedEncodingException e) {
-
 			logger.severe("Solr search error: " + e.getMessage());
 			throw new QueryException(QueryException.QUERY_NOT_UNDERSTANDABLE, e.getMessage(), e);
 		}
@@ -179,6 +181,7 @@ public class SolrIndexService implements Serializable {
 	 */
 	private List<ItemCollection> parseQueryResult(String json) {
 		long l = System.currentTimeMillis();
+		boolean debug = logger.isLoggable(Level.FINE);
 		List<ItemCollection> result = new ArrayList<ItemCollection>();
 		JsonParser parser = Json.createParser(new StringReader(json));
 		Event event = null;
@@ -198,8 +201,9 @@ public class SolrIndexService implements Serializable {
 							event = parser.next();
 							while (event.name().equals(Event.START_OBJECT.toString())) {
 								// a single doc..
-
-								logger.finest("......parse doc....");
+								if (debug) {
+									logger.finest("......parse doc....");
+								}
 								ItemCollection itemCol = parseDoc(parser);
 								// now take the values
 								result.add(itemCol);
@@ -220,8 +224,9 @@ public class SolrIndexService implements Serializable {
 				break;
 			}
 		}
-
-		logger.finest("......total parsing time " + (System.currentTimeMillis() - l) + "ms");
+		if (debug) {
+			logger.finest("......total parsing time " + (System.currentTimeMillis() - l) + "ms");
+		}
 		return result;
 	}
 
@@ -232,12 +237,15 @@ public class SolrIndexService implements Serializable {
 	 * @return
 	 */
 	private ItemCollection parseDoc(JsonParser parser) {
+		boolean debug = logger.isLoggable(Level.FINE);
 		ItemCollection document = new ItemCollection();
 		Event event = null;
 		event = parser.next(); // a single doc..
 		while (event.name().equals(Event.KEY_NAME.toString())) {
 			String itemName = parser.getString();
-			logger.finest("......found item " + itemName);
+			if (debug) {
+				logger.finest("......found item " + itemName);
+			}
 			List<?> itemValue = parseItem(parser);
 			// convert itemName and value....
 			itemName = adaptSolrFieldName(itemName);

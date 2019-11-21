@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
@@ -39,7 +40,7 @@ import org.imixs.workflow.exceptions.AccessDeniedException;
  * 
  * @version 1.0
  * @author rsoika
- *  
+ * 
  */
 @DeclareRoles({ "org.imixs.ACCESSLEVEL.NOACCESS", "org.imixs.ACCESSLEVEL.READERACCESS",
 		"org.imixs.ACCESSLEVEL.AUTHORACCESS", "org.imixs.ACCESSLEVEL.EDITORACCESS",
@@ -115,6 +116,7 @@ public class RegistryIndexService implements Serializable {
 	 * @throws AccessDeniedException
 	 */
 	public void onDocumentEvent(@Observes DocumentEvent documentEvent) throws AccessDeniedException {
+		boolean debug = logger.isLoggable(Level.FINE);
 		if (documentEvent == null) {
 			return;
 		}
@@ -141,13 +143,17 @@ public class RegistryIndexService implements Serializable {
 				return;
 			}
 			// index...
-			logger.info("...index document...");
+			if (debug) {
+				logger.finest("...index document...");
+			}
 			addDocumentToIndex(documentEvent.getDocument());
 		}
 
 		if (documentEvent.getEventType() == DocumentEvent.ON_DOCUMENT_DELETE) {
 			// index...
-			logger.info("...remove indexed document...");
+			if (debug) {
+				logger.finest("...remove indexed document...");
+			}
 			removeDocumentToIndex(documentEvent.getDocument());
 		}
 	}

@@ -1,5 +1,6 @@
 package org.imixs.microservice.batch;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.inject.Inject;
@@ -42,7 +43,7 @@ public class BatchEventAdapter implements GenericAdapter {
 	@Override
 	public ItemCollection execute(ItemCollection document, ItemCollection event) throws AdapterException {
 		try {
-
+			boolean debug = logger.isLoggable(Level.FINE);
 			// Check the txtActivityResult for a batch-event
 			ItemCollection evalItemCollection = workflowService.evalWorkflowResult(event, document);
 			if (evalItemCollection == null) {
@@ -52,7 +53,9 @@ public class BatchEventAdapter implements GenericAdapter {
 			// test for a batch event ....
 			if (evalItemCollection.hasItem(BATCH_EVENT_ID)) {
 				int batchEventID = evalItemCollection.getItemValueInteger(BATCH_EVENT_ID);
-				logger.info("...create new batch event - eventId=" + batchEventID);
+				if (debug) {
+					logger.finest("...create new batch event - eventId=" + batchEventID);
+				}
 				// ceate EventLogEntry....
 				ItemCollection batchData = new ItemCollection().event(batchEventID);
 				eventLogService.createEvent(BatchEventService.EVENTLOG_TOPIC_BATCH_EVENT, document.getUniqueID(),

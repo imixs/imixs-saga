@@ -29,6 +29,7 @@ package org.imixs.registry;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.annotation.security.DeclareRoles;
@@ -86,7 +87,10 @@ public class DiscoveryService {
 	 * @param businessEvent
 	 */
 	public void discoverService(ItemCollection businessEvent) {
-		logger.info("...discover registry.....");
+		boolean debug = logger.isLoggable(Level.FINE);
+		if (debug) {
+			logger.finest("...discover registry.....");
+		}
 		long l = System.currentTimeMillis();
 		if (businessEvent == null) {
 			return;
@@ -97,25 +101,33 @@ public class DiscoveryService {
 		try {
 			// 1) $modelversion provided
 			if (discoverServiceByModelVersion(businessEvent)) {
-				logger.info("......service disvovery by model version completed in " + (System.currentTimeMillis() - l)
-						+ "ms");
+				if (debug) {
+					logger.fine("......service disvovery by model version completed in "
+							+ (System.currentTimeMillis() - l) + "ms");
+				}
 				return;
 			}
 			// 2) $workflowgroup provided
 			if (discoverServiceByWorkflowGroup(businessEvent)) {
-				logger.info("......service disvovery by workflow group completed in " + (System.currentTimeMillis() - l)
-						+ "ms");
+				if (debug) {
+					logger.fine("......service disvovery by workflow group completed in "
+							+ (System.currentTimeMillis() - l) + "ms");
+				}
 				return;
 			}
 
 			// 3) disovery by rule (default)
 			discoverServiceByRule(businessEvent);
 
-		} catch (ModelException e) {
+		} catch (
+
+		ModelException e) {
 			logger.warning(e.getErrorCode() + " " + e.getMessage());
 		}
 
-		logger.info("......service disvovery by rule completed in " + (System.currentTimeMillis() - l) + "ms");
+		if (debug) {
+			logger.fine("......service disvovery by rule completed in " + (System.currentTimeMillis() - l) + "ms");
+		}
 	}
 
 	/**
@@ -270,6 +282,7 @@ public class DiscoveryService {
 	 */
 	private boolean discoverServiceByRule(ItemCollection businessEvent) throws ModelException {
 		long l = System.currentTimeMillis();
+		boolean debug = logger.isLoggable(Level.FINE);
 		String service = null;
 		BPMNRuleEngine bpmnRuleEngine = null;
 
@@ -289,7 +302,9 @@ public class DiscoveryService {
 				model.initStartEvent(businessEvent);
 				service = registryService.getServiceByModelVersion(model.getVersion());
 				businessEvent.setItemValue(RegistryService.ITEM_API, service);
-				logger.info("......discoverd Service by rule in " + (System.currentTimeMillis() - l) + "ms");
+				if (debug) {
+					logger.fine("......discoverd Service by rule in " + (System.currentTimeMillis() - l) + "ms");
+				}
 				return true;
 			}
 		}
