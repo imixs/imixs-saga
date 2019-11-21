@@ -111,7 +111,7 @@ public class SolrUpdateService implements Serializable {
 			restClient.registerRequestFilter(authenticator);
 		}
 
-		// try to get the schma of the core...
+		// try to get the schema of the core...
 		try {
 			String existingSchema = restClient.get(api + "/api/cores/" + core + "/schema");
 			logger.info("...core   - OK ");
