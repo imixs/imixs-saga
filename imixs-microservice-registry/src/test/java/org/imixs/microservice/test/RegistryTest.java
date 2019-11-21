@@ -1,6 +1,8 @@
 package org.imixs.microservice.test;
 
+import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 import javax.ws.rs.core.MediaType;
@@ -74,15 +76,35 @@ public class RegistryTest {
 		try {
 			ticket = workflowCLient.processWorkitem(ticket);
 			logger.info("process instance created in " + (System.currentTimeMillis() - l) + "ms....");
-		} catch (Exception e) { 
+
+			Assert.assertNotNull(ticket);
+			String uid = ticket.getUniqueID();
+			Assert.assertFalse(uid.isEmpty());
+
+			// test get method....
+			// wait 2 seconds for the indexer...
+			logger.info("...waiting 2 seconds...");
+			TimeUnit.SECONDS.sleep(2);
+
+			
+			ticket = workflowCLient.getWorkitem(uid);
+			Assert.assertNotNull(ticket);
+			
+			
+			
+			// get tasklist
+			logger.info("...get tasklist/creator/" + USERID);
+			List<ItemCollection> tasklist = workflowCLient.getTaskListByCreator(USERID);
+			Assert.assertNotNull(tasklist);
+			Assert.assertTrue(tasklist.size()>0);
+			
+			logger.info(tasklist.size() + " workitems found...");
+			
+			logger.info("...finished!");
+		} catch (Exception e) {
 			e.printStackTrace();
 			Assert.fail();
 		}
-
-		Assert.assertNotNull(ticket);
-		String uid = ticket.getUniqueID();
-
-		Assert.assertFalse(uid.isEmpty());
 	}
 
 	/**
@@ -97,7 +119,61 @@ public class RegistryTest {
 	// @Ignore
 	@Test
 	public void createNewWorkitemJSONTest() {
-		long l = System.currentTimeMillis();
+
+		ItemCollection ticket = null;
+		RestClient restClient = new RestClient();
+		// create a default basic authenticator
+		org.imixs.workflow.services.rest.BasicAuthenticator basicAuth = new org.imixs.workflow.services.rest.BasicAuthenticator(
+				USERID, PASSWORD);
+		// register the authenticator
+		restClient.registerRequestFilter(basicAuth);
+
+		// create a json test string
+		String json = "{\"item\":" + " [" + "{\"name\": \"type\",\"value\": [\"workitem\"]},"
+				+ "{\"name\": \"$modelversion\",\"value\": [\"" + MODEL_VERSION + "\"]},"
+				+ "{\"name\": \"$taskid\",\"value\": [1000]}," + "{\"name\": \"$eventid\",\"value\": [10]},"
+				+ "{\"name\": \"txtname\",\"value\": [\"test\"]}" + "]}" + "";
+
+		try {
+			// post json request, accept XML
+			String result = restClient.post(BASE_URL + "/workflow/workitem", json.getBytes(),
+					MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML);
+
+			List<ItemCollection> tickets = XMLDataCollectionAdapter.readCollection(result.getBytes());
+
+			// extract 1st workitem...
+			Assert.assertNotNull(tickets);
+			Assert.assertTrue(tickets.size() > 0);
+			ticket = tickets.get(0);
+
+			Assert.assertNotNull(ticket);
+			String uid = ticket.getUniqueID();
+			Assert.assertFalse(uid.isEmpty());
+
+			// date check
+			Date created = ticket.getItemValueDate("$created");
+			Assert.assertNotNull(created);
+			Assert.assertTrue(created instanceof Date);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			Assert.fail();
+		}
+
+	}
+
+	/**
+	 * create new Ticket based on a JSON String
+	 * <p>
+	 * The method post a JSON string and accepts XML. The returned XML Content is
+	 * converted back into a ItemCollection.
+	 * <p>
+	 * This code is just to verify the typed JSON call. Use the Imixs-Melman
+	 * WorkflowClient to hide content convention.
+	 */
+	@Test
+	public void createNewWorkitemJSONTestTyped() {
+
 		ItemCollection ticket = null;
 		RestClient restClient = new RestClient();
 		// create a default basic authenticator
@@ -117,12 +193,11 @@ public class RegistryTest {
 
 		try {
 			// post json request, accept XML
-			String result = restClient.post(BASE_URL + "/workflow/workitem", json, MediaType.APPLICATION_JSON,
+			String result = restClient.post(BASE_URL + "/workflow/workitem/typed", json, MediaType.APPLICATION_JSON,
 					MediaType.APPLICATION_XML);
 
 			List<ItemCollection> tickets = XMLDataCollectionAdapter.readCollection(result.getBytes());
 
-			logger.info("process instance created in " + (System.currentTimeMillis() - l) + "ms....");
 			// extract 1st workitem...
 			Assert.assertNotNull(tickets);
 			Assert.assertTrue(tickets.size() > 0);

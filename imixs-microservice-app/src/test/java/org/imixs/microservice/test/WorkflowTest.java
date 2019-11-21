@@ -10,6 +10,7 @@ import java.io.StringWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import javax.ws.rs.core.MediaType;
@@ -105,7 +106,7 @@ public class WorkflowTest {
 		Assert.assertFalse(uid.isEmpty());
 	}
 
-	/** 
+	/**
 	 * create new Ticket based on a JSON String
 	 * <p>
 	 * The method post a JSON string and accepts XML. The returned XML Content is
@@ -127,6 +128,62 @@ public class WorkflowTest {
 		restClient.registerRequestFilter(basicAuth);
 
 		// create a json test string
+		String json = "{\"item\":" + " [" + "{\"name\": \"type\",\"value\": [\"workitem\"]},"
+				+ "{\"name\": \"$modelversion\",\"value\": [\"" + MODEL_VERSION + "\"]}," + "{\"name\": \"$taskid\",\"value\": [1000]},"
+				+ "{\"name\": \"$eventid\",\"value\": [10]}," + "{\"name\": \"txtname\",\"value\": [\"test\"]}" + "]}"
+				+ "";
+
+		try {
+			// post json request, accept XML
+			String result = restClient.post(BASE_URL + "workflow/workitem", json.getBytes(), MediaType.APPLICATION_JSON,
+					MediaType.APPLICATION_XML);
+
+			List<ItemCollection> tickets = XMLDataCollectionAdapter.readCollection(result.getBytes());
+
+			// extract 1st workitem...
+			Assert.assertNotNull(tickets);
+			Assert.assertTrue(tickets.size() > 0);
+			ticket = tickets.get(0);
+
+			Assert.assertNotNull(ticket);
+			String uid = ticket.getUniqueID();
+			Assert.assertFalse(uid.isEmpty());
+
+			// date check
+			Date created=ticket.getItemValueDate("$created");
+			Assert.assertNotNull(created);
+			Assert.assertTrue(created instanceof Date);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			Assert.fail();
+		}
+
+
+	}
+
+	/**
+	 * create new Ticket based on a JSON String
+	 * <p>
+	 * The method post a JSON string and accepts XML. The returned XML Content is
+	 * converted back into a ItemCollection.
+	 * <p>
+	 * This code is just to verify the typed JSON call. Use the Imixs-Melman
+	 * WorkflowClient to hide content convention.
+	 */
+	// @Ignore
+	@Test
+	public void createNewWorkitemJSONTestTyped() {
+
+		ItemCollection ticket = null;
+		RestClient restClient = new RestClient();
+		// create a default basic authenticator
+		org.imixs.workflow.services.rest.BasicAuthenticator basicAuth = new org.imixs.workflow.services.rest.BasicAuthenticator(
+				USERID, PASSWORD);
+		// register the authenticator
+		restClient.registerRequestFilter(basicAuth);
+
+		// create a json test string
 		String json = "{\"item\":[" + "     {\"name\":\"type\",\"value\":{\"@type\":\"xs:string\",\"$\":\"workitem\"}},"
 				+ "     {\"name\":\"$modelversion\",\"value\":{\"@type\":\"xs:string\",\"$\":\"" + MODEL_VERSION
 				+ "\"}}," + "     {\"name\":\"$taskid\",\"value\":{\"@type\":\"xs:int\",\"$\":\"1000\"}},"
@@ -137,11 +194,11 @@ public class WorkflowTest {
 
 		try {
 			// post json request, accept XML
-			String result = restClient.post(BASE_URL + "workflow/workitem", json, MediaType.APPLICATION_JSON,
+			String result = restClient.post(BASE_URL + "workflow/workitem/typed", json, MediaType.APPLICATION_JSON,
 					MediaType.APPLICATION_XML);
 
 			List<ItemCollection> tickets = XMLDataCollectionAdapter.readCollection(result.getBytes());
-	
+
 			// extract 1st workitem...
 			Assert.assertNotNull(tickets);
 			Assert.assertTrue(tickets.size() > 0);

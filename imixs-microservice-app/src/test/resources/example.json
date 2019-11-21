@@ -1,0 +1,39 @@
+{
+	"document": [
+		{
+			"item": [
+				{
+					"name": "type",
+					"value": [
+						"workitem"
+					]
+				},
+				{
+					"name": "$modelversion",
+					"value": [
+						"1.0"
+					]
+				},
+				{
+					"name": "$task",
+					"value": [
+						1000
+					]
+				},
+				{
+					"name": "$event",
+					"value": [
+						10
+					]
+				},
+				{
+					"name": "txtname",
+					"value": [
+						"test"
+					]
+				}
+			]
+		}
+	]
+} 
+	   
