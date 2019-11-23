@@ -12,8 +12,10 @@ services:
     image: imixs/imixs-microservice
     environment:
       WILDFLY_PASS: adminadmin
+      POSTGRES_HOST: "db"
       POSTGRES_USER: "postgres"
       POSTGRES_PASSWORD: "adminadmin"
+      POSTGRES_DATABASE: "workflow"
       POSTGRES_CONNECTION: "jdbc:postgresql://db/workflow"
     ports:
       - "8080:8080"

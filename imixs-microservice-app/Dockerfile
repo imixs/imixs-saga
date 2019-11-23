@@ -4,7 +4,7 @@ FROM imixs/wildfly:1.2.8
 MAINTAINER ralph.soika@imixs.com
 
 # add configuration files
-COPY ./src/docker/conf/* ${WILDFLY_CONFIG}/
+COPY ./src/docker/conf/wildfly/* ${WILDFLY_CONFIG}/
 
 # add application artifacts
 COPY ./src/docker/apps/* ${WILDFLY_DEPLOYMENT}/   
