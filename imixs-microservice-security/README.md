@@ -15,11 +15,11 @@ The security module can be bundled with a Imixs-Microserice or the Imixs-Registr
 ### Authentication
 
 To register a Imixs-Microservice at the Imixs-Registry Service, the Imixs-Microservice need to authenticate itself with an appropriate auth method. 
-The imixs-microservice-core module supports different Authencation Methods which can be chousn by configuration properties:
+The imixs-microservice-core module supports different Authencation Methods which can be chosen by configuration properties:
 
-    IMIXS_REGISTRY_AUTH_METHOD:  auth method (BASIC|FORM|JWT|CUSTOM)
-    IMIXS_REGISTRY_AUTH_SECRET:  user password or jwt secret
-    IMIXS_REGISTRY_AUTH_USERID:  userId
+    IMIXS_AUTH_METHOD:  auth method (BASIC|FORM|JWT|CUSTOM)
+    IMIXS_AUTH_SECRET:  user password or jwt secret
+    IMIXS_AUTH_USERID:  userId
     IMIXS_REGISTRY_AUTH_SERVICE: Service endpoint for Form based authentication or Custom implementations
 
 
@@ -40,5 +40,11 @@ The event can be used to register a custom RequestFilter:
 	}
 
 	
-	
+### Authentication Propagation
+
+The Imixs-Registry can also propagate an existing authentication header to an Imixs-Microservice. This can be the case if the Imixs-Registry and the underlying Imixs-Microservices accepting the same authentication token (e.g. an JSON Web Token). In this case an existing Authentication header is forwarded to the Imixs-Microservice.
+
+To activate Authentication Propagation the environment imixs.auth.propagation need to be set to true:
+
+	IMIXS_AUTH_PROPAGATION: true
 	

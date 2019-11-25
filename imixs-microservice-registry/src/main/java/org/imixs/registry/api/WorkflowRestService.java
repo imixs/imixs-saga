@@ -69,7 +69,6 @@ import org.imixs.registry.index.SearchService;
 import org.imixs.registry.index.SortOrder;
 import org.imixs.workflow.ItemCollection;
 import org.imixs.workflow.WorkflowKernel;
-
 import org.imixs.workflow.exceptions.ImixsExceptionHandler;
 import org.imixs.workflow.exceptions.QueryException;
 import org.imixs.workflow.util.JSONParser;
@@ -424,8 +423,12 @@ public class WorkflowRestService {
 	}
 
 	/**
-	 * creates a new Instance of a WorkflowClient...
+	 * creates a new Instance of a WorkflowClient.
+	 * <p>
+	 * In case the current request contains an authentication token we propagate
+	 * this token to the service.
 	 * 
+	 * @see DefaultAuthenicator
 	 * @return
 	 */
 	private WorkflowClient createWorkflowClient(String serviceAPI) {

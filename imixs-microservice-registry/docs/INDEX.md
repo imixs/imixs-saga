@@ -46,9 +46,9 @@ The following example shows a docker-compose setup of a Imixs-Microservice and a
 	      IMIXS_MODEL: "/home/imixs/model/ticket-en-1.0.0.bpmn"
 	      MODEL_DEFAULT_DATA: "/home/imixs/model/ticket-en-1.0.0.bpmn"
 	      IMIXS_REGISTRY_API: "http://registry:8080/api"
-	      IMIXS_REGISTRY_AUTH_METHOD: "BASIC"
-	      IMIXS_REGISTRY_AUTH_USERID: "admin"
-	      IMIXS_REGISTRY_AUTH_SECRET: "adminadmin"
+	      IMIXS_AUTH_METHOD: "BASIC"
+	      IMIXS_AUTH_USERID: "admin"
+	      IMIXS_AUTH_SECRET: "adminadmin"
 	      IMIXS_REGISTRY_INTERVAL: 10000
 	      IMIXS_REGISTRY_INDEX_ENABLED: "true"
 	      IMIXS-REGISTRY_INDEX_FIELDS: ""
@@ -68,9 +68,9 @@ The following example shows a docker-compose setup of a Imixs-Microservice and a
 	      TZ: "Europe/Berlin"
 	      SOLR_API: "http://registry-solr:8080"    
 	      INDEX_INTERVAL: 60000
-	      IMIXS_REGISTRY_AUTH_METHOD: "BASIC"
-	      IMIXS_REGISTRY_AUTH_USERID: "admin"
-	      IMIXS_REGISTRY_AUTH_SECRET: "adminadmin"      
+	      IMIXS_AUTH_METHOD: "BASIC"
+	      IMIXS_AUTH_USERID: "admin"
+	      IMIXS_AUTH_SECRET: "adminadmin"      
 	    ports:
 	      - "8081:8080"
 	      - "9991:9990"
