@@ -3,6 +3,7 @@ package org.imixs.microservice.registry;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
@@ -66,11 +67,9 @@ public class RegistrySelfRegistrationService implements Serializable {
 	@ConfigProperty(name = "imixs.api", defaultValue = "http://localhost:8080/api")
 	String imixsAPI;
 
-	
-	
 	@Inject
 	protected Event<AuthEvent> authEvents;
-	
+
 	@Inject
 	protected ModelService modelService;
 
@@ -124,7 +123,10 @@ public class RegistrySelfRegistrationService implements Serializable {
 	 */
 	@Timeout
 	private synchronized void onTimer() {
-		logger.info("...ping Imixs-Registry (" + registryAPI + ")");
+		boolean debug = logger.isLoggable(Level.FINE);
+		if (debug) {
+			logger.finest("......ping Imixs-Registry (" + registryAPI + ")");
+		}
 		registerMicroservice();
 	}
 
@@ -132,9 +134,11 @@ public class RegistrySelfRegistrationService implements Serializable {
 	 * This method registers the microservice at a given imixs-registry endpoint
 	 */
 	private void registerMicroservice() {
-		long l=System.currentTimeMillis();
-		logger.info("...register Imixs-Registry (" + registryAPI + ")");
-
+		boolean debug = logger.isLoggable(Level.FINE);
+		long l = System.currentTimeMillis();
+		if (debug) {
+			logger.finest("......register Imixs-Registry (" + registryAPI + ")");
+		}
 		// create a new Instance of a DocumentClient to register the service at the
 		// Imixs-Registry
 		DocumentClient client = new DocumentClient(registryAPI);
@@ -148,20 +152,24 @@ public class RegistrySelfRegistrationService implements Serializable {
 
 		try {
 			// send all model definitions.....
- 			List<String> versions = modelService.getLatestVersions();
-			List<ItemCollection> models=new ArrayList<ItemCollection>();
-			for (String version:versions) {
-				logger.fine("......loading model version '" + version + "'");
-				
-				ItemCollection modelEntity=modelService.loadModelEntity(version);
+			List<String> versions = modelService.getLatestVersions();
+			List<ItemCollection> models = new ArrayList<ItemCollection>();
+			for (String version : versions) {
+				if (debug) {
+					logger.fine("......loading model version '" + version + "'");
+				}
+				ItemCollection modelEntity = modelService.loadModelEntity(version);
 				// add the api endpoint...
 				modelEntity.setItemValue(ITEM_API, imixsAPI);
 				models.add(modelEntity);
 			}
-			
+
 			// post new service
 			client.postXMLDataCollection("/services", XMLDataCollectionAdapter.getDataCollection(models));
-			logger.info("...registration of " + models.size() + " models completed in "+(System.currentTimeMillis()-l) +"ms...");
+			if (debug) {
+				logger.fine("...registration of " + models.size() + " models completed in "
+						+ (System.currentTimeMillis() - l) + "ms...");
+			}
 		} catch (RestAPIException e) {
 			logger.severe("Unable to register service at Imixs-Registry: " + registryAPI + " - " + e.getMessage());
 
