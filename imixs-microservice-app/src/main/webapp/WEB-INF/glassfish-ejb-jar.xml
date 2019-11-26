@@ -34,5 +34,20 @@
 				<name>imixs-workflow-service</name>
 			</principal>
 		</ejb>
+		
+		<ejb>
+			<ejb-name>RegistrySelfRegistrationService</ejb-name>
+			<principal>
+				<name>imixs-workflow-service</name>
+			</principal>
+		</ejb>
+		
+		<ejb>
+			<ejb-name>BatchEventService</ejb-name>
+			<principal>
+				<name>imixs-workflow-service</name>
+			</principal>
+		</ejb>
+		
 	</enterprise-beans>
 </glassfish-ejb-jar>
