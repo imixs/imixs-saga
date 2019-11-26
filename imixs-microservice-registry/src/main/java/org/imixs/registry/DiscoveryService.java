@@ -36,6 +36,7 @@ import javax.annotation.security.DeclareRoles;
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
 import org.imixs.workflow.BPMNRuleEngine;
@@ -58,7 +59,10 @@ import org.imixs.workflow.exceptions.ModelException;
  * <li>Service Discover by Business Rule</li>
  * </ul>
  * <p>
- * The method discoverService starts the process.
+ * The discoverService does not start the processing life cycle.
+ * <p>
+ * During the discovery process the service sends discoveryEvents which can be
+ * used by an observer CDI bean to intercept the life cycle of the process.
  * 
  * 
  * @author Ralph Soika
@@ -78,15 +82,22 @@ public class DiscoveryService {
 	@Inject
 	protected RegistryService registryService;
 
+	@Inject
+	protected Event<DiscoveryEvent> discoveryEvents;
+
 	private static Logger logger = Logger.getLogger(DiscoveryService.class.getName());
 
 	/**
 	 * The method discovers a service based on the data of a businessEvent. If a
 	 * service was found the item $api will contain the service endpoint.
+	 * <p>
+	 * During the discovery process the service sends discoveryEvents which can be
+	 * used by an observer CDI bean to intercept the life cycle of the process.
 	 * 
 	 * @param businessEvent
 	 */
 	public void discoverService(ItemCollection businessEvent) {
+		boolean found = false;
 		boolean debug = logger.isLoggable(Level.FINE);
 		if (debug) {
 			logger.finest("...discover registry.....");
@@ -98,35 +109,60 @@ public class DiscoveryService {
 		// remove $api
 		businessEvent.removeItem(RegistryService.ITEM_API);
 
+		// Fire the DocumentEvent BEFORE_DISCOVERY
+		if (discoveryEvents != null) {
+			discoveryEvents.fire(new DiscoveryEvent(businessEvent, DiscoveryEvent.BEFORE_DISCOVERY));
+		} else {
+			logger.warning("Missing CDI support for Event<DiscoveryEvent> !");
+		}
+
 		try {
+
 			// 1) $modelversion provided
 			if (discoverServiceByModelVersion(businessEvent)) {
+				found = true;
 				if (debug) {
 					logger.fine("......service disvovery by model version completed in "
 							+ (System.currentTimeMillis() - l) + "ms");
 				}
-				return;
 			}
 			// 2) $workflowgroup provided
-			if (discoverServiceByWorkflowGroup(businessEvent)) {
+			if (!found && discoverServiceByWorkflowGroup(businessEvent)) {
+				found = true;
 				if (debug) {
 					logger.fine("......service disvovery by workflow group completed in "
 							+ (System.currentTimeMillis() - l) + "ms");
 				}
-				return;
+
 			}
 
 			// 3) disovery by rule (default)
-			discoverServiceByRule(businessEvent);
+			if (!found && discoverServiceByRule(businessEvent)) {
+				found = true;
+				if (debug) {
+					logger.fine(
+							"......service disvovery by rule completed in " + (System.currentTimeMillis() - l) + "ms");
+				}
+			}
 
-		} catch (
-
-		ModelException e) {
+		} catch (ModelException e) {
 			logger.warning(e.getErrorCode() + " " + e.getMessage());
 		}
 
-		if (debug) {
-			logger.fine("......service disvovery by rule completed in " + (System.currentTimeMillis() - l) + "ms");
+		if (found) {
+			// Fire the DocumentEvent AFTER_DISCOVERY
+			if (discoveryEvents != null) {
+				discoveryEvents.fire(new DiscoveryEvent(businessEvent, DiscoveryEvent.AFTER_DISCOVERY));
+			} else {
+				logger.warning("Missing CDI support for Event<DiscoveryEvent> !");
+			}
+		} else {
+			// Fire the DocumentEvent ON_FAILURE
+			if (discoveryEvents != null) {
+				discoveryEvents.fire(new DiscoveryEvent(businessEvent, DiscoveryEvent.ON_FAILURE));
+			} else {
+				logger.warning("Missing CDI support for Event<DiscoveryEvent> !");
+			}
 		}
 	}
 
@@ -139,7 +175,7 @@ public class DiscoveryService {
 	 * business event, the method returns false.
 	 * 
 	 * @param businessEvent
-	 * @return
+	 * @return true if a service endpoint was found
 	 * @throws ModelException
 	 */
 	private boolean discoverServiceByModelVersion(ItemCollection businessEvent) throws ModelException {
@@ -214,7 +250,7 @@ public class DiscoveryService {
 	 * business event, the method returns false.
 	 * 
 	 * @param businessEvent
-	 * @return
+	 * @return true if a service endpoint was found
 	 * @throws ModelException
 	 */
 	private boolean discoverServiceByWorkflowGroup(ItemCollection businessEvent) throws ModelException {
@@ -277,7 +313,7 @@ public class DiscoveryService {
 	 * business event, the method returns false.
 	 * 
 	 * @param businessEvent
-	 * @return
+	 * @return true if a service endpoint was found
 	 * @throws ModelException
 	 */
 	private boolean discoverServiceByRule(ItemCollection businessEvent) throws ModelException {

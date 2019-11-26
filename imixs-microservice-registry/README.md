@@ -51,7 +51,7 @@ To setup an Imixs-Microservice with the Self Registration feature the following 
  
 ## Service Discovery
  
-A client can start a new process instance by sending a business event to the Imixs-Registry. The discovery process will select a matching Imixs-Microservice and forward the business event to initialize a new workflow.
+A client can start a new process instance by sending a business event to the Imixs-Registry. The discovery process will select a matching Imixs-Microservice and forward the business event to initialize a new workflow instance.
 
 Read more about the discovery process in the section [Service Discovery](docs/DISCOVERY.md).
  

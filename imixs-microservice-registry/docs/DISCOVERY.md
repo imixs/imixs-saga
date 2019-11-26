@@ -1,6 +1,6 @@
 # The Service Discovery
 
-A client can start a new process instance based on a specific business event. The service discovery process automatically selects a matching workflow service based on the data provided with the business event and starts a new process instance.
+A client can start a new process instance based on a business event without providing any processing information ($modelversion, $taskid, $workflowgroup). The service discovery process automatically selects a matching workflow service based on the data provided with the business event and starts a new process instance for a matching workflow model.
 
 The discovery process supports different modes of a service discovery, with each mode having its pros and cons. The following section describes the modes in detail.
 
@@ -79,6 +79,29 @@ The client has no control which service and model will be eventually applied to 
 
 
 
+## Discovery Events
+
+During the discovery process the service sends discoveryEvents which can be used by an observer CDI bean to intercept the life cycle of the process.
+
+An event Observer can react on the different phases during the discovery process.
+The DiscoveryEvent defines the following event types:
+
+ - BEFORE_DISCOVERY - send immediately before the discovery process is started
+ - AFTER_DISCOVERY - send immediately after a discovery was successful finished
+ - ON_FAILURE - send in case the discovery process failed
+ 
+A CDI client bean can observe these events and add additional data for the given document 
+
+
+This event can be consumed by another Session EJB or CDI Bean implementing the @Observes annotation:
+
+	@Stateless
+	public class DiscoveryServiceListener {
+	    public void onEvent(@Observes DiscoveryEvent discoveryEvent){
+	        ItemCollection workitem=discoveryEvent.getDocument();
+	        System.out.println("Received discoveryEvent Type = " + discoveryEvent.getType());
+		}
+	}
 
 
 
