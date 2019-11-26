@@ -9,7 +9,6 @@ import javax.crypto.SecretKey;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.imixs.jwt.HMAC;
@@ -59,9 +58,6 @@ public class DefaultAuthenticator {
 
 	private static final String QUERY_PARAM_SESSION = "jwt";
 
-	@javax.ws.rs.core.Context
-	private HttpServletRequest servletRequest;
-
 	@Inject
 	@ConfigProperty(name = "imixs.auth.secret", defaultValue = "")
 	String authSecret;
@@ -105,46 +101,53 @@ public class DefaultAuthenticator {
 		}
 
 		// test if authentication propagation is true
-		if (propagateAuthentication && servletRequest != null) {
-			// try to extract the authentication token....
-			// 1st try bearer token...
-			String authorizationToken = servletRequest.getHeader("Authorization");
-			if (authorizationToken != null && !authorizationToken.isEmpty()) {
-				// fine, we can propagate the token
-			} else {
-				// 2nd try: check the header for a 'jwt' param
-				String jwt = servletRequest.getHeader("jwt");
-				if (jwt != null && !jwt.isEmpty()) {
-					authorizationToken = "Bearer " + jwt;
+		try {
+			if (propagateAuthentication && authEvent.getRequest() != null) {
+				String authorizationToken = null;
+				// try to extract the authentication token....
+				// 1st try bearer token...
+				authorizationToken = authEvent.getRequest().getHeader("Authorization");
+				if (authorizationToken != null && !authorizationToken.isEmpty()) {
+					// fine, we can propagate the token
 				} else {
-					// 3rd try quersting ?jwt=.....
-					jwt = servletRequest.getQueryString();
+					// 2nd try: check the header for a 'jwt' param
+					String jwt = authEvent.getRequest().getHeader("jwt");
 					if (jwt != null && !jwt.isEmpty()) {
-						int iPos = jwt.indexOf(QUERY_PARAM_SESSION + "=");
-						if (iPos > -1) {
-							if (debug) {
-								logger.fine("parsing query param " + QUERY_PARAM_SESSION + "....");
-							}
-							iPos = iPos + (QUERY_PARAM_SESSION + "=").length() + 0;
-							jwt = jwt.substring(iPos);
-
-							iPos = jwt.indexOf("&");
+						authorizationToken = "Bearer " + jwt;
+					} else {
+						// 3rd try quersting ?jwt=.....
+						jwt = authEvent.getRequest().getQueryString();
+						if (jwt != null && !jwt.isEmpty()) {
+							int iPos = jwt.indexOf(QUERY_PARAM_SESSION + "=");
 							if (iPos > -1) {
-								jwt = jwt.substring(0, iPos);
+								if (debug) {
+									logger.fine("parsing query param " + QUERY_PARAM_SESSION + "....");
+								}
+								iPos = iPos + (QUERY_PARAM_SESSION + "=").length() + 0;
+								jwt = jwt.substring(iPos);
+
+								iPos = jwt.indexOf("&");
+								if (iPos > -1) {
+									jwt = jwt.substring(0, iPos);
+								}
+								// url-decoding of token (issue #7)
+								jwt = getURLDecodedToken(jwt);
+								authorizationToken = "Bearer " + jwt;
 							}
-							// url-decoding of token (issue #7)
-							jwt = getURLDecodedToken(jwt);
-							authorizationToken = "Bearer " + jwt;
 						}
 					}
 				}
-			}
 
-			// in case we found a token, than we use the PropagationAuthenticator
-			if (authorizationToken != null && !authorizationToken.isEmpty()) {
-				registerPropagationAuthenticator(authEvent.getClient(), authorizationToken);
-				return;
+				// in case we found a token, than we use the PropagationAuthenticator
+				if (authorizationToken != null && !authorizationToken.isEmpty()) {
+					registerPropagationAuthenticator(authEvent.getClient(), authorizationToken);
+					return;
+				}
 			}
+		} catch (Exception e) {
+			logger.warning("Unable to resolve http request header - " + e.getMessage());
+			// unable to resolve request param
+			// no op!
 		}
 
 		if (authSecret.isEmpty()) {

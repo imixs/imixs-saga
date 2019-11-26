@@ -436,7 +436,7 @@ public class WorkflowRestService {
 		WorkflowClient client = new WorkflowClient(serviceAPI);
 		// fire an AuthEvent to register a ClientRequestFilter
 		if (authEvents != null) {
-			AuthEvent authEvent = new AuthEvent(client);
+			AuthEvent authEvent = new AuthEvent(client,servletRequest);
 			authEvents.fire(authEvent);
 		} else {
 			logger.warning("Missing CDI support for Event<AuthEvent> !");
@@ -478,7 +478,7 @@ public class WorkflowRestService {
 		if (uid != null && !uid.isEmpty() && !businessEvent.getUniqueID().isEmpty()
 				&& !uid.equals(businessEvent.getUniqueID())) {
 			logger.severe("@POST/@PUT workitem/" + uid
-					+ " : $UNIQUEID did not match, remove $uniqueid to create a new instnace!");
+					+ " : $UNIQUEID did not match, remove $uniqueid to create a new instance!");
 			return Response.status(Response.Status.NOT_ACCEPTABLE).build();
 		}
 

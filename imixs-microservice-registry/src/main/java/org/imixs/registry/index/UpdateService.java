@@ -67,7 +67,7 @@ public class UpdateService implements Serializable {
 	@Inject
 	@ConfigProperty(name = "imixs.index.interval", defaultValue = "1000")
 	int indexInterval; // default 1sec
-	
+
 	@Inject
 	protected Event<AuthEvent> authEvents;
 
@@ -268,7 +268,7 @@ public class UpdateService implements Serializable {
 		EventLogClient client = new EventLogClient(serviceAPI);
 		// fire an AuthEvent to register a ClientRequestFilter
 		if (authEvents != null) {
-			AuthEvent authEvent = new AuthEvent(client);
+			AuthEvent authEvent = new AuthEvent(client, null);
 			authEvents.fire(authEvent);
 		} else {
 			logger.warning("Missing CDI support for Event<AuthEvent> !");

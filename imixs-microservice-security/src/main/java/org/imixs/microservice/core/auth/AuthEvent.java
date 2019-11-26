@@ -1,5 +1,7 @@
 package org.imixs.microservice.core.auth;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.imixs.melman.AbstractClient;
 
 /**
@@ -17,10 +19,12 @@ import org.imixs.melman.AbstractClient;
 public class AuthEvent {
 
 	private AbstractClient client = null;
+	private HttpServletRequest request = null;
 
-	public AuthEvent(AbstractClient _client) {
+	public AuthEvent(AbstractClient _client, HttpServletRequest _request) {
 		super();
 		setClient(_client);
+		setRequest(_request);
 	}
 
 	public AbstractClient getClient() {
@@ -29,6 +33,14 @@ public class AuthEvent {
 
 	public void setClient(AbstractClient _client) {
 		this.client = _client;
+	}
+
+	public HttpServletRequest getRequest() {
+		return request;
+	}
+
+	public void setRequest(HttpServletRequest request) {
+		this.request = request;
 	}
 
 }
