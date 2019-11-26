@@ -501,6 +501,7 @@ public class SolrUpdateService implements Serializable {
 			}
 
 			xmlContent.append("<doc>");
+			xmlContent.append("<field name=\"id\">" + document.getUniqueID() + "</field>");
 
 			// now add all fields...
 			for (String aFieldname : schemaFieldList) {
