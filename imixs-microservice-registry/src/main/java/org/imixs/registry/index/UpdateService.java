@@ -117,17 +117,14 @@ public class UpdateService implements Serializable {
 	}
 
 	/**
-	 * On the timeout event we flush the event log for all imixs-microservices
-	 * registered at the experience registry.
-	 * 
+	 * This method flush the event log for all imixs-microservices registered at the
+	 * experience registry.
 	 */
-	@Timeout
-	private synchronized void onTimer() {
+	public synchronized void updateIndex() {
 		if (!api.isEmpty()) {
 			boolean debug = logger.isLoggable(Level.FINE);
 			long l = System.currentTimeMillis();
 			// iterate over all registered Imixs-Microserives and read the eventLog entries
-
 			Set<String> services = registryService.getServices();
 			if (services != null && services.size() > 0) {
 				for (String service : services) {
@@ -143,6 +140,34 @@ public class UpdateService implements Serializable {
 				}
 			}
 		}
+	}
+
+	/**
+	 * This method returns a timer for a corresponding id if such a timer object
+	 * exists.
+	 * 
+	 * @param id
+	 * @return Timer
+	 * @throws Exception
+	 */
+	private Timer findTimer() {
+		for (Object obj : timerService.getTimers()) {
+			Timer timer = (javax.ejb.Timer) obj;
+			if (timerID.equals(timer.getInfo())) {
+				return timer;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * On the timeout event we flush the event log for all imixs-microservices
+	 * registered at the experience registry.
+	 * 
+	 */
+	@Timeout
+	private synchronized void onTimer() {
+		updateIndex();
 	}
 
 	/**
@@ -274,24 +299,6 @@ public class UpdateService implements Serializable {
 			logger.warning("Missing CDI support for Event<AuthEvent> !");
 		}
 		return client;
-	}
-
-	/**
-	 * This method returns a timer for a corresponding id if such a timer object
-	 * exists.
-	 * 
-	 * @param id
-	 * @return Timer
-	 * @throws Exception
-	 */
-	public Timer findTimer() {
-		for (Object obj : timerService.getTimers()) {
-			Timer timer = (javax.ejb.Timer) obj;
-			if (timerID.equals(timer.getInfo())) {
-				return timer;
-			}
-		}
-		return null;
 	}
 
 }

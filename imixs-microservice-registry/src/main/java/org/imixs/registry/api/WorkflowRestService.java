@@ -67,6 +67,7 @@ import org.imixs.registry.RegistryService;
 import org.imixs.registry.index.DefaultOperator;
 import org.imixs.registry.index.SearchService;
 import org.imixs.registry.index.SortOrder;
+import org.imixs.registry.index.UpdateService;
 import org.imixs.workflow.ItemCollection;
 import org.imixs.workflow.WorkflowKernel;
 import org.imixs.workflow.exceptions.ImixsExceptionHandler;
@@ -113,6 +114,9 @@ public class WorkflowRestService {
 
 	@Inject
 	protected SearchService searchService;
+
+	@Inject
+	protected UpdateService updateService;
 
 	@Inject
 	protected Event<AuthEvent> authEvents;
@@ -490,12 +494,31 @@ public class WorkflowRestService {
 		if (!businessEvent.getUniqueID().isEmpty()) {
 			// lookup process instance by search index!
 			try {
-				ItemCollection _tmp = searchService.getDocument(businessEvent.getUniqueID());
+				ItemCollection _tmp =null;
+				// 1. try a direct search
+				_tmp= searchService.getDocument(businessEvent.getUniqueID());
+				if (_tmp == null) {
+					// 2. try to force an index update - we do not want to wait for the update service...
+					if (debug) {
+						logger.finest("......workitem '"+businessEvent.getUniqueID()  + "' not found in index -> force index update...");
+					}
+					updateService.updateIndex();
+					_tmp= searchService.getDocument(businessEvent.getUniqueID());
+				}
+				// do we found the workitem?
 				if (_tmp != null) {
-					logger.info("...existing business object found in index");
+					if (debug) {
+						logger.finest("...existing business object found in index, updating $api...");
+					}
 					// update $api information
 					businessEvent.setItemValue(RegistryService.ITEM_API,
 							_tmp.getItemValueString(RegistryService.ITEM_API));
+				} else {
+					// error 404 !
+					if (debug) {
+						logger.finest("......workitem '"+businessEvent.getUniqueID()  + "' not found in index.");
+					}
+					Response.status(Response.Status.NOT_FOUND).build();
 				}
 			} catch (QueryException e) {
 				// no corresponding document found!
