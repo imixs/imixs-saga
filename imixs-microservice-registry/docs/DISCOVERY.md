@@ -90,10 +90,17 @@ The DiscoveryEvent defines the following event types:
  - AFTER_DISCOVERY - send immediately after a discovery was successful finished
  - ON_FAILURE - send in case the discovery process failed
  
-A CDI client bean can observe these events and add additional data for the given document 
+A CDI client bean can observe these events and add additional data for the given business event. 
 
+Maven Dependency:
 
-This event can be consumed by another Session EJB or CDI Bean implementing the @Observes annotation:
+	<dependency>
+		<groupId>org.imixs.workflow</groupId>
+		<artifactId>imixs-microservice-util</artifactId>
+		<version>${org.imixs.microservice.version}</version>
+	</dependency>
+
+The event can be consumed by another Session EJB or CDI Bean implementing the @Observes annotation:
 
 	@Stateless
 	public class DiscoveryServiceListener {
