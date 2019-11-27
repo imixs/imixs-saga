@@ -39,6 +39,7 @@ import javax.ejb.Stateless;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
+import org.imixs.microservice.registry.DiscoveryEvent;
 import org.imixs.workflow.BPMNRuleEngine;
 import org.imixs.workflow.ItemCollection;
 import org.imixs.workflow.Model;
