@@ -69,6 +69,10 @@ public class SearchService implements Serializable {
 
 	@Inject
 	SolrIndexService solrIndexService;
+	
+	@Inject
+	RegistrySchemaService registrySchemaService;
+
 
 	private static final long serialVersionUID = 1L;
 	private static Logger logger = Logger.getLogger(SearchService.class.getName());
@@ -188,7 +192,7 @@ public class SearchService implements Serializable {
 
 		// Because Solr does not accept $ symbol in an item name we need to replace the
 		// Imxis Item Names and adapt them into the corresponding Solr Field name
-		searchTerm = adaptQueryFieldNames(searchTerm);
+		searchTerm = registrySchemaService.adaptQueryFieldNames(searchTerm);
 
 		return searchTerm;
 
@@ -271,30 +275,6 @@ public class SearchService implements Serializable {
 		}
 	}
 
-	/**
-	 * This method adapts a search query for Imixs Item names and adapts these names
-	 * with the corresponding Solr field name (replace $ with _)
-	 * 
-	 * @return
-	 */
-	private String adaptQueryFieldNames(String _query) {
-		String result = _query;
-
-		if (_query == null || !_query.contains("$")) {
-			return result;
-		}
-
-		for (String imixsItemName : solrUpdateService.getSchemaFieldList()) {
-			if (imixsItemName.charAt(0) == '$') {
-				// this item starts with $ and we need to parse the query for this item....
-				while (result.contains(imixsItemName + ":")) {
-					String solrField = "_" + imixsItemName.substring(1);
-					result = result.replace(imixsItemName + ":", solrField + ":");
-				}
-			}
-		}
-
-		return result;
-	}
+	
 
 }

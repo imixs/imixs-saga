@@ -4,14 +4,11 @@ import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
-import java.util.StringTokenizer;
 import java.util.function.IntPredicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -22,9 +19,9 @@ import javax.inject.Inject;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.imixs.registry.index.DefaultOperator;
+import org.imixs.registry.index.RegistrySchemaService;
 import org.imixs.registry.index.SortOrder;
 import org.imixs.workflow.ItemCollection;
-import org.imixs.workflow.WorkflowKernel;
 import org.imixs.workflow.exceptions.QueryException;
 import org.imixs.workflow.services.rest.BasicAuthenticator;
 import org.imixs.workflow.services.rest.RestAPIException;
@@ -47,12 +44,7 @@ public class SolrUpdateService implements Serializable {
 	// number of hits
 	public static final int DEFAULT_PAGE_SIZE = 100; // default docs in one page
 
-	public static List<String> DEFAULT_STORE_FIELD_LIST = Arrays.asList("type", "$taskid", "$writeaccess",
-			"$workflowsummary", "$workflowabstract", "$workflowgroup", "$workflowstatus", "$modified", "$created",
-			"$modelversion", "$lasteventdate", "$creator", "$editor", "$lasteditor", "$owner", "namowner", "$api");
-
-	private List<String> schemaFieldList = null;
-
+	
 	@Inject
 	@ConfigProperty(name = "solr.configset", defaultValue = "_default")
 	private String configset;
@@ -76,6 +68,10 @@ public class SolrUpdateService implements Serializable {
 	@Inject
 	@ConfigProperty(name = "imixs.registry.index.fields", defaultValue = "")
 	String imixsIndexFieldList;
+	
+	@Inject
+	RegistrySchemaService registrySchemaService;
+
 
 	private RestClient restClient;
 
@@ -90,20 +86,7 @@ public class SolrUpdateService implements Serializable {
 			// no solr index!
 			return;
 		}
-		// crate unique index fields
-		schemaFieldList = new ArrayList<String>();
-		schemaFieldList.add(WorkflowKernel.UNIQUEID);
-		schemaFieldList.addAll(DEFAULT_STORE_FIELD_LIST);
-		if (imixsIndexFieldList != null && !imixsIndexFieldList.isEmpty()) {
-			StringTokenizer st = new StringTokenizer(imixsIndexFieldList, ",");
-			while (st.hasMoreElements()) {
-				String sName = st.nextToken().toLowerCase().trim();
-				// do not add internal fields
-				if (!schemaFieldList.contains(sName)) {
-					schemaFieldList.add(sName);
-				}
-			}
-		}
+	
 		// create rest client
 		restClient = new RestClient(api);
 		if (user != null && !user.isEmpty()) {
@@ -126,9 +109,6 @@ public class SolrUpdateService implements Serializable {
 
 	}
 
-	public List<String> getSchemaFieldList() {
-		return schemaFieldList;
-	}
 
 	/**
 	 * This method adds a collection of documents to the Lucene Solr index. The
@@ -340,7 +320,7 @@ public class SolrUpdateService implements Serializable {
 	private String buildUpdateSchema(String oldSchema) {
 
 		StringBuffer updateSchema = new StringBuffer();
-		List<String> fieldListStore = schemaFieldList;
+		List<String> fieldListStore = registrySchemaService.getSchemaFieldList();
 
 		// remove white space from oldSchema to simplify string compare...
 		oldSchema = oldSchema.replace(" ", "");
@@ -400,7 +380,7 @@ public class SolrUpdateService implements Serializable {
 			String type, boolean store, boolean docvalue) {
 
 		// replace $ with _
-		String name = adaptImixsItemName(_name);
+		String name = registrySchemaService.adaptSolrFieldName(_name);
 
 		String fieldDefinition = "{\"name\":\"" + name + "\",\"type\":\"" + type + "\",\"stored\":" + store
 				+ ",\"docValues\":" + docvalue + "}";
@@ -477,7 +457,7 @@ public class SolrUpdateService implements Serializable {
 			// wrapp value into CDATA
 			convertedValue = "<![CDATA[" + stripControlCodes(convertedValue) + "]]>";
 
-			xmlContent.append("<field name=\"" + adaptImixsItemName(itemName) + "\">" + convertedValue + "</field>");
+			xmlContent.append("<field name=\"" + registrySchemaService.adaptSolrFieldName(itemName) + "\">" + convertedValue + "</field>");
 		}
 
 	}
@@ -504,7 +484,8 @@ public class SolrUpdateService implements Serializable {
 			xmlContent.append("<field name=\"id\">" + document.getUniqueID() + "</field>");
 
 			// now add all fields...
-			for (String aFieldname : schemaFieldList) {
+			List<String> fieldList = registrySchemaService.getSchemaFieldList();
+			for (String aFieldname : fieldList) {
 				addFieldValuesToUpdateRequest(xmlContent, document, aFieldname);
 			}
 
@@ -568,25 +549,5 @@ public class SolrUpdateService implements Serializable {
 		}
 	}
 
-	/**
-	 * This method adapts an Imixs item name to the corresponding Solr field name.
-	 * Because Solr does not accept $ char at the beginning of an field we need to
-	 * replace starting $ with _ if the item is part of the Imixs Index Schema.
-	 * 
-	 * @param itemName
-	 * @return adapted Solr field name
-	 */
-	private String adaptImixsItemName(String itemName) {
-		if (itemName == null || itemName.isEmpty()) {
-			return itemName;
-		}
-		if (itemName.charAt(0) == '$') {
-			if (schemaFieldList.contains(itemName)) {
-				String adaptedName = "_" + itemName.substring(1);
-				return adaptedName;
-			}
-		}
-		return itemName;
-	}
 
 }

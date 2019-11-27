@@ -12,6 +12,7 @@
 		<module>imixs-microservice-security</module>
 		<module>imixs-microservice-registry-app</module>
 		<module>imixs-microservice-registry-core</module>
+		<module>imixs-microservice-util</module>
 	</modules>
 
 	<description>Imixs-Workflow Microservice </description>

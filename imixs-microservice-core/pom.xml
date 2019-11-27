@@ -27,7 +27,12 @@
 			<artifactId>imixs-melman</artifactId>
 		</dependency>
 
-		<!-- Imixs-Microservice-Security -->
+		<!-- Imixs-Microservice -->
+		<dependency>
+			<groupId>org.imixs.workflow</groupId>
+			<artifactId>imixs-microservice-util</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 		<dependency>
 			<groupId>org.imixs.workflow</groupId>
 			<artifactId>imixs-microservice-security</artifactId>

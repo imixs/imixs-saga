@@ -1,9 +1,8 @@
 package org.imixs.microservice.registry;
 
 import java.io.Serializable;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -15,13 +14,11 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.imixs.registry.index.RegistrySchemaService;
 import org.imixs.workflow.ItemCollection;
-import org.imixs.workflow.WorkflowKernel;
 import org.imixs.workflow.engine.DocumentEvent;
 import org.imixs.workflow.engine.DocumentService;
 import org.imixs.workflow.engine.EventLogService;
-import org.imixs.workflow.engine.WorkflowService;
-import org.imixs.workflow.engine.index.SchemaService;
 import org.imixs.workflow.exceptions.AccessDeniedException;
 
 /**
@@ -54,6 +51,11 @@ public class RegistryIndexService implements Serializable {
 	public static final String EVENTLOG_TOPIC_INDEX_ADD = "imixs-registry.index.add";
 	public static final String EVENTLOG_TOPIC_INDEX_REMOVE = "imixs-registry.index.remove";
 
+	// note: this field list should be synchronized with the DEFAULT_STORE_FIELD_LIST from the Registry SolrUpdateService
+	public static List<String> DEFAULT_STORE_FIELD_LIST = Arrays.asList("type", "$taskid", "$writeaccess",
+			"$workflowsummary", "$workflowabstract", "$workflowgroup", "$workflowstatus", "$modified", "$created",
+			"$modelversion", "$lasteventdate", "$creator", "$editor", "$lasteditor", "$owner", "namowner", "$api");
+
 	@Inject
 	@ConfigProperty(name = "imixs.registry.api", defaultValue = "")
 	String registryAPI;
@@ -69,9 +71,12 @@ public class RegistryIndexService implements Serializable {
 	@Inject
 	@ConfigProperty(name = "imixs.registry.index.typefilter", defaultValue = "(workitem|workitemarchive)")
 	String imixsRegistryIndexTypeFilter;
+	
+	@Inject
+	RegistrySchemaService registrySchemaService;
 
 	private static final long serialVersionUID = 1L;
-	private List<String> fieldList = null;
+	
 	private static Logger logger = Logger.getLogger(RegistryIndexService.class.getName());
 
 	/**
@@ -85,25 +90,6 @@ public class RegistryIndexService implements Serializable {
 		// is registry-index enabled?
 		if (!imixsRegistryIndex || registryAPI.isEmpty()) {
 			return;
-		}
-
-		// compute search field list
-		fieldList = new ArrayList<String>();
-		fieldList.add(WorkflowKernel.UNIQUEID);
-		fieldList.add(WorkflowService.READACCESS);
-		fieldList.add(RegistrySelfRegistrationService.ITEM_API);
-
-		// add all items form teh default field store list
-		fieldList.addAll(SchemaService.DEFAULT_STORE_FIELD_LIST);
-		if (imixsRegistryIndexFieldList != null && !imixsRegistryIndexFieldList.isEmpty()) {
-			StringTokenizer st = new StringTokenizer(imixsRegistryIndexFieldList, ",");
-			while (st.hasMoreElements()) {
-				String sName = st.nextToken().toLowerCase().trim();
-				// do not add internal fields
-				if (!fieldList.contains(sName)) {
-					fieldList.add(sName);
-				}
-			}
 		}
 	}
 
@@ -191,6 +177,7 @@ public class RegistryIndexService implements Serializable {
 	 */
 	private ItemCollection buildIndexDocument(ItemCollection document) {
 		ItemCollection indexDocument = new ItemCollection();
+		List<String> fieldList=registrySchemaService.getSchemaFieldList();
 		for (String itemName : fieldList) {
 			indexDocument.replaceItemValue(itemName, document.getItemValue(itemName));
 		}

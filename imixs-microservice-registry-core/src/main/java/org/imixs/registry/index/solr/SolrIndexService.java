@@ -21,6 +21,7 @@ import javax.json.stream.JsonParser.Event;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.imixs.registry.index.DefaultOperator;
+import org.imixs.registry.index.RegistrySchemaService;
 import org.imixs.registry.index.SortOrder;
 import org.imixs.workflow.ItemCollection;
 import org.imixs.workflow.exceptions.QueryException;
@@ -67,7 +68,8 @@ public class SolrIndexService implements Serializable {
 	private String core;
 
 	@Inject
-	private SolrUpdateService solrUpdateService;
+	RegistrySchemaService registrySchemaService;
+
 
 	private RestClient restClient = null;
 
@@ -248,7 +250,7 @@ public class SolrIndexService implements Serializable {
 			}
 			List<?> itemValue = parseItem(parser);
 			// convert itemName and value....
-			itemName = adaptSolrFieldName(itemName);
+			itemName = registrySchemaService.adaptSolrFieldName(itemName);
 			document.replaceItemValue(itemName, itemValue);
 			event = parser.next();
 		}
@@ -256,27 +258,7 @@ public class SolrIndexService implements Serializable {
 		return document;
 	}
 
-	/**
-	 * This method adapts an Solr field name to the corresponding Imixs Item name.
-	 * Because Solr does not accept $ char at the beginning of an field we need to
-	 * replace starting _ with $ if the item is part of the Imixs Index Schema.
-	 * 
-	 * @param itemName
-	 * @return adapted Imixs item name
-	 */
-	private String adaptSolrFieldName(String itemName) {
-		if (itemName == null || itemName.isEmpty()) {
-			return itemName;
-		}
-		if (itemName.charAt(0) == '_') {
-			String adaptedName = "$" + itemName.substring(1);
-			if (solrUpdateService.getSchemaFieldList().contains(adaptedName)) {
-				return adaptedName;
-			}
-		}
-		return itemName;
-	}
-
+	
 	/**
 	 * parses a single item value
 	 * 
