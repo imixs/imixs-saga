@@ -24,7 +24,7 @@ import javax.inject.Inject;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.imixs.melman.EventLogClient;
 import org.imixs.melman.RestAPIException;
-import org.imixs.microservice.core.auth.AuthEvent;
+import org.imixs.microservice.security.auth.AuthEvent;
 import org.imixs.registry.RegistryService;
 import org.imixs.registry.index.solr.SolrIndexService;
 import org.imixs.registry.index.solr.SolrUpdateService;

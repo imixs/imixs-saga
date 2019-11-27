@@ -50,7 +50,7 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.imixs.microservice.core.auth.AuthEvent;
+import org.imixs.microservice.security.auth.AuthEvent;
 import org.imixs.registry.DiscoveryService;
 import org.imixs.registry.RegistryService;
 import org.imixs.registry.index.SearchService;

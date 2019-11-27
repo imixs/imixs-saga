@@ -23,7 +23,7 @@ import javax.inject.Inject;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.imixs.melman.DocumentClient;
 import org.imixs.melman.RestAPIException;
-import org.imixs.microservice.core.auth.AuthEvent;
+import org.imixs.microservice.security.auth.AuthEvent;
 import org.imixs.workflow.ItemCollection;
 import org.imixs.workflow.WorkflowKernel;
 import org.imixs.workflow.engine.ModelService;

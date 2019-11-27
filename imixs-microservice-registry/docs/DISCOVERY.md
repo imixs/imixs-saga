@@ -99,7 +99,7 @@ This event can be consumed by another Session EJB or CDI Bean implementing the @
 	public class DiscoveryServiceListener {
 	    public void onEvent(@Observes DiscoveryEvent discoveryEvent){
 	        ItemCollection workitem=discoveryEvent.getDocument();
-	        System.out.println("Received discoveryEvent Type = " + discoveryEvent.getType());
+	        System.out.println("Received discoveryEvent Type = " + discoveryEvent.getEventType());
 		}
 	}
 

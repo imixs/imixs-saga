@@ -19,7 +19,7 @@ import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
-import org.imixs.microservice.core.auth.AuthEvent;
+import org.imixs.microservice.security.auth.AuthEvent;
 import org.imixs.registry.index.solr.SolrIndexService;
 import org.imixs.registry.index.solr.SolrUpdateService;
 import org.imixs.workflow.ItemCollection;

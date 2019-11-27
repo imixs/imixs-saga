@@ -1,4 +1,4 @@
-package org.imixs.registry;
+package org.imixs.microservice.registry;
 
 import org.imixs.workflow.ItemCollection;
 

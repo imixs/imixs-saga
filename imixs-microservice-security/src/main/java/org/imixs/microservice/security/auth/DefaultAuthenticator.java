@@ -1,4 +1,4 @@
-package org.imixs.microservice.core.auth;
+package org.imixs.microservice.security.auth;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;

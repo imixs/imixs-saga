@@ -25,7 +25,7 @@
  *  	Ralph Soika - Software Developer
  *******************************************************************************/
 
-package org.imixs.microservice.core.auth;
+package org.imixs.microservice.security.auth;
 
 /**
  * AuthException is the default Exception type

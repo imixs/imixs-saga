@@ -82,6 +82,10 @@ public class RegistryIndexService implements Serializable {
 	 */
 	@PostConstruct
 	void init() {
+		// is registry-index enabled?
+		if (!imixsRegistryIndex || registryAPI.isEmpty()) {
+			return;
+		}
 
 		// compute search field list
 		fieldList = new ArrayList<String>();

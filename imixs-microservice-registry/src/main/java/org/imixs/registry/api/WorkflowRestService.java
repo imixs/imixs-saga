@@ -61,7 +61,7 @@ import javax.ws.rs.core.Response;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.imixs.melman.RestAPIException;
 import org.imixs.melman.WorkflowClient;
-import org.imixs.microservice.core.auth.AuthEvent;
+import org.imixs.microservice.security.auth.AuthEvent;
 import org.imixs.registry.DiscoveryService;
 import org.imixs.registry.RegistryService;
 import org.imixs.registry.index.DefaultOperator;
