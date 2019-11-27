@@ -24,11 +24,6 @@
 		<!-- Imixs-Microservice-Security -->
 		<dependency>
 			<groupId>org.imixs.workflow</groupId>
-			<artifactId>imixs-microservice-util</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.imixs.workflow</groupId>
 			<artifactId>imixs-microservice-security</artifactId>
 			<version>${project.version}</version>
 		</dependency>
