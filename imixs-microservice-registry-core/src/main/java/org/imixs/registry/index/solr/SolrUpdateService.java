@@ -49,7 +49,7 @@ public class SolrUpdateService implements Serializable {
 
 	public static List<String> DEFAULT_STORE_FIELD_LIST = Arrays.asList("type", "$taskid", "$writeaccess",
 			"$workflowsummary", "$workflowabstract", "$workflowgroup", "$workflowstatus", "$modified", "$created",
-			"$lasteventdate", "$creator", "$editor", "$lasteditor", "$owner", "namowner", "$api");
+			"$modelversion", "$lasteventdate", "$creator", "$editor", "$lasteditor", "$owner", "namowner", "$api");
 
 	private List<String> schemaFieldList = null;
 
