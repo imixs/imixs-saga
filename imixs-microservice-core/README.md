@@ -1,6 +1,6 @@
 # Imixs-Microservice - Core
 
-The Imixs-Microserivce core is a library providing the following features:
+The Imixs-Microserivce core is a library providing the core functionallity for a Imixs-Microservice:
 
  - **AutoRegister** - registers a Imixs-Microservice at a Imixs-Registry Endpoing
  - **IndexService** - creates eventLog entries for a derived solr index each time a document is saved

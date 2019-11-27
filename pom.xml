@@ -9,9 +9,9 @@
 	<modules>
 		<module>imixs-microservice-app</module>
 		<module>imixs-microservice-core</module>
-		<module>imixs-microservice-registry</module>
 		<module>imixs-microservice-security</module>
-		<module>imixs-microservice-util</module>
+		<module>imixs-microservice-registry-app</module>
+		<module>imixs-microservice-registry-core</module>
 	</modules>
 
 	<description>Imixs-Workflow Microservice </description>

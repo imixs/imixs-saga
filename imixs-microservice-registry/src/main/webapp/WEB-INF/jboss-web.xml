@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<jboss-web>
-
-	<default-encoding>UTF-8</default-encoding>
-	<context-root>/</context-root>
-	<security-domain>imixsrealm</security-domain>
-
-</jboss-web>
