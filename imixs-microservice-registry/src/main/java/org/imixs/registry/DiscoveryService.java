@@ -122,7 +122,7 @@ public class DiscoveryService {
 			if (discoverServiceByModelVersion(businessEvent)) {
 				found = true;
 				if (debug) {
-					logger.fine("......service disvovery by model version completed in "
+					logger.fine("......service discovery by model version completed in "
 							+ (System.currentTimeMillis() - l) + "ms");
 				}
 			}
@@ -130,7 +130,7 @@ public class DiscoveryService {
 			if (!found && discoverServiceByWorkflowGroup(businessEvent)) {
 				found = true;
 				if (debug) {
-					logger.fine("......service disvovery by workflow group completed in "
+					logger.fine("......service discovery by workflow group completed in "
 							+ (System.currentTimeMillis() - l) + "ms");
 				}
 
@@ -141,7 +141,7 @@ public class DiscoveryService {
 				found = true;
 				if (debug) {
 					logger.fine(
-							"......service disvovery by rule completed in " + (System.currentTimeMillis() - l) + "ms");
+							"......service discovery by rule completed in " + (System.currentTimeMillis() - l) + "ms");
 				}
 			}
 
@@ -327,10 +327,17 @@ public class DiscoveryService {
 
 		Collection<BPMNModel> models = registryService.getModels();
 		for (BPMNModel model : models) {
-			bpmnRuleEngine = new BPMNRuleEngine(model);
-			model.initStartEvent(businessEventClone);
-
-			int taskID = bpmnRuleEngine.eval(businessEventClone);
+			int taskID=0;
+			try {
+				bpmnRuleEngine = new BPMNRuleEngine(model);
+				model.initStartEvent(businessEventClone);
+				taskID = bpmnRuleEngine.eval(businessEventClone);
+			} catch (ModelException e) {
+				String message = "Discover Business Rule failed - $modelversion=" + model.getVersion() + " ▷ "
+						+ businessEventClone.getTaskID() + "→" + businessEventClone.getEventID() + " ERROR: "
+						+ e.getMessage();
+				throw new ModelException(e.getErrorCode(), message, e);
+			}
 			// test if this is an EndTask. If the model did not match!
 			ItemCollection task = model.getTask(taskID);
 			if (!task.getItemValueBoolean("endTask")) {
@@ -339,7 +346,7 @@ public class DiscoveryService {
 				service = registryService.getServiceByModelVersion(model.getVersion());
 				businessEvent.setItemValue(RegistryService.ITEM_API, service);
 				if (debug) {
-					logger.fine("......discoverd Service by rule in " + (System.currentTimeMillis() - l) + "ms");
+					logger.fine("......discovered Service by rule in " + (System.currentTimeMillis() - l) + "ms");
 				}
 				return true;
 			}
