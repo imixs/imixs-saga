@@ -440,7 +440,7 @@ public class WorkflowRestService {
 		WorkflowClient client = new WorkflowClient(serviceAPI);
 		// fire an AuthEvent to register a ClientRequestFilter
 		if (authEvents != null) {
-			AuthEvent authEvent = new AuthEvent(client,servletRequest);
+			AuthEvent authEvent = new AuthEvent(client, servletRequest);
 			authEvents.fire(authEvent);
 		} else {
 			logger.warning("Missing CDI support for Event<AuthEvent> !");
@@ -494,16 +494,18 @@ public class WorkflowRestService {
 		if (!businessEvent.getUniqueID().isEmpty()) {
 			// lookup process instance by search index!
 			try {
-				ItemCollection _tmp =null;
+				ItemCollection _tmp = null;
 				// 1. try a direct search
-				_tmp= searchService.getDocument(businessEvent.getUniqueID());
+				_tmp = searchService.getDocument(businessEvent.getUniqueID());
 				if (_tmp == null) {
-					// 2. try to force an index update - we do not want to wait for the update service...
+					// 2. try to force an index update - we do not want to wait for the update
+					// service...
 					if (debug) {
-						logger.finest("......workitem '"+businessEvent.getUniqueID()  + "' not found in index -> force index update...");
+						logger.finest("......workitem '" + businessEvent.getUniqueID()
+								+ "' not found in index -> force index update...");
 					}
 					updateService.updateIndex();
-					_tmp= searchService.getDocument(businessEvent.getUniqueID());
+					_tmp = searchService.getDocument(businessEvent.getUniqueID());
 				}
 				// do we found the workitem?
 				if (_tmp != null) {
@@ -516,7 +518,7 @@ public class WorkflowRestService {
 				} else {
 					// error 404 !
 					if (debug) {
-						logger.finest("......workitem '"+businessEvent.getUniqueID()  + "' not found in index.");
+						logger.finest("......workitem '" + businessEvent.getUniqueID() + "' not found in index.");
 					}
 					Response.status(Response.Status.NOT_FOUND).build();
 				}
@@ -535,24 +537,53 @@ public class WorkflowRestService {
 			return Response.status(Response.Status.NOT_ACCEPTABLE).build();
 		}
 
-		// post workitem
 		ItemCollection workitem = null;
-		WorkflowClient workflowClient = createWorkflowClient(serviceAPI);
-		try {
-			workitem = workflowClient.processWorkitem(businessEvent);
-			// update the api endpoint
-			workitem.setItemValue(RegistryService.ITEM_API,
-					serviceAPI + "/workflow/workitem/" + workitem.getUniqueID());
+		/*
+		 * Test the status of the discovered businessEvent object.
+		 * 
+		 * If we have a workItem with a $eventId - in this case we need to process In
+		 * case we have a uniqueid and no $eventId we can return this instance without
+		 * processing
+		 * 
+		 * In case we have no $uniqueId or a $eventID than we process the business event
+		 * by the given api endpoint.
+		 * 
+		 */
+		if (!businessEvent.getUniqueID().isEmpty() && businessEvent.getEventID() == 0) {
+			// no further processing required
+			workitem = businessEvent;
 			if (debug) {
-				logger.fine("......new remote process instance initialized in " + (System.currentTimeMillis() - l)
-						+ "ms....");
+				logger.fine("......return existing process instance - " + workitem.getUniqueID());
 			}
-		} catch (RestAPIException e) {
-			workitem = ImixsExceptionHandler.addErrorMessage(e, businessEvent);
-			e.printStackTrace();
+		} else {
+			// we need to process the workitem....
+			try {
+
+				if (debug) {
+					if (businessEvent.getUniqueID().isEmpty()) {
+						logger.fine("......creating a new process instance...");
+					} else {
+						logger.fine(
+								"......processing existing process instance - " + businessEvent.getUniqueID() + "...");
+					}
+				}
+
+				// remote processing
+				WorkflowClient workflowClient = createWorkflowClient(serviceAPI);
+				workitem = workflowClient.processWorkitem(businessEvent);
+				// update the api endpoint
+				workitem.setItemValue(RegistryService.ITEM_API,
+						serviceAPI + "/workflow/workitem/" + workitem.getUniqueID());
+				if (debug) {
+					logger.fine("......processed in " + (System.currentTimeMillis() - l) + "ms....");
+				}
+			} catch (RestAPIException e) {
+				workitem = ImixsExceptionHandler.addErrorMessage(e, businessEvent);
+				e.printStackTrace();
+			}
 		}
 
-		// return workitem
+		// finally we return the result (workitem)
 		try {
 			if (workitem == null) {
 				return Response.status(Response.Status.NOT_ACCEPTABLE).build();
@@ -563,6 +594,7 @@ public class WorkflowRestService {
 					return Response.ok(XMLDataCollectionAdapter.getDataCollection(workitem))
 							.status(Response.Status.NOT_ACCEPTABLE).build();
 				} else {
+					// return workitem....
 					return Response.ok(XMLDataCollectionAdapter.getDataCollection(workitem)).build();
 				}
 			}

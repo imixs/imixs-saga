@@ -113,6 +113,15 @@ public class DiscoveryService {
 		// Fire the DocumentEvent BEFORE_DISCOVERY
 		if (discoveryEvents != null) {
 			discoveryEvents.fire(new DiscoveryEvent(businessEvent, DiscoveryEvent.BEFORE_DISCOVERY));
+			
+			// test if we have a $api information provided by a oberserver bean...
+			if (businessEvent.hasItem(RegistryService.ITEM_API)) {
+				if (debug) {
+					logger.finest("...redirect by event 'BEFORE_DISCOVERY'...");
+				}
+				return;
+			}			
+			
 		} else {
 			logger.warning("Missing CDI support for Event<DiscoveryEvent> !");
 		}
@@ -337,6 +346,15 @@ public class DiscoveryService {
 				String message = "Discover Business Rule failed - $modelversion=" + model.getVersion() + " ▷ "
 						+ businessEventClone.getTaskID() + "→" + businessEventClone.getEventID() + " ERROR: "
 						+ e.getMessage();
+				
+				if (debug) {
+					// print businessEvent data for analyzing
+					List<String> itemNames = businessEvent.getItemNames();
+					for (String item: itemNames) {
+						logger.finest("       " + item + "="+businessEvent.getItemValueString(item));
+					}
+				}
+				
 				throw new ModelException(e.getErrorCode(), message, e);
 			}
 			// test if this is an EndTask. If the model did not match!
