@@ -6,7 +6,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.annotation.security.DeclareRoles;
-import javax.annotation.security.RunAs;
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
@@ -56,8 +56,12 @@ import org.imixs.workflow.exceptions.ProcessingErrorException;
  * @author rsoika
  *
  */
-@DeclareRoles({ "org.imixs.ACCESSLEVEL.MANAGERACCESS" })
-@RunAs("org.imixs.ACCESSLEVEL.MANAGERACCESS")
+@DeclareRoles({ "org.imixs.ACCESSLEVEL.NOACCESS", "org.imixs.ACCESSLEVEL.READERACCESS",
+	"org.imixs.ACCESSLEVEL.AUTHORACCESS", "org.imixs.ACCESSLEVEL.EDITORACCESS",
+	"org.imixs.ACCESSLEVEL.MANAGERACCESS" })
+@RolesAllowed({ "org.imixs.ACCESSLEVEL.NOACCESS", "org.imixs.ACCESSLEVEL.READERACCESS",
+	"org.imixs.ACCESSLEVEL.AUTHORACCESS", "org.imixs.ACCESSLEVEL.EDITORACCESS",
+	"org.imixs.ACCESSLEVEL.MANAGERACCESS" })
 @Stateless
 @LocalBean
 public class BatchEventService {

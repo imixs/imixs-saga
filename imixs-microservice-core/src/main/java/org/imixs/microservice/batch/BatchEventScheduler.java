@@ -5,6 +5,9 @@ import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
+import javax.annotation.security.DeclareRoles;
+import javax.annotation.security.RunAs;
+import javax.ejb.LocalBean;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
 import javax.enterprise.concurrent.ManagedScheduledExecutorService;
@@ -28,8 +31,11 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
  * @author rsoika
  *
  */
+@DeclareRoles({ "org.imixs.ACCESSLEVEL.MANAGERACCESS" })
+@RunAs("org.imixs.ACCESSLEVEL.MANAGERACCESS")
 @Startup
 @Singleton
+@LocalBean
 public class BatchEventScheduler {
 
 	public static final String BATCH_PROCESSOR_ENABLED = "batch.processor.enabled";
