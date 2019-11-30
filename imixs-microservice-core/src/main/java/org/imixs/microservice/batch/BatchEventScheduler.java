@@ -14,7 +14,7 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 /**
  * The BatchEventScheduler starts a ManagedScheduledExecutorService to process
- * batch events in an asynchronous by calling the BatchEventService.
+ * batch events in an asynchronous way by calling the BatchEventService.
  * <p>
  * The BatchEventScheduler runs on a ManagedScheduledExecutorService with the
  * interval 'BATCH_PROCESSOR_INTERVAL' and an optional delay defined by
