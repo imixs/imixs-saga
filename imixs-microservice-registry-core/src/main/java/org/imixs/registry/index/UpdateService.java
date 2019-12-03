@@ -65,7 +65,7 @@ public class UpdateService implements Serializable {
 	private String api;
 
 	@Inject
-	@ConfigProperty(name = "imixs.index.interval", defaultValue = "1000")
+	@ConfigProperty(name = "imixs.registry.index.interval", defaultValue = "1000")
 	int indexInterval; // default 1sec
 
 	@Inject

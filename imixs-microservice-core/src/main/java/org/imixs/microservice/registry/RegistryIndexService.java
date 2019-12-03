@@ -1,7 +1,6 @@
 package org.imixs.microservice.registry;
 
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -31,7 +30,7 @@ import org.imixs.workflow.exceptions.AccessDeniedException;
  * An index data object is added into the eventLog entry containing a subset of
  * items. The item list contains all items from the
  * SchemaService.DEFAULT_NOANALYZE_FIELD_LIST and optional items defined by the
- * imixs property 'imixs-registry.index.fields'.
+ * imixs property 'imixs.registry.index.fields'.
  * <p>
  * The RegistryIndexService adds only workitems to the registry index.
  * 
@@ -51,11 +50,6 @@ public class RegistryIndexService implements Serializable {
 	public static final String EVENTLOG_TOPIC_INDEX_ADD = "imixs-registry.index.add";
 	public static final String EVENTLOG_TOPIC_INDEX_REMOVE = "imixs-registry.index.remove";
 
-	// note: this field list should be synchronized with the DEFAULT_STORE_FIELD_LIST from the Registry SolrUpdateService
-	public static List<String> DEFAULT_STORE_FIELD_LIST = Arrays.asList("type", "$taskid", "$writeaccess",
-			"$workflowsummary", "$workflowabstract", "$workflowgroup", "$workflowstatus", "$modified", "$created",
-			"$modelversion", "$lasteventdate", "$creator", "$editor", "$lasteditor", "$owner", "namowner", "$api");
-
 	@Inject
 	@ConfigProperty(name = "imixs.registry.api", defaultValue = "")
 	String registryAPI;
@@ -64,9 +58,6 @@ public class RegistryIndexService implements Serializable {
 	@ConfigProperty(name = "imixs.registry.index.enabled", defaultValue = "false")
 	boolean imixsRegistryIndex;
 
-	@Inject
-	@ConfigProperty(name = "imixs.registry.index.fields", defaultValue = "")
-	String imixsRegistryIndexFieldList;
 
 	@Inject
 	@ConfigProperty(name = "imixs.registry.index.typefilter", defaultValue = "(workitem|workitemarchive)")
@@ -128,7 +119,7 @@ public class RegistryIndexService implements Serializable {
 				return;
 			}
 
-			// does the document math the imixsRegistryIndexTypeFilter?
+			// does the document match the imixsRegistryIndexTypeFilter?
 			if (!documentEvent.getDocument().getType().matches(imixsRegistryIndexTypeFilter)) {
 				return;
 			}
@@ -171,7 +162,7 @@ public class RegistryIndexService implements Serializable {
 	 * This helper method builds a indexDocument. This document contains a subset of
 	 * items defined by the SchemaService.DEFAULT_NOANALYZE_FIELD_LIST and an
 	 * optional item list defined by the Imixs property
-	 * 'imixs-registry.index.fields'
+	 * 'imixs.registry.index.fields'
 	 * 
 	 * @return
 	 */
