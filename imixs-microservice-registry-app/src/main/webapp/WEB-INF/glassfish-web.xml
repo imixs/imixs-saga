@@ -2,35 +2,28 @@
 <!DOCTYPE glassfish-web-app PUBLIC "-//GlassFish.org//DTD GlassFish Application Server 3.1 Servlet 3.0//EN" "http://glassfish.org/dtds/glassfish-web-app_3_0-1.dtd">
 <glassfish-web-app>
 
-	<context-root>/imixs-microservice</context-root>
+	<context-root>/</context-root>
 
 	<security-role-mapping>
 		<role-name>org.imixs.ACCESSLEVEL.NOACCESS</role-name>
-		<group-name>Noaccess</group-name>
 		<group-name>IMIXS-WORKFLOW-Noaccess</group-name>
 	</security-role-mapping>
-
 	<security-role-mapping>
 		<role-name>org.imixs.ACCESSLEVEL.READERACCESS</role-name>
-		<group-name>Reader</group-name>
 		<group-name>IMIXS-WORKFLOW-Reader</group-name>
 	</security-role-mapping>
-
 	<security-role-mapping>
 		<role-name>org.imixs.ACCESSLEVEL.AUTHORACCESS</role-name>
-		<group-name>Author</group-name>
 		<group-name>IMIXS-WORKFLOW-Author</group-name>
 	</security-role-mapping>
-
 	<security-role-mapping>
 		<role-name>org.imixs.ACCESSLEVEL.EDITORACCESS</role-name>
-		<group-name>Editor</group-name>
 		<group-name>IMIXS-WORKFLOW-Editor</group-name>
 	</security-role-mapping>
-
 	<security-role-mapping>
 		<role-name>org.imixs.ACCESSLEVEL.MANAGERACCESS</role-name>
-		<group-name>Manager</group-name>
 		<group-name>IMIXS-WORKFLOW-Manager</group-name>
+		<!-- map run as principal name -->
+		<principal-name>imixs-workflow-service</principal-name>
 	</security-role-mapping>
 </glassfish-web-app>

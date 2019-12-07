@@ -139,11 +139,7 @@
 			<properties>
 				<custom.unpackTypes>war</custom.unpackTypes>
 			</properties>
-		</profile>
 		
-		<!-- payara micro profile (custom Dockerfile) -->
-		<profile>
-			<id>payara-micro</id>
 			<build>
 				<plugins>
 					<!-- copy artifact into docker/apps -->
@@ -186,7 +182,7 @@
 										<exec executable="docker">
 											<arg value="build" />
 											<arg value="-f" />
-											<arg value="Dockerfile-payara-micro" />
+											<arg value="Dockerfile-wildfly" />
 											<arg value="-t" />
 											<arg value="imixs/imixs-microservice" />
 											<arg value="./" />

@@ -1,0 +1,11 @@
+# default password 'password'
+alex;{SSHA256}0m/IrpAeBC/9AsFp2BN38NKCUas1tF5q/+D/uoPydEhSXDLvIghGEw==;IMIXS-WORKFLOW-Author
+marty;{SSHA256}0m/IrpAeBC/9AsFp2BN38NKCUas1tF5q/+D/uoPydEhSXDLvIghGEw==;IMIXS-WORKFLOW-Author
+rico;{SSHA256}0m/IrpAeBC/9AsFp2BN38NKCUas1tF5q/+D/uoPydEhSXDLvIghGEw==;IMIXS-WORKFLOW-Author
+alex;{SSHA256}0m/IrpAeBC/9AsFp2BN38NKCUas1tF5q/+D/uoPydEhSXDLvIghGEw==;IMIXS-WORKFLOW-Author
+melman;{SSHA256}0m/IrpAeBC/9AsFp2BN38NKCUas1tF5q/+D/uoPydEhSXDLvIghGEw==;IMIXS-WORKFLOW-Author
+skipper;{SSHA256}0m/IrpAeBC/9AsFp2BN38NKCUas1tF5q/+D/uoPydEhSXDLvIghGEw==;IMIXS-WORKFLOW-Author
+gloria;{SSHA256}0m/IrpAeBC/9AsFp2BN38NKCUas1tF5q/+D/uoPydEhSXDLvIghGEw==;IMIXS-WORKFLOW-Author
+private;{SSHA256}0m/IrpAeBC/9AsFp2BN38NKCUas1tF5q/+D/uoPydEhSXDLvIghGEw==;IMIXS-WORKFLOW-Author
+# admin password 'adminadmin'
+admin;{SSHA256}5caivkfBWXXdI5vUCXMvtP+LXSMG8yuGR6Bpm3i8+9mWW29bNu7VFw==;IMIXS-WORKFLOW-Manager

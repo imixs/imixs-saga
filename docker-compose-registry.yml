@@ -17,8 +17,6 @@ services:
       POSTGRES_PASSWORD: "adminadmin"
       POSTGRES_CONNECTION: "jdbc:postgresql://db/workflow"
       
-      MODEL_DEFAULT_DATA: "/home/imixs/model/ticket-en-1.0.0.bpmn;/home/imixs/model/order-en-1.0.0.bpmn"
-      MODEL_DEFAULT_DATA_OVERWRITE: "true"
       IMIXS_REGISTRY_API: "http://registry:8080/api"
       IMIXS_AUTH_METHOD: "BASIC"
       IMIXS_AUTH_USERID: "admin"
@@ -26,15 +24,17 @@ services:
       IMIXS_INTERVAL: 10000
       IMIXS_REGISTRY_INDEX_ENABLED: "true"
       IMIXS-REGISTRY_INDEX_FIELDS: ""
-      #IMIXS_REGISTRY_AUTOREGISTER_INTERVAL: 120000
+      IMIXS_REGISTRY_AUTOREGISTER_INTERVAL: 4000
       IMIXS_API: "http://app:8080/api"
       
       BATCH_PROCESSOR_ENABLED: "true"
-      BATCH_PROCESSOR_INTERVAL: 2000
+      BATCH_PROCESSOR_INTERVAL: "500"
+      BATCH_PROCESSOR_INITIALDELAY: "2000"      
+      
+      
     ports:
       - "8080:8080"
       - "9990:9990"
-      - "8787:8787"    
     volumes:
       - ~/git/imixs-microservice/src/model/:/home/imixs/model/
       # Uncomment the followign lines to provide a auto-deployment directory for development   
@@ -50,36 +50,24 @@ services:
     image: imixs/imixs-registry
     environment:
       WILDFLY_PASS: adminadmin
-      DEBUG: "true"
       TZ: "Europe/Berlin"
       
       INDEX_INTERVAL: 2000
       IMIXS_AUTH_METHOD: "BASIC"
       IMIXS_AUTH_USERID: "admin"
       IMIXS_AUTH_SECRET: "adminadmin"
-      
-      
+      IMIXS_AUTH_PROPAGATION: "true"
+            
       SOLR_API: "http://solr:8983" 
       SOLR_CORE: "registry"
-      
-      #IMIXS_AUTH_METHOD: "JWT"
-      #IMIXS_AUTH_USERID: "admin"
-      #IMIXS_AUTH_SECRET: "secret"
-      
-            
+
+      IMIXS_REGISTRY_INDEX_INTERVAL: 2000
+      IMIXS_REGISTRY_INDEX_FIELDS: "oap.screen"
        
     ports:
       - "8081:8080"
-      - "9991:9990"
-      - "8788:8787"    
-
-    #volumes:
-      # Uncomment the followign lines to provide a auto-deployment directory for development   
-      #- ~/git/imixs-microservice/imixs-microservice-registry/src/docker/deployments:/opt/wildfly/standalone/deployments/
-      
     depends_on:
       - solr
-
 
 
   solr:
