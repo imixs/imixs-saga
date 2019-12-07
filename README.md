@@ -20,12 +20,13 @@ Imixs-Workflow supports the BPMN 2.0 standard and provides the free modeling too
  
 # How to Install
 
-Imixs-Microservice is based on the Java EE specification and can be deployed into any Java EE application server like [JBoss/Wildfly](http://wildfly.org/), GlassFish or [Payara](http://www.payara.fish/). See the [Imixs-Workflow deployment guide](http://www.imixs.org/doc/deployment/index.html) for further information. 
+Imixs-Microservice is based on the [Jakarta EE](https://jakarta.ee/) and [Eclipse Microprofile](https://microprofile.io/) and can be deployed into any enterprise application server like [JBoss/Wildfly](http://wildfly.org/), [Payara](http://www.payara.fish/) or [OpenLiberty](https://openliberty.io/). See the [Imixs-Workflow deployment guide](http://www.imixs.org/doc/deployment/index.html) for further information. 
 
 ### Run with Docker
 
-Imixs-Microservice provides a docker image, making it easy to run the Imixs-Microservice out of the box in a Docker container. This container image can be used for development as also for productive purpose. 
-To start the Imixs-Microservice you need to define a container stack with Docker Compose. A docker-compose.yml file is already part of the project. 
+Imixs-Microservice provides a docker image, making it easy to run the Imixs-Microservice out of the box in a Docker container. This container image can be used for development as also for productive purpose. The docker image is based on payara-micro which is optimized for cloud environments like Kubernetes, OpenShift or Docker-Swarm. 
+
+To start the Imixs-Microservice you just need to define a container stack with Docker Compose. A docker-compose.yml file is already part of the project and can be downloaded from [here](https://github.com/imixs/imixs-microservice/blob/master/docker-compose.yml). 
 
 To start the service run:
 
@@ -61,8 +62,6 @@ You can add or change accounts by updating the property files:
  * _imixs-users.properties_
  
 And of course  you can configure a different custom security realm (e.g. LDAP). 
-
-
 
 # How to Work With the Imixs-Microservice
 
@@ -104,25 +103,25 @@ To create a valid workitem the following attributes are mandatory:
 
 See the following Example:
 
-    {"item":[
-     {"name":"$modelversion","value":{"@type":"xs:string","$":"1.0"}},
-     {"name":"$taskid","value":{"@type":"xs:int","$":"1000"}}, 
-     {"name":"$eventid","value":{"@type":"xs:int","$":"10"}}, 
-     {"name":"_subject","value":{"@type":"xs:string","$":"...some business data..."}}
-    ]}  
+   
+	{"item": [
+	  {"name": "$modelversion","value": ["1.0"]},
+	  {"name": "$taskid","value": [1000]},
+	  {"name": "$eventid","value": [10]},
+	  {"name": "txtname","value": ["test"]}
+	]}    
     
 
 The example below shows how to post a new Workitem in the JSON format using the curl command. The request creates a new process instance with the $modelVerson 1.0, TaskID 10 and the inital EventID 10. 
 
-	$ curl --user admin:adminadmin -H "Content-Type: application/json" -H 'Accept: application/json' -d \
-	       '{"item":[ \
-	                 {"name":"type","value":{"@type":"xs:string","$":"workitem"}}, \
-	                 {"name":"$modelversion","value":{"@type":"xs:string","$":"1.0"}}, \
-	                 {"name":"$taskid","value":{"@type":"xs:int","$":"1000"}}, \
-	                 {"name":"$eventid","value":{"@type":"xs:int","$":"10"}}, \
-	                 {"name":"txtname","value":{"@type":"xs:string","$":"test-json"}}\
-	         ]}' \
-	         http://localhost:8080/api/workflow/workitem.json
+	curl --user admin:adminadmin -H "Content-Type: application/json" -H 'Accept: application/json' -d \
+	   '{"item": [
+	      {"name": "$modelversion","value": ["1.0"]},
+	      {"name": "$taskid","value": [1000]},
+	      {"name": "$eventid","value": [10]},
+	      {"name": "txtname","value": ["test"]}
+	    ]} '\
+	  http://localhost:8080/api/workflow/workitem
 
 
 Once you created a new process instance based on a predefined model you got a set of data back form the workflow engine describing the state of your new business object which is now controlled by the workflow engine. This is called the workitem:
@@ -267,47 +266,36 @@ You can initialize provided models by calling the Rest API URL:
 
 This will automatically reload the models from the defined location. 
 
-## How to Build a Local Docker Image
+
+
+# Development
+
+You can use Imixs-Microservice also as a template for a custom workflow project. To build the project from the source code run the maven command:
+
+    $ mvn clean install
 
 To build the Docker image locally from sources run:
 	
 	$ mvn clean install -Pdocker
 
-	
-## Docker for Production
 
-To run the Imixs-Microservice in a Docker production environment the project provides several additional maven profiles:
-
-
-### docker-build
-
-With the profile '_docker-build_' a docker container based on the current version of Imixs-Microservice is created locally
- 
-	$ cd imixs-microservice-app
-	$ mvn clean install -Pdocker-build
-
-
-### docker-push
-
-With the '_docker-push_' profile the current version of Imixs-Microservice can be pushed to a private remote repository:
-
-	mvn clean install -Pdocker-push -Dorg.imixs.docker.registry=localhost:5000
-
-where 'localhost:5000' need to be replaced with the host of a private registry. See the [docker-push command](https://docs.docker.com/docker-cloud/builds/push-images/) for more details.
-
-### docker-hub
-
-Imixs-Microservice is also available on [Docker-Hub](https://hub.docker.com/r/imixs/imixs-microservice/). The public docker images can be used for development and production. If you need technical support please contact [imixs.com](https://www.imixs.com/contact/) 
-
-
-# Development
+## Dev Docker Image
 
 The Imixs-Microservice project also includes a docker-compose-dev profile with additional settings and services. To run the Imixs-Microservice in developer mode run:
 
 	$ docker-compose -f docker-compose-dev.yml up
 
+You can map a local deployment directory for hot-deployment and model soruces:
+
+    ...
+    volumes:
+	    - ~/git/imixs-microservice/src/model/:/home/imixs/model/
+	    - ~/git/imixs-microservice/src/docker/deployments:/opt/wildfly/standalone/deployments/
+    ...
+
+
    
-### The Imixs-Admin Client
+## The Imixs-Admin Client
 
 In the developer mode the service provides an additional admin service. The [Imixs-Admin Client](http://www.imixs.org/doc/administration.html) is a web tool to administrate a running instance of the Imixs-Workflow Engine. The Imixs-Admin tool is automatically deployed when running Imixs-Microservice based on the official Docker Container. 
 
@@ -322,26 +310,9 @@ The connect URL to connect the Imixs-Admin Tool with your microservice is _http:
 To learn more about all the Imixs-Admin client, see the [official documentation](http://www.imixs.org/doc/administration.html). 
 
 
-### Build from Sources
-
-You can use Imixs-Microservice also as a template for a custom workflow project. To build the project from the source code run the maven command:
-
-    $ mvn clean install
- 		
-To build the image run:
-
-	$ mvn clean install -Pdocker 		
-
-You can also map a deployment directory for hot-deployment:
-
-    ...
-    volumes:
-        - ~/git/imixs-microservice/src/docker/deployments:/opt/wildfly/standalone/deployments/
-    ...
 
 
-
-### Extend the Imixs-Micorsevice
+## Extend the Imixs-Micorsevice
 
 If you plan to extend the Imixs-Microservice you just need to setup a Maven Overlay Project:
 

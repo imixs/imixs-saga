@@ -207,8 +207,6 @@ Portions Copyright [2016-2018] [Payara Foundation and/or its affiliates]
                     </provider-config>
                 </message-security-config>
                 <property value="SHA-256" name="default-digest-algorithm" />
-                
-               
             </security-service>
             <transaction-service tx-log-dir="${com.sun.aas.instanceRoot}/logs" >
             </transaction-service>

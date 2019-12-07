@@ -42,12 +42,14 @@
 			</principal>
 		</ejb>
 
+		<!-- Optional for Solr Index 
 		<ejb>
 			<ejb-name>SolrAutoFlushScheduler</ejb-name>
 			<principal>
 				<name>imixs-workflow-service</name>
 			</principal>
 		</ejb>
+		-->
 		
 		<ejb>
 			<ejb-name>BatchEventScheduler</ejb-name>
