@@ -62,20 +62,17 @@ import org.imixs.workflow.xml.XMLDataCollection;
 import org.imixs.workflow.xml.XMLDataCollectionAdapter;
 
 /**
- * This api endpoint provides methods to registry an Imixs-Microservice. The
+ * The root API endpoint provides methods to register an Imixs-Microservice. The
  * endpoint provides a GET method to list all registered services and a POST
- * method to register a new Imixs-Microserivce. The Imixs-Microservice core api
+ * method to register a new Imixs-Microserivce. The Imixs-Microservice core API
  * provides the EJB 'RegistrySelfRegistrationService' which will automatically
  * register a Imixs-Microservice on startup if the property 'imixs.registry.api'
  * is set.
  * <p>
- * The service provides the API Resource /workflow to POST a BusinessEvent
- * (ItemCollection)
- * <p>
  * The client must have Manager access to be allowed to use this service.
  * <p>
  * Model Versions are ambiguous. It is not allowed to register a model version
- * with different api endpoints.
+ * with different API endpoints.
  * 
  * @author rsoika
  *

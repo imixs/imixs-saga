@@ -78,20 +78,24 @@ import org.imixs.workflow.xml.XMLDocument;
 import org.imixs.workflow.xml.XMLDocumentAdapter;
 
 /**
- * This api endpoint provides methods to registry an Imixs-Microservice. The
- * endpoint provides a GET method to list all registered services and a POST
- * method to register a new Imixs-Microserivce. The Imixs-Microservice core api
- * provides the EJB 'RegistrySelfRegistrationService' which will automatically
- * register a Imixs-Microservice on startup if the property 'imixs.registry.api'
- * is set.
+ * The api endpoint '/workflow' provides methods to create or update a process
+ * instance based on a BusinessEvent (ItemCollection)
  * <p>
- * The service provides the API Resource /workflow to POST a BusinessEvent
- * (ItemCollection)
+ * A POST request for the resource '/workitem' discovers a service based on the
+ * data of a businessEvent. In case the businessEvent contains a uid than a
+ * search request is delegated to the Solr Index to lookup the existing instance
+ * and extract the $api item.
  * <p>
- * The client must have Manager access to be allowed to use this service.
+ * In case the businessEvent contains no uid the service will be discovered by
+ * the provided business data (e.g. $modelversion, $workflowgroup or business
+ * rules). If a service was found the item $api will contain the service
+ * endpoint.
  * <p>
- * Model Versions are ambiguous. It is not allowed to register a model version
- * with different api endpoints.
+ * The response code of the response object is set to 200 if case the processing
+ * was successful. In case of an Exception a error message is generated and the
+ * status NOT_ACCEPTABLE is returned.
+ * <p>
+ * 
  * 
  * @author rsoika
  *
@@ -529,8 +533,11 @@ public class WorkflowRestService {
 			}
 
 		} else {
+			// create a new process instance based by calling the discovery service.
 			discoveryService.discoverService(businessEvent);
 		}
+
+		// if we still have no $api endpoint, then we reject the request
 		serviceAPI = businessEvent.getItemValueString(RegistryService.ITEM_API);
 		if (serviceAPI.isEmpty()) {
 			logger.severe("Invalid workitem - no service endpoint found!");
@@ -541,9 +548,11 @@ public class WorkflowRestService {
 		/*
 		 * Test the status of the discovered businessEvent object.
 		 * 
-		 * If we have a workItem with a $eventId - in this case we need to process In
-		 * case we have a uniqueid and no $eventId we can return this instance without
-		 * processing
+		 * If we have a workItem with a $eventId - in this case we need to process the
+		 * process instance.
+		 * 
+		 * In case we have a uniqueid but no $eventId we can return this instance
+		 * without processing
 		 * 
 		 * In case we have no $uniqueId or a $eventID than we process the business event
 		 * by the given api endpoint.

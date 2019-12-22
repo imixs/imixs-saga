@@ -39,7 +39,6 @@ import javax.ejb.Stateless;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
-
 import org.imixs.workflow.BPMNRuleEngine;
 import org.imixs.workflow.ItemCollection;
 import org.imixs.workflow.Model;
@@ -63,8 +62,10 @@ import org.imixs.workflow.exceptions.ModelException;
  * The discoverService does not start the processing life cycle.
  * <p>
  * During the discovery process the service sends discoveryEvents which can be
- * used by an observer CDI bean to intercept the life cycle of the process.
- * 
+ * used by an observer CDI bean to intercept the life cycle of the process. In
+ * case an observer returns a service endpoint by itself the discovery process
+ * is stopped and the provided api endpoint is returned without evaluating any
+ * business rules.
  * 
  * @author Ralph Soika
  * @version 1.0
@@ -94,6 +95,9 @@ public class DiscoveryService {
 	 * <p>
 	 * During the discovery process the service sends discoveryEvents which can be
 	 * used by an observer CDI bean to intercept the life cycle of the process.
+	 * <p>
+	 * An observer may select a service endpoint by itself. In this case the
+	 * discovery process is stopped and the provided api endpoint is returned.
 	 * 
 	 * @param businessEvent
 	 */
@@ -113,15 +117,15 @@ public class DiscoveryService {
 		// Fire the DocumentEvent BEFORE_DISCOVERY
 		if (discoveryEvents != null) {
 			discoveryEvents.fire(new DiscoveryEvent(businessEvent, DiscoveryEvent.BEFORE_DISCOVERY));
-			
+
 			// test if we have a $api information provided by a oberserver bean...
 			if (businessEvent.hasItem(RegistryService.ITEM_API)) {
 				if (debug) {
 					logger.finest("...redirect by event 'BEFORE_DISCOVERY'...");
 				}
 				return;
-			}			
-			
+			}
+
 		} else {
 			logger.warning("Missing CDI support for Event<DiscoveryEvent> !");
 		}
@@ -337,7 +341,7 @@ public class DiscoveryService {
 
 		Collection<BPMNModel> models = registryService.getModels();
 		for (BPMNModel model : models) {
-			int taskID=0;
+			int taskID = 0;
 			try {
 				bpmnRuleEngine = new BPMNRuleEngine(model);
 				model.initStartEvent(businessEventClone);
@@ -346,15 +350,15 @@ public class DiscoveryService {
 				String message = "Discover Business Rule failed - $modelversion=" + model.getVersion() + " ▷ "
 						+ businessEventClone.getTaskID() + "→" + businessEventClone.getEventID() + " ERROR: "
 						+ e.getMessage();
-				
+
 				if (debug) {
 					// print businessEvent data for analyzing
 					List<String> itemNames = businessEvent.getItemNames();
-					for (String item: itemNames) {
-						logger.finest("       " + item + "="+businessEvent.getItemValueString(item));
+					for (String item : itemNames) {
+						logger.finest("       " + item + "=" + businessEvent.getItemValueString(item));
 					}
 				}
-				
+
 				throw new ModelException(e.getErrorCode(), message, e);
 			}
 			// test if this is an EndTask. If the model did not match!
