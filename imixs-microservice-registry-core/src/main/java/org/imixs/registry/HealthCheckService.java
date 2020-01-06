@@ -1,6 +1,7 @@
 /*******************************************************************************
- *  Imixs IX Workflow Technology
- *  Copyright (C) 2001, 2008 Imixs Software Solutions GmbH,  
+ * <pre>
+ *  Imixs Workflow 
+ *  Copyright (C) 2001-2020 Imixs Software Solutions GmbH,  
  *  http://www.imixs.com
  *  
  *  This program is free software; you can redistribute it and/or 
@@ -16,17 +17,21 @@
  *  You can receive a copy of the GNU General Public
  *  License at http://www.gnu.org/licenses/gpl.html
  *  
+ *  Project: 
+ *      https://www.imixs.org
+ *      https://github.com/imixs/imixs-workflow
+ *  
  *  Contributors:  
- *  	Imixs Software Solutions GmbH - initial API and implementation
- *  	Ralph Soika
+ *      Imixs Software Solutions GmbH - initial API and implementation
+ *      Ralph Soika - Software Developer
+ * </pre>
  *******************************************************************************/
+
 package org.imixs.registry;
 
 import java.util.List;
-
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-
 import org.eclipse.microprofile.health.Health;
 import org.eclipse.microprofile.health.HealthCheck;
 import org.eclipse.microprofile.health.HealthCheckResponse;
@@ -34,16 +39,14 @@ import org.eclipse.microprofile.health.HealthCheckResponseBuilder;
 import org.imixs.workflow.bpmn.BPMNModel;
 
 /**
- * The Imixs HealthCheckService implements the Microservice HealthCheck
- * interface.
+ * The Imixs HealthCheckService implements the Microservice HealthCheck interface.
  * <p>
  * The service returns the count of registered workflow models
  * <p>
- * Example:
- * <code>{"data":{"model.count":1},"name":"imixs-workflow","state":"UP"}</code>
+ * Example: <code>{"data":{"model.count":1},"name":"imixs-workflow","state":"UP"}</code>
  * <p>
- * This check indicates the overall status of the registry service. If models
- * are available the service works.
+ * This check indicates the overall status of the registry service. If models are available the
+ * service works.
  * 
  * @author rsoika
  * @version 1.0
@@ -52,44 +55,44 @@ import org.imixs.workflow.bpmn.BPMNModel;
 @ApplicationScoped
 public class HealthCheckService implements HealthCheck {
 
-	@Inject
-	private RegistryService registryService;
+  @Inject
+  private RegistryService registryService;
 
-	/**
-	 * This is the implementation for the health check call back method.
-	 * <p>
-	 * The method returns the status 'UP' in case the count of workflow models >= 0
-	 * <p>
-	 * Example:
-	 * <code>{"data":{"model.count":1},"name":"imixs-workflow","state":"UP"}</code>
-	 * <p>
-	 * This check indicates the overall status of the registry service. If
-	 * registryService is available, status is UP.
-	 * 
-	 */
-	@Override
-	public HealthCheckResponse call() {
-		HealthCheckResponseBuilder builder = null;
-		int modelCount = 0;
-		String errorMessage = null;
-		try {
-			List<BPMNModel> models = registryService.getModels();
-			if (models != null) {
-				modelCount = models.size();
-			}
-		} catch (Exception e) {
-			errorMessage = e.getMessage();
-			// failed! - result in status=down
-			modelCount = -1;
-		}
+  /**
+   * This is the implementation for the health check call back method.
+   * <p>
+   * The method returns the status 'UP' in case the count of workflow models >= 0
+   * <p>
+   * Example: <code>{"data":{"model.count":1},"name":"imixs-workflow","state":"UP"}</code>
+   * <p>
+   * This check indicates the overall status of the registry service. If registryService is
+   * available, status is UP.
+   * 
+   */
+  @Override
+  public HealthCheckResponse call() {
+    HealthCheckResponseBuilder builder = null;
+    int modelCount = 0;
+    String errorMessage = null;
+    try {
+      List<BPMNModel> models = registryService.getModels();
+      if (models != null) {
+        modelCount = models.size();
+      }
+    } catch (Exception e) {
+      errorMessage = e.getMessage();
+      // failed! - result in status=down
+      modelCount = -1;
+    }
 
-		if (modelCount >= 0) {
-			builder = HealthCheckResponse.named("imixs-registry").withData("model.count", modelCount).up();
-		} else {
-			builder = HealthCheckResponse.named("imixs-registry").withData("error", errorMessage).down();
-		}
+    if (modelCount >= 0) {
+      builder =
+          HealthCheckResponse.named("imixs-registry").withData("model.count", modelCount).up();
+    } else {
+      builder = HealthCheckResponse.named("imixs-registry").withData("error", errorMessage).down();
+    }
 
-		return builder.build();
-	}
+    return builder.build();
+  }
 
 }

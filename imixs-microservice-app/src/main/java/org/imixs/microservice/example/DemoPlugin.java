@@ -1,6 +1,7 @@
 /*******************************************************************************
+ * <pre>
  *  Imixs Workflow 
- *  Copyright (C) 2001, 2011 Imixs Software Solutions GmbH,  
+ *  Copyright (C) 2001-2020 Imixs Software Solutions GmbH,  
  *  http://www.imixs.com
  *  
  *  This program is free software; you can redistribute it and/or 
@@ -17,21 +18,20 @@
  *  License at http://www.gnu.org/licenses/gpl.html
  *  
  *  Project: 
- *  	http://www.imixs.org
- *  	http://java.net/projects/imixs-workflow
+ *      https://www.imixs.org
+ *      https://github.com/imixs/imixs-workflow
  *  
  *  Contributors:  
- *  	Imixs Software Solutions GmbH - initial API and implementation
- *  	Ralph Soika - Software Developer
+ *      Imixs Software Solutions GmbH - initial API and implementation
+ *      Ralph Soika - Software Developer
+ * </pre>
  *******************************************************************************/
 
 package org.imixs.microservice.example;
 
 import java.util.List;
 import java.util.logging.Logger;
-
 import javax.ejb.EJB;
-
 import org.imixs.workflow.ItemCollection;
 import org.imixs.workflow.WorkflowContext;
 import org.imixs.workflow.engine.ModelService;
@@ -48,34 +48,34 @@ import org.imixs.workflow.exceptions.PluginException;
 
 public class DemoPlugin extends AbstractPlugin {
 
-	// inject services...
-	@EJB
-	ModelService modelService;
+  // inject services...
+  @EJB
+  ModelService modelService;
 
-	private static Logger logger = Logger.getLogger(DemoPlugin.class.getName());
+  private static Logger logger = Logger.getLogger(DemoPlugin.class.getName());
 
-	public void init(WorkflowContext actx) throws PluginException {
-		// here we can initialize optional components 
-	}
+  public void init(WorkflowContext actx) throws PluginException {
+    // here we can initialize optional components
+  }
 
-	public ItemCollection run(ItemCollection documentContext, ItemCollection adocumentActivity)
-			throws PluginException {
+  public ItemCollection run(ItemCollection documentContext, ItemCollection adocumentActivity)
+      throws PluginException {
 
-		// test model service
-		List<String> versions = modelService.getVersions();
-		for (String aversion : versions) {
-			logger.info("ModelVersion found: " + aversion);
-		}
-		
-		// add a custom item
-		documentContext.setItemValue("_some_item", "Hello World");
-	
-		return documentContext;
-	}
+    // test model service
+    List<String> versions = modelService.getVersions();
+    for (String aversion : versions) {
+      logger.info("ModelVersion found: " + aversion);
+    }
 
-	@Override
-	public void close(boolean rollbackTransaction) throws PluginException {
-		// here we can react on a rollback transaction
-	}
+    // add a custom item
+    documentContext.setItemValue("_some_item", "Hello World");
+
+    return documentContext;
+  }
+
+  @Override
+  public void close(boolean rollbackTransaction) throws PluginException {
+    // here we can react on a rollback transaction
+  }
 
 }

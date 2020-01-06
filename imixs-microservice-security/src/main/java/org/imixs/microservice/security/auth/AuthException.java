@@ -1,6 +1,7 @@
 /*******************************************************************************
+ * <pre>
  *  Imixs Workflow 
- *  Copyright (C) 2001, 2011 Imixs Software Solutions GmbH,  
+ *  Copyright (C) 2001-2020 Imixs Software Solutions GmbH,  
  *  http://www.imixs.com
  *  
  *  This program is free software; you can redistribute it and/or 
@@ -17,12 +18,13 @@
  *  License at http://www.gnu.org/licenses/gpl.html
  *  
  *  Project: 
- *  	http://www.imixs.org
- *  	http://java.net/projects/imixs-workflow
+ *      https://www.imixs.org
+ *      https://github.com/imixs/imixs-workflow
  *  
  *  Contributors:  
- *  	Imixs Software Solutions GmbH - initial API and implementation
- *  	Ralph Soika - Software Developer
+ *      Imixs Software Solutions GmbH - initial API and implementation
+ *      Ralph Soika - Software Developer
+ * </pre>
  *******************************************************************************/
 
 package org.imixs.microservice.security.auth;
@@ -35,52 +37,52 @@ package org.imixs.microservice.security.auth;
  */
 public class AuthException extends Exception {
 
-	private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
-	public String errorContext = "UNDEFINED";
-	public String errorCode = "UNDEFINED";
+  public String errorContext = "UNDEFINED";
+  public String errorCode = "UNDEFINED";
 
-	public AuthException(String aErrorCode, String message) {
-		super(message);
-		errorCode = aErrorCode;
+  public AuthException(String aErrorCode, String message) {
+    super(message);
+    errorCode = aErrorCode;
 
-	}
+  }
 
-	public AuthException(String aErrorContext, String aErrorCode, String message) {
-		super(message);
-		errorContext = aErrorContext;
-		errorCode = aErrorCode;
+  public AuthException(String aErrorContext, String aErrorCode, String message) {
+    super(message);
+    errorContext = aErrorContext;
+    errorCode = aErrorCode;
 
-	}
+  }
 
-	public AuthException(String aErrorContext, String aErrorCode, String message, Exception e) {
-		super(message, e);
-		errorContext = aErrorContext;
-		errorCode = aErrorCode;
+  public AuthException(String aErrorContext, String aErrorCode, String message, Exception e) {
+    super(message, e);
+    errorContext = aErrorContext;
+    errorCode = aErrorCode;
 
-	}
+  }
 
-	public AuthException(String aErrorCode, String message, Exception e) {
-		super(message, e);
+  public AuthException(String aErrorCode, String message, Exception e) {
+    super(message, e);
 
-		errorCode = aErrorCode;
+    errorCode = aErrorCode;
 
-	}
+  }
 
-	public String getErrorContext() {
-		return errorContext;
-	}
+  public String getErrorContext() {
+    return errorContext;
+  }
 
-	public void setErrorContext(String errorContext) {
-		this.errorContext = errorContext;
-	}
+  public void setErrorContext(String errorContext) {
+    this.errorContext = errorContext;
+  }
 
-	public String getErrorCode() {
-		return errorCode;
-	}
+  public String getErrorCode() {
+    return errorCode;
+  }
 
-	public void setErrorCode(String errorCode) {
-		this.errorCode = errorCode;
-	}
+  public void setErrorCode(String errorCode) {
+    this.errorCode = errorCode;
+  }
 
 }
