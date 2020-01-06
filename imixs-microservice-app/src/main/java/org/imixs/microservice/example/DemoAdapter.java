@@ -1,6 +1,6 @@
-/*******************************************************************************
- * <pre>
- *  Imixs Workflow 
+/*  
+ *  Imixs-Workflow 
+ *  
  *  Copyright (C) 2001-2020 Imixs Software Solutions GmbH,  
  *  http://www.imixs.com
  *  
@@ -22,10 +22,9 @@
  *      https://github.com/imixs/imixs-workflow
  *  
  *  Contributors:  
- *      Imixs Software Solutions GmbH - initial API and implementation
+ *      Imixs Software Solutions GmbH - Project Management
  *      Ralph Soika - Software Developer
- * </pre>
- *******************************************************************************/
+ */
 
 package org.imixs.microservice.example;
 
@@ -38,7 +37,8 @@ import org.imixs.workflow.engine.ModelService;
 import org.imixs.workflow.exceptions.AdapterException;
 
 /**
- * This adapter class demonstrates the CDI behavior of an imixs workflow adapter.
+ * This adapter class demonstrates the CDI behavior of an imixs workflow
+ * adapter.
  * 
  * @author Ralph Soika
  * @version 1.0
@@ -47,26 +47,23 @@ import org.imixs.workflow.exceptions.AdapterException;
 
 public class DemoAdapter implements SignalAdapter {
 
-  // inject services...
-  @EJB
-  ModelService modelService;
+    // inject services...
+    @EJB
+    ModelService modelService;
 
-  private static Logger logger = Logger.getLogger(DemoAdapter.class.getName());
+    private static Logger logger = Logger.getLogger(DemoAdapter.class.getName());
 
+    @Override
+    public ItemCollection execute(ItemCollection document, ItemCollection event) throws AdapterException {
 
+        logger.info("...running demo adapter...");
+        // test model service
+        List<String> versions = modelService.getVersions();
+        for (String aversion : versions) {
+            logger.info("ModelVersion found: " + aversion);
+        }
 
-  @Override
-  public ItemCollection execute(ItemCollection document, ItemCollection event)
-      throws AdapterException {
-
-    logger.info("...running demo adapter...");
-    // test model service
-    List<String> versions = modelService.getVersions();
-    for (String aversion : versions) {
-      logger.info("ModelVersion found: " + aversion);
+        return document;
     }
-
-    return document;
-  }
 
 }

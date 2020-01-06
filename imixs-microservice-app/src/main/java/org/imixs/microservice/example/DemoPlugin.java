@@ -1,6 +1,6 @@
-/*******************************************************************************
- * <pre>
- *  Imixs Workflow 
+/*  
+ *  Imixs-Workflow 
+ *  
  *  Copyright (C) 2001-2020 Imixs Software Solutions GmbH,  
  *  http://www.imixs.com
  *  
@@ -22,10 +22,9 @@
  *      https://github.com/imixs/imixs-workflow
  *  
  *  Contributors:  
- *      Imixs Software Solutions GmbH - initial API and implementation
+ *      Imixs Software Solutions GmbH - Project Management
  *      Ralph Soika - Software Developer
- * </pre>
- *******************************************************************************/
+ */
 
 package org.imixs.microservice.example;
 
@@ -48,34 +47,33 @@ import org.imixs.workflow.exceptions.PluginException;
 
 public class DemoPlugin extends AbstractPlugin {
 
-  // inject services...
-  @EJB
-  ModelService modelService;
+    // inject services...
+    @EJB
+    ModelService modelService;
 
-  private static Logger logger = Logger.getLogger(DemoPlugin.class.getName());
+    private static Logger logger = Logger.getLogger(DemoPlugin.class.getName());
 
-  public void init(WorkflowContext actx) throws PluginException {
-    // here we can initialize optional components
-  }
-
-  public ItemCollection run(ItemCollection documentContext, ItemCollection adocumentActivity)
-      throws PluginException {
-
-    // test model service
-    List<String> versions = modelService.getVersions();
-    for (String aversion : versions) {
-      logger.info("ModelVersion found: " + aversion);
+    public void init(WorkflowContext actx) throws PluginException {
+        // here we can initialize optional components
     }
 
-    // add a custom item
-    documentContext.setItemValue("_some_item", "Hello World");
+    public ItemCollection run(ItemCollection documentContext, ItemCollection adocumentActivity) throws PluginException {
 
-    return documentContext;
-  }
+        // test model service
+        List<String> versions = modelService.getVersions();
+        for (String aversion : versions) {
+            logger.info("ModelVersion found: " + aversion);
+        }
 
-  @Override
-  public void close(boolean rollbackTransaction) throws PluginException {
-    // here we can react on a rollback transaction
-  }
+        // add a custom item
+        documentContext.setItemValue("_some_item", "Hello World");
+
+        return documentContext;
+    }
+
+    @Override
+    public void close(boolean rollbackTransaction) throws PluginException {
+        // here we can react on a rollback transaction
+    }
 
 }

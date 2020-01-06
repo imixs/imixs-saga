@@ -1,6 +1,6 @@
-/*******************************************************************************
- * <pre>
- *  Imixs Workflow 
+/*  
+ *  Imixs-Workflow 
+ *  
  *  Copyright (C) 2001-2020 Imixs Software Solutions GmbH,  
  *  http://www.imixs.com
  *  
@@ -22,10 +22,9 @@
  *      https://github.com/imixs/imixs-workflow
  *  
  *  Contributors:  
- *      Imixs Software Solutions GmbH - initial API and implementation
+ *      Imixs Software Solutions GmbH - Project Management
  *      Ralph Soika - Software Developer
- * </pre>
- *******************************************************************************/
+ */
 
 package org.imixs.microservice.security.auth;
 
@@ -33,9 +32,9 @@ import javax.servlet.http.HttpServletRequest;
 import org.imixs.melman.AbstractClient;
 
 /**
- * The AuthEvent provides a CDI observer pattern. The AuthEvent is fired by the RegistryService EJB.
- * An event Observer can react on this event to register a authentication filter by calling the
- * method registerClientRequestFilter.
+ * The AuthEvent provides a CDI observer pattern. The AuthEvent is fired by the
+ * RegistryService EJB. An event Observer can react on this event to register a
+ * authentication filter by calling the method registerClientRequestFilter.
  * <p>
  * See also the Imixs-Melman project
  * 
@@ -46,29 +45,29 @@ import org.imixs.melman.AbstractClient;
  */
 public class AuthEvent {
 
-  private AbstractClient client = null;
-  private HttpServletRequest request = null;
+    private AbstractClient client = null;
+    private HttpServletRequest request = null;
 
-  public AuthEvent(AbstractClient _client, HttpServletRequest _request) {
-    super();
-    setClient(_client);
-    setRequest(_request);
-  }
+    public AuthEvent(AbstractClient _client, HttpServletRequest _request) {
+        super();
+        setClient(_client);
+        setRequest(_request);
+    }
 
-  public AbstractClient getClient() {
-    return client;
-  }
+    public AbstractClient getClient() {
+        return client;
+    }
 
-  public void setClient(AbstractClient _client) {
-    this.client = _client;
-  }
+    public void setClient(AbstractClient _client) {
+        this.client = _client;
+    }
 
-  public HttpServletRequest getRequest() {
-    return request;
-  }
+    public HttpServletRequest getRequest() {
+        return request;
+    }
 
-  public void setRequest(HttpServletRequest request) {
-    this.request = request;
-  }
+    public void setRequest(HttpServletRequest request) {
+        this.request = request;
+    }
 
 }

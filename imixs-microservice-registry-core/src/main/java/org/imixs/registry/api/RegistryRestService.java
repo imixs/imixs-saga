@@ -1,6 +1,6 @@
-/*******************************************************************************
- * <pre>
- *  Imixs Workflow 
+/*  
+ *  Imixs-Workflow 
+ *  
  *  Copyright (C) 2001-2020 Imixs Software Solutions GmbH,  
  *  http://www.imixs.com
  *  
@@ -22,10 +22,9 @@
  *      https://github.com/imixs/imixs-workflow
  *  
  *  Contributors:  
- *      Imixs Software Solutions GmbH - initial API and implementation
+ *      Imixs Software Solutions GmbH - Project Management
  *      Ralph Soika - Software Developer
- * </pre>
- *******************************************************************************/
+ */
 
 package org.imixs.registry.api;
 
@@ -62,191 +61,191 @@ import org.imixs.workflow.xml.XMLDataCollection;
 import org.imixs.workflow.xml.XMLDataCollectionAdapter;
 
 /**
- * The root API endpoint provides methods to register an Imixs-Microservice. The endpoint provides a
- * GET method to list all registered services and a POST method to register a new
- * Imixs-Microserivce. The Imixs-Microservice core API provides the EJB
- * 'RegistrySelfRegistrationService' which will automatically register a Imixs-Microservice on
- * startup if the property 'imixs.registry.api' is set.
+ * The root API endpoint provides methods to register an Imixs-Microservice. The
+ * endpoint provides a GET method to list all registered services and a POST
+ * method to register a new Imixs-Microserivce. The Imixs-Microservice core API
+ * provides the EJB 'RegistrySelfRegistrationService' which will automatically
+ * register a Imixs-Microservice on startup if the property 'imixs.registry.api'
+ * is set.
  * <p>
  * The client must have Manager access to be allowed to use this service.
  * <p>
- * Model Versions are ambiguous. It is not allowed to register a model version with different API
- * endpoints.
+ * Model Versions are ambiguous. It is not allowed to register a model version
+ * with different API endpoints.
  * 
  * @author rsoika
  *
  */
 @Path("/")
-@Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.TEXT_XML})
+@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.TEXT_XML })
 @Singleton
 public class RegistryRestService {
 
-  @javax.ws.rs.core.Context
-  private HttpServletRequest servletRequest;
+    @javax.ws.rs.core.Context
+    private HttpServletRequest servletRequest;
 
-  private static Logger logger = Logger.getLogger(RegistryRestService.class.getName());
+    private static Logger logger = Logger.getLogger(RegistryRestService.class.getName());
 
-  @Inject
-  protected RegistryService registrationService;
+    @Inject
+    protected RegistryService registrationService;
 
-  @Inject
-  protected DiscoveryService discoveryService;
+    @Inject
+    protected DiscoveryService discoveryService;
 
-  @Inject
-  protected SearchService searchService;
+    @Inject
+    protected SearchService searchService;
 
-  @Inject
-  protected Event<AuthEvent> authEvents;
+    @Inject
+    protected Event<AuthEvent> authEvents;
 
-  /**
-   * Retuns a list of all registered service definitions in a XML format
-   * 
-   * @return
-   */
-  @GET
-  @Path("services/")
-  public Response listServices(@QueryParam("format") String format) {
+    /**
+     * Retuns a list of all registered service definitions in a XML format
+     * 
+     * @return
+     */
+    @GET
+    @Path("services/")
+    public Response listServices(@QueryParam("format") String format) {
 
-    List<ItemCollection> result = new ArrayList<ItemCollection>();
-    Set<String> services = registrationService.getServices();
-    for (String service : services) {
-      List<BPMNModel> _modelList = registrationService.getModelByService(service);
+        List<ItemCollection> result = new ArrayList<ItemCollection>();
+        Set<String> services = registrationService.getServices();
+        for (String service : services) {
+            List<BPMNModel> _modelList = registrationService.getModelByService(service);
 
-      for (BPMNModel amodel : _modelList) {
-        ItemCollection def = new ItemCollection();
-        def.setItemValue(RegistryService.ITEM_API, service);
+            for (BPMNModel amodel : _modelList) {
+                ItemCollection def = new ItemCollection();
+                def.setItemValue(RegistryService.ITEM_API, service);
 
-        def.model(amodel.getVersion());
-        def.setItemValue("$workflowgroups", amodel.getGroups());
-        result.add(def);
-      }
+                def.model(amodel.getVersion());
+                def.setItemValue("$workflowgroups", amodel.getGroups());
+                result.add(def);
+            }
 
-    }
-    return convertResultList(result, format);
-  }
-
-  /**
-   * This method registers a Imixs-Microservice provided in xml document description.
-   * <p>
-   * The document can contain items with a regex to define a matcher object.
-   * <p>
-   * The item '$api' is mandatory and must contain a valid service api endpoint accessible form the
-   * Imixs-Registry service.
-   * 
-   * @param xmlworkitem - service description to be registered.
-   * @return status
-   */
-  @POST
-  @Path("services/")
-  @Produces(MediaType.APPLICATION_XML)
-  @Consumes({MediaType.APPLICATION_XML, "text/xml"})
-  public Response registerService(XMLDataCollection xmlDataCollection) {
-    long l = System.currentTimeMillis();
-    boolean debug = logger.isLoggable(Level.FINE);
-
-    if (servletRequest.isUserInRole("org.imixs.ACCESSLEVEL.MANAGERACCESS") == false) {
-      return Response.status(Response.Status.UNAUTHORIZED).build();
+        }
+        return convertResultList(result, format);
     }
 
-    if (xmlDataCollection == null) {
-      return Response.status(Response.Status.NOT_ACCEPTABLE).build();
-    }
+    /**
+     * This method registers a Imixs-Microservice provided in xml document
+     * description.
+     * <p>
+     * The document can contain items with a regex to define a matcher object.
+     * <p>
+     * The item '$api' is mandatory and must contain a valid service api endpoint
+     * accessible form the Imixs-Registry service.
+     * 
+     * @param xmlworkitem - service description to be registered.
+     * @return status
+     */
+    @POST
+    @Path("services/")
+    @Produces(MediaType.APPLICATION_XML)
+    @Consumes({ MediaType.APPLICATION_XML, "text/xml" })
+    public Response registerService(XMLDataCollection xmlDataCollection) {
+        long l = System.currentTimeMillis();
+        boolean debug = logger.isLoggable(Level.FINE);
 
-    List<ItemCollection> modelDefinitions =
-        XMLDataCollectionAdapter.putDataCollection(xmlDataCollection);
+        if (servletRequest.isUserInRole("org.imixs.ACCESSLEVEL.MANAGERACCESS") == false) {
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+        }
 
-    if (debug) {
-      logger.finest("...receifed " + modelDefinitions.size() + " model definitions.");
-    }
-    for (ItemCollection modelEntity : modelDefinitions) {
+        if (xmlDataCollection == null) {
+            return Response.status(Response.Status.NOT_ACCEPTABLE).build();
+        }
 
-      String serviceEndpoint = modelEntity.getItemValueString(RegistryService.ITEM_API);
-      if (serviceEndpoint.isEmpty()) {
-        logger.severe(
-            "Invalid service registration. model description does not contain an api endpoint '"
-                + RegistryService.ITEM_API + "'");
-        return Response.status(Response.Status.NOT_ACCEPTABLE).build();
-      }
+        List<ItemCollection> modelDefinitions = XMLDataCollectionAdapter.putDataCollection(xmlDataCollection);
 
-      BPMNModel model = getModelFromModelEntity(modelEntity);
-      if (model != null) {
-        // test if model version is ambiguous...
-        String _service = registrationService.getServiceByModelVersion(model.getVersion());
-        if (_service != null && !serviceEndpoint.equals(_service)) {
-          logger.severe("Invalid service registration. ModelVersion is ambiguous for api endpoint '"
-              + _service + "'");
-          return Response.status(Response.Status.NOT_ACCEPTABLE).build();
+        if (debug) {
+            logger.finest("...receifed " + modelDefinitions.size() + " model definitions.");
+        }
+        for (ItemCollection modelEntity : modelDefinitions) {
+
+            String serviceEndpoint = modelEntity.getItemValueString(RegistryService.ITEM_API);
+            if (serviceEndpoint.isEmpty()) {
+                logger.severe("Invalid service registration. model description does not contain an api endpoint '"
+                        + RegistryService.ITEM_API + "'");
+                return Response.status(Response.Status.NOT_ACCEPTABLE).build();
+            }
+
+            BPMNModel model = getModelFromModelEntity(modelEntity);
+            if (model != null) {
+                // test if model version is ambiguous...
+                String _service = registrationService.getServiceByModelVersion(model.getVersion());
+                if (_service != null && !serviceEndpoint.equals(_service)) {
+                    logger.severe("Invalid service registration. ModelVersion is ambiguous for api endpoint '"
+                            + _service + "'");
+                    return Response.status(Response.Status.NOT_ACCEPTABLE).build();
+                }
+                if (debug) {
+                    logger.fine("... add model '" + model.getVersion() + "' at service: " + serviceEndpoint);
+                }
+                registrationService.setModelByService(serviceEndpoint, model);
+            }
         }
         if (debug) {
-          logger.fine("... add model '" + model.getVersion() + "' at service: " + serviceEndpoint);
+            logger.fine("......registered " + modelDefinitions.size() + " model definitions in "
+                    + (System.currentTimeMillis() - l) + "ms....");
         }
-        registrationService.setModelByService(serviceEndpoint, model);
-      }
+        return Response.ok().build();
     }
-    if (debug) {
-      logger.fine("......registered " + modelDefinitions.size() + " model definitions in "
-          + (System.currentTimeMillis() - l) + "ms....");
-    }
-    return Response.ok().build();
-  }
 
-  private BPMNModel getModelFromModelEntity(ItemCollection modelEntity) {
-    List<FileData> files = modelEntity.getFileData();
-    boolean debug = logger.isLoggable(Level.FINE);
+    private BPMNModel getModelFromModelEntity(ItemCollection modelEntity) {
+        List<FileData> files = modelEntity.getFileData();
+        boolean debug = logger.isLoggable(Level.FINE);
 
-    for (FileData file : files) {
-      if (debug) {
-        logger.finest("......loading file:" + file.getName());
-      }
-      byte[] rawData = file.getContent();
-      InputStream bpmnInputStream = new ByteArrayInputStream(rawData);
-      try {
-        BPMNModel model = BPMNParser.parseModel(bpmnInputStream, "UTF-8");
-        return model;
+        for (FileData file : files) {
+            if (debug) {
+                logger.finest("......loading file:" + file.getName());
+            }
+            byte[] rawData = file.getContent();
+            InputStream bpmnInputStream = new ByteArrayInputStream(rawData);
+            try {
+                BPMNModel model = BPMNParser.parseModel(bpmnInputStream, "UTF-8");
+                return model;
 
-      } catch (Exception e) {
-        logger.warning("Failed to load model '" + file.getName() + "' : " + e.getMessage());
-      }
+            } catch (Exception e) {
+                logger.warning("Failed to load model '" + file.getName() + "' : " + e.getMessage());
+            }
+        }
+        return null;
     }
-    return null;
-  }
 
-  /**
-   * This method converts a ItemCollection List into a Jax-rs response object.
-   * <p>
-   * The method expects optional items and format string (json|xml)
-   * <p>
-   * In case the result set is null, than the method returns an empty collection.
-   * 
-   * @param result list of ItemCollection
-   * @param items  - optional item list
-   * @param format - optional format string (json|xml)
-   * @return jax-rs Response object.
-   */
-  private Response convertResultList(Collection<ItemCollection> result, String format) {
-    if (result == null) {
-      result = new ArrayList<ItemCollection>();
+    /**
+     * This method converts a ItemCollection List into a Jax-rs response object.
+     * <p>
+     * The method expects optional items and format string (json|xml)
+     * <p>
+     * In case the result set is null, than the method returns an empty collection.
+     * 
+     * @param result list of ItemCollection
+     * @param items  - optional item list
+     * @param format - optional format string (json|xml)
+     * @return jax-rs Response object.
+     */
+    private Response convertResultList(Collection<ItemCollection> result, String format) {
+        if (result == null) {
+            result = new ArrayList<ItemCollection>();
+        }
+        if ("json".equals(format)) {
+            return Response
+                    // Set the status and Put your entity here.
+                    .ok(XMLDataCollectionAdapter.getDataCollection(result))
+                    // Add the Content-Type header to tell Jersey which format it should marshall
+                    // the entity into.
+                    .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON).build();
+        } else if ("xml".equals(format)) {
+            return Response
+                    // Set the status and Put your entity here.
+                    .ok(XMLDataCollectionAdapter.getDataCollection(result))
+                    // Add the Content-Type header to tell Jersey which format it should marshall
+                    // the entity into.
+                    .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_XML).build();
+        } else {
+            // default header param
+            return Response
+                    // Set the status and Put your entity here.
+                    .ok(XMLDataCollectionAdapter.getDataCollection(result)).build();
+        }
     }
-    if ("json".equals(format)) {
-      return Response
-          // Set the status and Put your entity here.
-          .ok(XMLDataCollectionAdapter.getDataCollection(result))
-          // Add the Content-Type header to tell Jersey which format it should marshall
-          // the entity into.
-          .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON).build();
-    } else if ("xml".equals(format)) {
-      return Response
-          // Set the status and Put your entity here.
-          .ok(XMLDataCollectionAdapter.getDataCollection(result))
-          // Add the Content-Type header to tell Jersey which format it should marshall
-          // the entity into.
-          .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_XML).build();
-    } else {
-      // default header param
-      return Response
-          // Set the status and Put your entity here.
-          .ok(XMLDataCollectionAdapter.getDataCollection(result)).build();
-    }
-  }
 
 }

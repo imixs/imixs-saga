@@ -1,6 +1,6 @@
-/*******************************************************************************
- * <pre>
- *  Imixs Workflow 
+/*  
+ *  Imixs-Workflow 
+ *  
  *  Copyright (C) 2001-2020 Imixs Software Solutions GmbH,  
  *  http://www.imixs.com
  *  
@@ -22,10 +22,9 @@
  *      https://github.com/imixs/imixs-workflow
  *  
  *  Contributors:  
- *      Imixs Software Solutions GmbH - initial API and implementation
+ *      Imixs Software Solutions GmbH - Project Management
  *      Ralph Soika - Software Developer
- * </pre>
- *******************************************************************************/
+ */
 
 package org.imixs.microservice.security.auth;
 
@@ -41,15 +40,15 @@ import javax.ws.rs.core.MultivaluedMap;
  */
 public class PropagationAuthenticator implements ClientRequestFilter {
 
-  private final String token;
+    private final String token;
 
-  public PropagationAuthenticator(String authenticationToken) {
-    this.token = authenticationToken;
-  }
+    public PropagationAuthenticator(String authenticationToken) {
+        this.token = authenticationToken;
+    }
 
-  public void filter(ClientRequestContext requestContext) throws IOException {
-    MultivaluedMap<String, Object> headers = requestContext.getHeaders();
-    headers.add("Authorization", token);
-  }
+    public void filter(ClientRequestContext requestContext) throws IOException {
+        MultivaluedMap<String, Object> headers = requestContext.getHeaders();
+        headers.add("Authorization", token);
+    }
 
 }
