@@ -266,7 +266,6 @@ public class UpdateService implements Serializable {
                         Map<String, List<Object>> data = (Map<String, List<Object>>) dataEntries.get(0);
                         ItemCollection workitem = new ItemCollection(data);
 
-                        
                         // do we have already an deletion entry then remove it..
                         distinctDeletions.remove(uniqueid);
                         distinctUpdates.put(uniqueid, workitem);
