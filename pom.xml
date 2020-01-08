@@ -67,7 +67,7 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<org.imixs.workflow.version>5.1.5</org.imixs.workflow.version>
+		<org.imixs.workflow.version>5.1.6</org.imixs.workflow.version>
 		<org.imixs.adapters.version>2.1.0</org.imixs.adapters.version>
 		<org.imixs.melman.version>1.0.14</org.imixs.melman.version>
 		<org.imixs.jwt.version>1.0.2</org.imixs.jwt.version>
