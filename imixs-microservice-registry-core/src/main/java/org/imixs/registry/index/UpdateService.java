@@ -253,19 +253,20 @@ public class UpdateService implements Serializable {
                     String id = eventLogEntry.getItemValueString("id");
                     String topic = eventLogEntry.getItemValueString("topic");
                     String uniqueid = eventLogEntry.getItemValueString("ref");
-                    List<?> dataEntries = eventLogEntry.getItemValue("data");
-                    if (dataEntries == null || dataEntries.size() == 0) {
-                        logger.warning("wrong eventLogEntry '" + id
-                                + "' - does not contain a data object - entry will be deleted...");
-                        eventLogClient.deleteEventLogEntry(id);
-                        continue;
-                    }
-                    Map<String, List<Object>> data = (Map<String, List<Object>>) dataEntries.get(0);
-                    ItemCollection workitem = new ItemCollection(data);
-
                     // if the document was found we add/update the index. Otherwise we remove the
                     // document form the index.
                     if (EVENTLOG_TOPIC_INDEX_ADD.equals(topic)) {
+                        List<?> dataEntries = eventLogEntry.getItemValue("data");
+                        if (dataEntries == null || dataEntries.size() == 0) {
+                            logger.warning("wrong eventLogEntry '" + id
+                                    + "' - does not contain a data object - entry will be deleted...");
+                            eventLogClient.deleteEventLogEntry(id);
+                            continue;
+                        }
+                        Map<String, List<Object>> data = (Map<String, List<Object>>) dataEntries.get(0);
+                        ItemCollection workitem = new ItemCollection(data);
+
+                        
                         // do we have already an deletion entry then remove it..
                         distinctDeletions.remove(uniqueid);
                         distinctUpdates.put(uniqueid, workitem);
