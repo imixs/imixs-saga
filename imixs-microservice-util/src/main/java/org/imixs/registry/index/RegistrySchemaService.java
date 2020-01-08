@@ -34,9 +34,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.StringTokenizer;
+
 import javax.annotation.PostConstruct;
 import javax.ejb.Singleton;
 import javax.inject.Inject;
+
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.imixs.workflow.WorkflowKernel;
 
@@ -140,5 +142,28 @@ public class RegistrySchemaService implements Serializable {
     return itemName;
   }
 
+  
+  /**
+   * This method adapts an Imixs item name to the corresponding Solr field name. Because Solr does
+   * not accept $ char at the beginning of an field we need to replace starting $ with _ if the item
+   * is part of the Imixs Index Schema.
+   * 
+   * @param itemName
+   * @return adapted Solr field name
+   */
+  public String adaptImixsItemName(String itemName) {
+    if (itemName == null || itemName.isEmpty() || schemaFieldList == null) {
+      return itemName;
+    }
+    if (itemName.charAt(0) == '$') {
+      if (schemaFieldList.contains(itemName)) {
+        String adaptedName = "_" + itemName.substring(1);
+        return adaptedName;
+      }
+    }
+    return itemName;
+  }
+
+  
 
 }

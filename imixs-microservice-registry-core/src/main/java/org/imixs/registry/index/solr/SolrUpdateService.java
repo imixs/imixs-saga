@@ -118,20 +118,6 @@ public class SolrUpdateService implements Serializable {
             BasicAuthenticator authenticator = new BasicAuthenticator(user, password);
             restClient.registerRequestFilter(authenticator);
         }
-
-        // try to get the schema of the core...
-        try {
-            String existingSchema = restClient.get(api + "/api/cores/" + core + "/schema");
-            logger.info("...core   - OK ");
-
-            // update schema
-            updateSchema(existingSchema);
-        } catch (org.imixs.workflow.services.rest.RestAPIException e) {
-            // no schema found
-            logger.severe("...no solr core '" + core + "' found - " + e.getMessage() + ": verify the solr instance!");
-
-        }
-
     }
 
     /**
@@ -291,7 +277,7 @@ public class SolrUpdateService implements Serializable {
      * @throws RestAPIException
      * @throws                  org.imixs.workflow.services.rest.RestAPIException
      */
-    private void updateSchema(String schema) throws RestAPIException {
+    public void updateSchema(String schema) throws RestAPIException {
 
         // create the schema....
         String schemaUpdate = buildUpdateSchema(schema);
@@ -390,7 +376,7 @@ public class SolrUpdateService implements Serializable {
             String type, boolean store, boolean docvalue) {
 
         // replace $ with _
-        String name = registrySchemaService.adaptSolrFieldName(_name);
+        String name = registrySchemaService.adaptImixsItemName(_name);
 
         String fieldDefinition = "{\"name\":\"" + name + "\",\"type\":\"" + type + "\",\"stored\":" + store
                 + ",\"docValues\":" + docvalue + "}";
