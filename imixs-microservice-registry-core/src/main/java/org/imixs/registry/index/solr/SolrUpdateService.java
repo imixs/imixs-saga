@@ -158,33 +158,41 @@ public class SolrUpdateService implements Serializable {
     /**
      * This method removes a collection of documents from the Lucene Solr index.
      * 
-     * @param documents of collection of UniqueIDs to be removed from the index
+     * @param documentIDs of collection of UniqueIDs to be removed from the index
      * @throws org.imixs.workflow.services.rest.RestAPIException
      */
-    public void removeDocuments(Set<String> documents) throws RestAPIException {
+    public void removeDocuments(Set<String> documentIDs) throws RestAPIException {
+        boolean debug = logger.isLoggable(Level.FINE);
         long ltime = System.currentTimeMillis();
 
-        if (documents == null || documents.size() == 0) {
+        if (documentIDs == null || documentIDs.size() == 0) {
             // no op!
             return;
         } else {
             StringBuffer xmlDelete = new StringBuffer();
             xmlDelete.append("<delete>");
-            for (String id : documents) {
+            for (String id : documentIDs) {
                 xmlDelete.append("<id>" + id + "</id>");
             }
             xmlDelete.append("</delete>");
             String xmlRequest = xmlDelete.toString();
-            String uri = api + "/solr/" + core + "/update";
-            logger.finest("......delete documents '" + core + "':");
+            String uri = api + "/solr/" + core + "/update?commit=true";
+            if (debug) {
+                logger.finest("......delete documents '" + core + "':");
+            }
+            
             restClient.post(uri, xmlRequest, "text/xml");
         }
 
-        if (logger.isLoggable(Level.FINE)) {
-            logger.fine("... update index block in " + (System.currentTimeMillis() - ltime) + " ms (" + documents.size()
+        if (debug) {
+            logger.fine("... update index block in " + (System.currentTimeMillis() - ltime) + " ms (" + documentIDs.size()
                     + " workitems total)");
         }
     }
+    
+  
+    
+    
 
     /**
      * This method post a search query and returns the result.
