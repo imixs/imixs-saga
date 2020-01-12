@@ -32,7 +32,9 @@ package org.imixs.registry.index;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 import javax.annotation.PostConstruct;
@@ -40,9 +42,11 @@ import javax.ejb.Singleton;
 import javax.inject.Inject;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.imixs.workflow.WorkflowKernel;
 
 /**
- * The RegistrySchemaService provides schema informations used by the Imixs-Registry Solr Index.
+ * The RegistrySchemaService provides schema informations used by the
+ * Imixs-Registry Solr Index.
  * 
  * @version 1.0
  * @author rsoika
@@ -50,119 +54,130 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
  */
 @Singleton
 public class RegistrySchemaService implements Serializable {
-  private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-  public static List<String> DEFAULT_STORE_FIELD_LIST = Arrays.asList(
-      "type", "$taskid", "$writeaccess", "$workflowsummary", "$workflowabstract",
-      "$workflowgroup", "$workflowstatus", "$modified", "$created", "$modelversion",
-      "$lasteventdate", "$creator", "$editor", "$lasteditor", "$owner", "namowner", "$api");
+    public static List<String> DEFAULT_STORE_FIELD_LIST = Arrays.asList("type", "$taskid", "$writeaccess",
+            "$workflowsummary", "$workflowabstract", "$workflowgroup", "$workflowstatus", "$modified", "$created",
+            "$modelversion", "$lasteventdate", "$creator", "$editor", "$lasteditor", "$owner", "namowner", "$api");
 
-  private List<String> schemaFieldList = null;
+    private List<String> schemaFieldList = null;
 
-  @Inject
-  @ConfigProperty(name = "imixs.registry.index.fields", defaultValue = "")
-  String imixsIndexFieldList;
+    @Inject
+    @ConfigProperty(name = "imixs.registry.index.fields", defaultValue = "")
+    String imixsIndexFieldList;
 
-  /**
-   * Create a solr rest client instance
-   * 
-   * @throws org.imixs.workflow.services.rest.RestAPIException
-   */
-  @PostConstruct
-  public void init() {
+    private Set<String> uniqueFieldList = null;
 
-    // crate unique index fields
-    schemaFieldList = new ArrayList<String>();
-    schemaFieldList.addAll(DEFAULT_STORE_FIELD_LIST);
-    if (imixsIndexFieldList != null && !imixsIndexFieldList.isEmpty()) {
-      StringTokenizer st = new StringTokenizer(imixsIndexFieldList, ",");
-      while (st.hasMoreElements()) {
-        String sName = st.nextToken().toLowerCase().trim();
-        // do not add internal fields
-        if (!schemaFieldList.contains(sName)) {
-          schemaFieldList.add(sName);
+    /**
+     * Create a solr rest client instance
+     * 
+     * @throws org.imixs.workflow.services.rest.RestAPIException
+     */
+    @PostConstruct
+    public void init() {
+
+        // crate unique index fields
+        schemaFieldList = new ArrayList<String>();
+        schemaFieldList.addAll(DEFAULT_STORE_FIELD_LIST);
+        if (imixsIndexFieldList != null && !imixsIndexFieldList.isEmpty()) {
+            StringTokenizer st = new StringTokenizer(imixsIndexFieldList, ",");
+            while (st.hasMoreElements()) {
+                String sName = st.nextToken().toLowerCase().trim();
+                // do not add internal fields
+                if (!schemaFieldList.contains(sName)) {
+                    schemaFieldList.add(sName);
+                }
+            }
         }
-      }
+
+        // build unique field list containing all field names
+        uniqueFieldList = new HashSet<String>();
+        uniqueFieldList.add(WorkflowKernel.UNIQUEID);
+        uniqueFieldList.add("$readaccess");
+        uniqueFieldList.addAll(schemaFieldList);
+
     }
 
-
-  }
-
-  public List<String> getSchemaFieldList() {
-    return schemaFieldList;
-  }
-
-  /**
-   * This method adapts a search query for Imixs Item names and adapts these names with the
-   * corresponding Solr field name (replace $ with _)
-   * 
-   * @return
-   */
-  public String adaptQueryFieldNames(String _query) {
-    String result = _query;
-
-    if (_query == null || !_query.contains("$")) {
-      return result;
+    public List<String> getSchemaFieldList() {
+        return schemaFieldList;
     }
 
-    for (String imixsItemName : schemaFieldList) {
-      if (imixsItemName.charAt(0) == '$') {
-        // this item starts with $ and we need to parse the query for this item....
-        while (result.contains(imixsItemName + ":")) {
-          String solrField = "_" + imixsItemName.substring(1);
-          result = result.replace(imixsItemName + ":", solrField + ":");
+    /**
+     * Returns a unique list of all fields part of the index schema.
+     * 
+     * @return
+     */
+    public Set<String> getUniqueFieldList() {
+        return uniqueFieldList;
+    }
+
+    /**
+     * This method adapts a search query for Imixs Item names and adapts these names
+     * with the corresponding Solr field name (replace $ with _)
+     * 
+     * @return
+     */
+    public String adaptQueryFieldNames(String _query) {
+        String result = _query;
+
+        if (_query == null || !_query.contains("$")) {
+            return result;
         }
-      }
+
+        for (String imixsItemName : uniqueFieldList) {
+            if (imixsItemName.charAt(0) == '$') {
+                // this item starts with $ and we need to parse the query for this item....
+                while (result.contains(imixsItemName + ":")) {
+                    String solrField = "_" + imixsItemName.substring(1);
+                    result = result.replace(imixsItemName + ":", solrField + ":");
+                }
+            }
+        }
+
+        return result;
     }
 
-    return result;
-  }
+    /**
+     * This method adapts an Solr field name to the corresponding Imixs Item name.
+     * Because Solr does not accept $ char at the beginning of an field we need to
+     * replace starting _ with $ if the item is part of the Imixs Index Schema.
+     * 
+     * @param itemName
+     * @return adapted Imixs item name
+     */
+    public String adaptSolrFieldName(String itemName) {
+        if (itemName == null || itemName.isEmpty()) {
+            return itemName;
+        }
 
-  /**
-   * This method adapts an Solr field name to the corresponding Imixs Item name. Because Solr does
-   * not accept $ char at the beginning of an field we need to replace starting _ with $ if the item
-   * is part of the Imixs Index Schema.
-   * 
-   * @param itemName
-   * @return adapted Imixs item name
-   */
-  public String adaptSolrFieldName(String itemName) {
-    if (itemName == null || itemName.isEmpty()) {
-      return itemName;
+        if (itemName.charAt(0) == '_') {
+            String adaptedName = "$" + itemName.substring(1);
+            if (uniqueFieldList.contains(adaptedName)) {
+                return adaptedName;
+            }
+        }
+        return itemName;
     }
 
-
-    if (itemName.charAt(0) == '_') {
-      String adaptedName = "$" + itemName.substring(1);
-      if (schemaFieldList.contains(adaptedName)) {
-        return adaptedName;
-      }
+    /**
+     * This method adapts an Imixs item name to the corresponding Solr field name.
+     * Because Solr does not accept $ char at the beginning of an field we need to
+     * replace starting $ with _ if the item is part of the Imixs Index Schema.
+     * 
+     * @param itemName
+     * @return adapted Solr field name
+     */
+    public String adaptImixsItemName(String itemName) {
+        if (itemName == null || itemName.isEmpty()) {
+            return itemName;
+        }
+        if (itemName.charAt(0) == '$') {
+            if (uniqueFieldList.contains(itemName)) {
+                String adaptedName = "_" + itemName.substring(1);
+                return adaptedName;
+            }
+        }
+        return itemName;
     }
-    return itemName;
-  }
-
-  
-  /**
-   * This method adapts an Imixs item name to the corresponding Solr field name. Because Solr does
-   * not accept $ char at the beginning of an field we need to replace starting $ with _ if the item
-   * is part of the Imixs Index Schema.
-   * 
-   * @param itemName
-   * @return adapted Solr field name
-   */
-  public String adaptImixsItemName(String itemName) {
-    if (itemName == null || itemName.isEmpty() || schemaFieldList == null) {
-      return itemName;
-    }
-    if (itemName.charAt(0) == '$') {
-      if (schemaFieldList.contains(itemName)) {
-        String adaptedName = "_" + itemName.substring(1);
-        return adaptedName;
-      }
-    }
-    return itemName;
-  }
-
-  
 
 }
