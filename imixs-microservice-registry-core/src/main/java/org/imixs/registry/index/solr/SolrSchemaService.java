@@ -38,10 +38,12 @@
 package org.imixs.registry.index.solr;
 
 import java.util.logging.Logger;
+
 import javax.annotation.PostConstruct;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
 import javax.inject.Inject;
+
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.imixs.workflow.services.rest.BasicAuthenticator;
 import org.imixs.workflow.services.rest.RestClient;
@@ -113,4 +115,5 @@ public class SolrSchemaService {
         }
 
     }
+
 }
