@@ -39,6 +39,7 @@ import java.util.StringTokenizer;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.annotation.Resource;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
@@ -57,6 +58,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.imixs.melman.RestAPIException;
 import org.imixs.melman.WorkflowClient;
@@ -71,7 +73,7 @@ import org.imixs.workflow.ItemCollection;
 import org.imixs.workflow.WorkflowKernel;
 import org.imixs.workflow.exceptions.ImixsExceptionHandler;
 import org.imixs.workflow.exceptions.QueryException;
-import org.imixs.workflow.util.JSONParser;
+import org.imixs.workflow.util.ImixsJSONParser;
 import org.imixs.workflow.xml.XMLDataCollectionAdapter;
 import org.imixs.workflow.xml.XMLDocument;
 import org.imixs.workflow.xml.XMLDocumentAdapter;
@@ -339,7 +341,10 @@ public class WorkflowRestService {
 
         ItemCollection workitem = null;
         try {
-            workitem = JSONParser.parseWorkitem(requestBodyStream, encoding);
+            List<ItemCollection> result = ImixsJSONParser.parse(requestBodyStream);
+            if (result != null && result.size() > 0) {
+                workitem = result.get(0);
+            }
         } catch (ParseException e) {
             logger.severe("postJSONWorkitem wrong json format!");
             e.printStackTrace();
@@ -397,7 +402,10 @@ public class WorkflowRestService {
 
         ItemCollection workitem = null;
         try {
-            workitem = JSONParser.parseWorkitem(requestBodyStream, encoding);
+            List<ItemCollection> result = ImixsJSONParser.parse(requestBodyStream);
+            if (result != null && result.size() > 0) {
+                workitem = result.get(0);
+            }
         } catch (ParseException e) {
             logger.severe("postJSONWorkitemByUniqueID wrong json format!");
             e.printStackTrace();
@@ -514,19 +522,25 @@ public class WorkflowRestService {
                         logger.finest("...existing business object found in index, updating $api...");
                     }
                     // update $api information
-                    businessEvent.setItemValue(RegistryService.ITEM_API,
-                            _tmp.getItemValueString(RegistryService.ITEM_API));
+                    String _api = _tmp.getItemValueString(RegistryService.ITEM_API);
+                    if (_api.trim().isEmpty()) {
+                        logger.severe("Invalid registry index entry - no service endpoint defined for '"
+                                + businessEvent.getUniqueID() + "'");
+                        return Response.status(Response.Status.NOT_ACCEPTABLE).build();
+                    } else {
+                        businessEvent.setItemValue(RegistryService.ITEM_API, _api);
+                    }
                 } else {
                     // error 404 !
                     if (debug) {
                         logger.finest("......workitem '" + businessEvent.getUniqueID() + "' not found in index.");
                     }
-                    Response.status(Response.Status.NOT_FOUND).build();
+                    return Response.status(Response.Status.NOT_FOUND).build();
                 }
             } catch (QueryException e) {
                 // no corresponding document found!
                 logger.severe(uid + " not found or invalid read access!");
-                Response.status(Response.Status.NOT_ACCEPTABLE).build();
+                return Response.status(Response.Status.NOT_ACCEPTABLE).build();
             }
 
         } else {
@@ -537,7 +551,7 @@ public class WorkflowRestService {
         // if we still have no $api endpoint, then we reject the request
         serviceAPI = businessEvent.getItemValueString(RegistryService.ITEM_API);
         if (serviceAPI.isEmpty()) {
-            logger.severe("Invalid workitem - no service endpoint found!");
+            logger.severe("Invalid workitem - no service endpoint found for '" + businessEvent.getUniqueID() + "'");
             return Response.status(Response.Status.NOT_ACCEPTABLE).build();
         }
 
