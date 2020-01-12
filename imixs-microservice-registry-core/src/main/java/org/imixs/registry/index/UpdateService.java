@@ -248,11 +248,18 @@ public class UpdateService implements Serializable {
         }
         if (eventLogEntries != null && eventLogEntries.size() > 0) {
             try {
-
+                if (debug) {
+                    logger.finest("......" + eventLogEntries.size() + " new event log entries found");
+                }
                 for (ItemCollection eventLogEntry : eventLogEntries) {
                     String id = eventLogEntry.getItemValueString("id");
                     String topic = eventLogEntry.getItemValueString("topic");
                     String uniqueid = eventLogEntry.getItemValueString("ref");
+
+                    if (debug) {
+                        logger.finest("......topic=" + topic + " uniqueid=" + uniqueid);
+                    }
+
                     // if the document was found we add/update the index. Otherwise we remove the
                     // document form the index.
                     if (EVENTLOG_TOPIC_INDEX_ADD.equals(topic)) {
@@ -263,6 +270,7 @@ public class UpdateService implements Serializable {
                             eventLogClient.deleteEventLogEntry(id);
                             continue;
                         }
+
                         Map<String, List<Object>> data = (Map<String, List<Object>>) dataEntries.get(0);
                         ItemCollection workitem = new ItemCollection(data);
 

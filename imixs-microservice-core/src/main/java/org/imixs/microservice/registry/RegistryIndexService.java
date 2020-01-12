@@ -29,15 +29,17 @@
 package org.imixs.microservice.registry;
 
 import java.io.Serializable;
-import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.annotation.PostConstruct;
 import javax.annotation.security.DeclareRoles;
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
+
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.imixs.registry.index.RegistrySchemaService;
 import org.imixs.workflow.ItemCollection;
@@ -150,7 +152,7 @@ public class RegistryIndexService implements Serializable {
             }
             // index...
             if (debug) {
-                logger.finest("...index document...");
+                logger.finest("...add document to index ' " + documentEvent.getDocument().getUniqueID() + "'...");
             }
             addDocumentToIndex(documentEvent.getDocument());
         }
@@ -158,7 +160,7 @@ public class RegistryIndexService implements Serializable {
         if (documentEvent.getEventType() == DocumentEvent.ON_DOCUMENT_DELETE) {
             // index...
             if (debug) {
-                logger.finest("...remove indexed document...");
+                logger.finest("...remove document from index ' \" +documentEvent.getDocument().getUniqueID() + \"'...");
             }
             removeDocumentToIndex(documentEvent.getDocument());
         }
@@ -184,16 +186,22 @@ public class RegistryIndexService implements Serializable {
     }
 
     /**
-     * This helper method builds a indexDocument. This document contains a subset of
-     * items defined by the SchemaService.DEFAULT_NOANALYZE_FIELD_LIST and an
-     * optional item list defined by the Imixs property
-     * 'imixs.registry.index.fields'
+     * This helper method builds a indexDocument. This document contains all items
+     * defined by the solr schema .
+     * <p>
+     * This includes the fields
+     * <ul>
+     * <li>$uniqueid and $readaccess</li>
+     * <li>the SchemaService.DEFAULT_NOANALYZE_FIELD_LIST</li>
+     * <li>the optional item list defined by the Imixs property
+     * 'imixs.registry.index.fields'</li>
+     * </ul>
      * 
-     * @return
+     * @return list of all schema fields
      */
     private ItemCollection buildIndexDocument(ItemCollection document) {
         ItemCollection indexDocument = new ItemCollection();
-        List<String> fieldList = registrySchemaService.getSchemaFieldList();
+        Set<String> fieldList = registrySchemaService.getSchemaFieldList();
         for (String itemName : fieldList) {
             indexDocument.replaceItemValue(itemName, document.getItemValue(itemName));
         }

@@ -56,17 +56,16 @@ import org.imixs.workflow.WorkflowKernel;
 public class RegistrySchemaService implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    public static List<String> DEFAULT_STORE_FIELD_LIST = Arrays.asList("type", "$taskid", "$writeaccess",
+    public static List<String> DEFAULT_REGISTRY_FIELD_LIST = Arrays.asList("type", "$taskid", "$writeaccess",
             "$workflowsummary", "$workflowabstract", "$workflowgroup", "$workflowstatus", "$modified", "$created",
             "$modelversion", "$lasteventdate", "$creator", "$editor", "$lasteditor", "$owner", "namowner", "$api");
 
-    private List<String> schemaFieldList = null;
+    private List<String> registryCustomFieldList = null;
+    private Set<String> schemaFieldList = null;
 
     @Inject
     @ConfigProperty(name = "imixs.registry.index.fields", defaultValue = "")
     String imixsIndexFieldList;
-
-    private Set<String> uniqueFieldList = null;
 
     /**
      * Create a solr rest client instance
@@ -77,38 +76,48 @@ public class RegistrySchemaService implements Serializable {
     public void init() {
 
         // crate unique index fields
-        schemaFieldList = new ArrayList<String>();
-        schemaFieldList.addAll(DEFAULT_STORE_FIELD_LIST);
+        registryCustomFieldList = new ArrayList<String>();
+        registryCustomFieldList.addAll(DEFAULT_REGISTRY_FIELD_LIST);
         if (imixsIndexFieldList != null && !imixsIndexFieldList.isEmpty()) {
             StringTokenizer st = new StringTokenizer(imixsIndexFieldList, ",");
             while (st.hasMoreElements()) {
                 String sName = st.nextToken().toLowerCase().trim();
                 // do not add internal fields
-                if (!schemaFieldList.contains(sName)) {
-                    schemaFieldList.add(sName);
+                if (!registryCustomFieldList.contains(sName)) {
+                    registryCustomFieldList.add(sName);
                 }
             }
         }
 
         // build unique field list containing all field names
-        uniqueFieldList = new HashSet<String>();
-        uniqueFieldList.add(WorkflowKernel.UNIQUEID);
-        uniqueFieldList.add("$readaccess");
-        uniqueFieldList.addAll(schemaFieldList);
+        schemaFieldList = new HashSet<String>();
+        schemaFieldList.add(WorkflowKernel.UNIQUEID);
+        schemaFieldList.add("$readaccess");
+        schemaFieldList.addAll(registryCustomFieldList);
 
-    }
-
-    public List<String> getSchemaFieldList() {
-        return schemaFieldList;
     }
 
     /**
-     * Returns a unique list of all fields part of the index schema.
+     * Returns a list of all custom fields to be stored in the registry schema.
+     * <p>
+     * NOTE: this list does not contain the core fields '$uniqueid' and
+     * '$readaccess'. Use the method getSchmeaFieldList() to get all fields defined
+     * by the schema.
      * 
      * @return
      */
-    public Set<String> getUniqueFieldList() {
-        return uniqueFieldList;
+    public List<String> getRegistryCustomFieldList() {
+        return registryCustomFieldList;
+    }
+
+    /**
+     * Returns a unique list of all fields part of the index schema. This list also
+     * includes the fields $uniqueid and $readaccess
+     * 
+     * @return
+     */
+    public Set<String> getSchemaFieldList() {
+        return schemaFieldList;
     }
 
     /**
@@ -124,7 +133,7 @@ public class RegistrySchemaService implements Serializable {
             return result;
         }
 
-        for (String imixsItemName : uniqueFieldList) {
+        for (String imixsItemName : schemaFieldList) {
             if (imixsItemName.charAt(0) == '$') {
                 // this item starts with $ and we need to parse the query for this item....
                 while (result.contains(imixsItemName + ":")) {
@@ -152,7 +161,7 @@ public class RegistrySchemaService implements Serializable {
 
         if (itemName.charAt(0) == '_') {
             String adaptedName = "$" + itemName.substring(1);
-            if (uniqueFieldList.contains(adaptedName)) {
+            if (schemaFieldList.contains(adaptedName)) {
                 return adaptedName;
             }
         }
@@ -172,7 +181,7 @@ public class RegistrySchemaService implements Serializable {
             return itemName;
         }
         if (itemName.charAt(0) == '$') {
-            if (uniqueFieldList.contains(itemName)) {
+            if (schemaFieldList.contains(itemName)) {
                 String adaptedName = "_" + itemName.substring(1);
                 return adaptedName;
             }

@@ -139,6 +139,7 @@ public class SolrUpdateService implements Serializable {
      */
     public void indexDocuments(Collection<ItemCollection> documents) throws RestAPIException {
         long ltime = System.currentTimeMillis();
+        boolean debug = logger.isLoggable(Level.FINE);
 
         if (documents == null || documents.size() == 0) {
             // no op!
@@ -146,7 +147,8 @@ public class SolrUpdateService implements Serializable {
         } else {
 
             String xmlRequest = buildAddDoc(documents);
-            if (logger.isLoggable(Level.FINEST)) {
+            if (debug) {
+                logger.finest("....add doc to index:");
                 logger.finest(xmlRequest);
             }
 
@@ -154,7 +156,7 @@ public class SolrUpdateService implements Serializable {
             restClient.post(uri, xmlRequest, "text/xml");
         }
 
-        if (logger.isLoggable(Level.FINE)) {
+        if (debug) {
             logger.fine("... update index block in " + (System.currentTimeMillis() - ltime) + " ms (" + documents.size()
                     + " workitems total)");
         }
@@ -331,7 +333,7 @@ public class SolrUpdateService implements Serializable {
     private String buildUpdateSchema(String oldSchema) {
 
         StringBuffer updateSchema = new StringBuffer();
-        List<String> fieldListStore = registrySchemaService.getSchemaFieldList();
+        List<String> registryFieldList = registrySchemaService.getRegistryCustomFieldList();
 
         // remove white space from oldSchema to simplify string compare...
         oldSchema = oldSchema.replace(" ", "");
@@ -341,7 +343,7 @@ public class SolrUpdateService implements Serializable {
         updateSchema.append("{");
 
         // add each field from the fieldListAnalyze
-        for (String field : fieldListStore) {
+        for (String field : registryFieldList) {
             addFieldDefinitionToUpdateSchema(updateSchema, oldSchema, field, "strings", true, false);
         }
 
@@ -483,13 +485,14 @@ public class SolrUpdateService implements Serializable {
 
             // if no UniqueID is defined we need to skip this document
             if (document.getUniqueID().isEmpty()) {
+                logger.warning("Invalid document - missing $uniqueid!");
                 continue;
             }
 
             xmlContent.append("<doc>");
             xmlContent.append("<field name=\"id\">" + document.getUniqueID() + "</field>");
 
-            // add $uniqueid 
+            // add $uniqueid
             addFieldValuesToUpdateRequest(xmlContent, WorkflowKernel.UNIQUEID,
                     document.getItemValue(WorkflowKernel.UNIQUEID));
 
@@ -502,9 +505,9 @@ public class SolrUpdateService implements Serializable {
             }
             addFieldValuesToUpdateRequest(xmlContent, "$readaccess", vReadAccess);
 
-            // now add all fields...
-            List<String> fieldList = registrySchemaService.getSchemaFieldList();
-            for (String aFieldname : fieldList) {
+            // now add all custom fields...
+            List<String> registryCustomFieldList = registrySchemaService.getRegistryCustomFieldList();
+            for (String aFieldname : registryCustomFieldList) {
                 addFieldValuesToUpdateRequest(xmlContent, aFieldname, document.getItemValue(aFieldname));
             }
 
