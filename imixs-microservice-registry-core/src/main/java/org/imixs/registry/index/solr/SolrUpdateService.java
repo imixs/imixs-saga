@@ -32,6 +32,7 @@ import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -40,14 +41,18 @@ import java.util.Set;
 import java.util.function.IntPredicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.annotation.PostConstruct;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
+
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.imixs.registry.index.DefaultOperator;
 import org.imixs.registry.index.RegistrySchemaService;
+import org.imixs.registry.index.SearchService;
 import org.imixs.registry.index.SortOrder;
 import org.imixs.workflow.ItemCollection;
+import org.imixs.workflow.WorkflowKernel;
 import org.imixs.workflow.exceptions.QueryException;
 import org.imixs.workflow.services.rest.BasicAuthenticator;
 import org.imixs.workflow.services.rest.RestAPIException;
@@ -180,19 +185,15 @@ public class SolrUpdateService implements Serializable {
             if (debug) {
                 logger.finest("......delete documents '" + core + "':");
             }
-            
+
             restClient.post(uri, xmlRequest, "text/xml");
         }
 
         if (debug) {
-            logger.fine("... update index block in " + (System.currentTimeMillis() - ltime) + " ms (" + documentIDs.size()
-                    + " workitems total)");
+            logger.fine("... update index block in " + (System.currentTimeMillis() - ltime) + " ms ("
+                    + documentIDs.size() + " workitems total)");
         }
     }
-    
-  
-    
-    
 
     /**
      * This method post a search query and returns the result.
@@ -344,6 +345,10 @@ public class SolrUpdateService implements Serializable {
             addFieldDefinitionToUpdateSchema(updateSchema, oldSchema, field, "strings", true, false);
         }
 
+        // add the $uniqueid and $readaccess field
+        addFieldDefinitionToUpdateSchema(updateSchema, oldSchema, WorkflowKernel.UNIQUEID, "string", true, false);
+        addFieldDefinitionToUpdateSchema(updateSchema, oldSchema, "$readaccess", "strings", true, true);
+
         // remove last ,
         int lastComma = updateSchema.lastIndexOf(",");
         if (lastComma > -1) {
@@ -417,8 +422,7 @@ public class SolrUpdateService implements Serializable {
      * @param workitem  the workitem containing the values
      * @param _itemName the item name inside the workitem
      */
-    private void addFieldValuesToUpdateRequest(StringBuffer xmlContent, final ItemCollection workitem,
-            final String _itemName) {
+    private void addFieldValuesToUpdateRequest(StringBuffer xmlContent, final String _itemName, final List<?> vValues) {
 
         SimpleDateFormat dateformat = new SimpleDateFormat("yyyyMMddHHmmss");
 
@@ -426,7 +430,6 @@ public class SolrUpdateService implements Serializable {
             return;
         }
 
-        List<?> vValues = workitem.getItemValue(_itemName);
         if (vValues.size() == 0) {
             return;
         }
@@ -469,6 +472,7 @@ public class SolrUpdateService implements Serializable {
      * 
      * @return xml content to update documents
      */
+    @SuppressWarnings("unchecked")
     private String buildAddDoc(Collection<ItemCollection> documents) {
 
         StringBuffer xmlContent = new StringBuffer();
@@ -485,10 +489,23 @@ public class SolrUpdateService implements Serializable {
             xmlContent.append("<doc>");
             xmlContent.append("<field name=\"id\">" + document.getUniqueID() + "</field>");
 
+            // add $uniqueid 
+            addFieldValuesToUpdateRequest(xmlContent, WorkflowKernel.UNIQUEID,
+                    document.getItemValue(WorkflowKernel.UNIQUEID));
+
+            // add read acess..
+            List<String> vReadAccess = (List<String>) document.getItemValue("$readaccess");
+            if (vReadAccess.size() == 0 || (vReadAccess.size() == 1 && "".equals(vReadAccess.get(0).toString()))) {
+                // if empty than we add the ANONYMOUS default entry
+                vReadAccess = new ArrayList<String>();
+                vReadAccess.add(SearchService.ANONYMOUS);
+            }
+            addFieldValuesToUpdateRequest(xmlContent, "$readaccess", vReadAccess);
+
             // now add all fields...
             List<String> fieldList = registrySchemaService.getSchemaFieldList();
             for (String aFieldname : fieldList) {
-                addFieldValuesToUpdateRequest(xmlContent, document, aFieldname);
+                addFieldValuesToUpdateRequest(xmlContent, aFieldname, document.getItemValue(aFieldname));
             }
 
             xmlContent.append("</doc>");

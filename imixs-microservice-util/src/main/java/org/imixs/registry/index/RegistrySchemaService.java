@@ -40,7 +40,6 @@ import javax.ejb.Singleton;
 import javax.inject.Inject;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
-import org.imixs.workflow.WorkflowKernel;
 
 /**
  * The RegistrySchemaService provides schema informations used by the Imixs-Registry Solr Index.
@@ -53,8 +52,8 @@ import org.imixs.workflow.WorkflowKernel;
 public class RegistrySchemaService implements Serializable {
   private static final long serialVersionUID = 1L;
 
-  public static List<String> DEFAULT_STORE_FIELD_LIST = Arrays.asList(WorkflowKernel.UNIQUEID,
-      "type", "$readaccess", "$taskid", "$writeaccess", "$workflowsummary", "$workflowabstract",
+  public static List<String> DEFAULT_STORE_FIELD_LIST = Arrays.asList(
+      "type", "$taskid", "$writeaccess", "$workflowsummary", "$workflowabstract",
       "$workflowgroup", "$workflowstatus", "$modified", "$created", "$modelversion",
       "$lasteventdate", "$creator", "$editor", "$lasteditor", "$owner", "namowner", "$api");
 
