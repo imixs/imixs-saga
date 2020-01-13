@@ -140,12 +140,21 @@ public class WorkflowRestService {
     @Path("/workitem/{uniqueid : ([0-9a-f]{8}-.*|[0-9a-f]{11}-.*)}")
     public Response getWorkItem(@PathParam("uniqueid") String uniqueid, @QueryParam("items") String items,
             @QueryParam("format") String format) {
-
+        boolean debug = logger.isLoggable(Level.FINE);
         ItemCollection workitem;
         try {
             workitem = searchService.getDocument(uniqueid);
             if (workitem == null) {
-                // workitem not found
+                // 2. try to force an index update - we do not want to wait for the update
+                // service...
+                if (debug) {
+                    logger.finest("......workitem '" + uniqueid + "' not found in index -> force index update...");
+                }
+                updateService.updateIndex();
+                workitem = searchService.getDocument(uniqueid);
+            }
+            if (workitem == null) {
+                // workitem not found (even after index update)
                 return Response.status(Response.Status.NOT_FOUND).build();
             }
 
