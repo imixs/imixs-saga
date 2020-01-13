@@ -551,7 +551,11 @@ public class WorkflowRestService {
         // if we still have no $api endpoint, then we reject the request
         serviceAPI = businessEvent.getItemValueString(RegistryService.ITEM_API);
         if (serviceAPI.isEmpty()) {
-            logger.severe("Invalid workitem - no service endpoint found for '" + businessEvent.getUniqueID() + "'");
+            if (businessEvent.getUniqueID().isEmpty()) {
+                logger.severe("Invalid workitem - no service endpoint found new business event");
+            } else {
+                logger.severe("Invalid workitem - no service endpoint found for '" + businessEvent.getUniqueID() + "'");
+            }
             return Response.status(Response.Status.NOT_ACCEPTABLE).build();
         }
 
