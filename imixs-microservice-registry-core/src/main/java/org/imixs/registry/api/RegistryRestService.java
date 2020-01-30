@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.ejb.Singleton;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
@@ -49,8 +50,8 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
 import org.imixs.microservice.security.auth.AuthEvent;
-import org.imixs.registry.DiscoveryService;
 import org.imixs.registry.RegistryService;
 import org.imixs.registry.index.SearchService;
 import org.imixs.workflow.FileData;
@@ -89,9 +90,7 @@ public class RegistryRestService {
     @Inject
     protected RegistryService registrationService;
 
-    @Inject
-    protected DiscoveryService discoveryService;
-
+  
     @Inject
     protected SearchService searchService;
 
