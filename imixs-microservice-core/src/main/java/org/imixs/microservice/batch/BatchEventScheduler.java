@@ -105,12 +105,17 @@ public class BatchEventScheduler {
     }
 
     /**
-     * The method delecates the event processing to the stateless ejb
+     * The method delegates the event processing to the stateless ejb
      * BatchEventProcessor.
-     * 
+     * <p>
+     * Before processing the eventLog the method releases possible dead locks first.
+     * Both methods are running in separate transactions
      * 
      */
     public void run() {
+        
+        batchEventProcessor.releaseDeadLocks();
+        
         batchEventProcessor.processEventLog();
 
     }
