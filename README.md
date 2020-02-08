@@ -91,7 +91,7 @@ To verify if the model was deployed successfully you can check the model reposit
 
 ### Create a new Process Instance
 
-To create a new process instance you can POST a JSON Object to the Imixs-Microservice Rest API: 
+To create a new process instance you can POST a XML or an JSON Object to the Imixs-Microservice Rest API: 
 
     POST = http://localhost:8080/api/workflow/workitem
 				
@@ -101,48 +101,98 @@ To create a valid workitem the following attributes are mandatory:
 * $taskid = the start task in your model
 * $eventid = the initial event to be processed by the Imixs-Worklfow engine
 
-See the following Example:
+See the following XML Example:
 
    
-	{"item": [
-	  {"name": "$modelversion","value": ["1.0"]},
-	  {"name": "$taskid","value": [1000]},
-	  {"name": "$eventid","value": [10]},
-	  {"name": "txtname","value": ["test"]}
-	]}    
+	<document xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	  <item name="$modelversion">
+	    <value xsi:type="xs:string">1.0</value>
+	  </item>
+	  <item name="$taskid">
+	    <value xsi:type="xs:int">1000</value>
+	  </item>
+	  <item name="$eventid">
+	    <value xsi:type="xs:int">10</value>
+	  </item>
+	  <item name="_subject">
+	    <value xsi:type="xs:string">some data...</value>
+	    <value xsi:type="xs:string">more data...</value>
+	  </item>
+	</document>  
     
+As you can see you can specify the data types for each value. This is an important function to distinguish between data types such as Integer, Float order Date.
 
-The example below shows how to post a new Workitem in the JSON format using the curl command. The request creates a new process instance with the $modelVerson 1.0, TaskID 10 and the inital EventID 10. 
 
-	curl --user admin:adminadmin -H "Content-Type: application/json" -H 'Accept: application/json' -d \
-	   '{"item": [
-	      {"name": "$modelversion","value": ["1.0"]},
-	      {"name": "$taskid","value": [1000]},
-	      {"name": "$eventid","value": [10]},
-	      {"name": "txtname","value": ["test"]}
-	    ]} '\
+The example below shows how to post a new Workitem in the XML format using the _curl_ command. The request creates a new process instance with the $modelVerson 1.0, TaskID 10 and the inital EventID 10. 
+
+
+	curl --user admin:adminadmin -H "Content-Type: application/xml" -H 'Accept: application/xml' -d  \
+	   '<document xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+		<item name="$modelversion"><value xsi:type="xs:string">1.0</value></item>
+		<item name="$taskid"><value xsi:type="xs:int">1000</value></item>
+		<item name="$eventid"><value xsi:type="xs:int">10</value></item>
+		<item name="_subject">
+			<value xsi:type="xs:string">some data...</value>
+			<value xsi:type="xs:string">more data...</value>
+		</item>
+	   </document>' \
 	  http://localhost:8080/api/workflow/workitem
+
+
 
 
 Once you created a new process instance based on a predefined model you got a set of data back form the workflow engine describing the state of your new business object which is now controlled by the workflow engine. This is called the workitem:
 
-	{"document":[
-	  {"item":[
-	    {"value":[1556380031038],"name":"$created"},
-	    {"value":["admin"],"name":"$creator"},
-	    {"value":["admin"],"name":"$editor"},
-	    {"value":[0],"name":"$eventid"},
-	    {"value":[true],"name":"$isauthor"},
-	    {"value":["1.0"],"name":"$modelversion"},
-	    {"value":[1556380031038],"name":"$modified"},
-	    {"value":[1100],"name":"$taskid"},
-	    {"value":["51f3c349-06f5-4bda-ba10-d50bcb9ec0bf"],"name":"$uniqueid"},
-	    {"value":["Ticket"],"name":"$workflowgroup"},
-	    {"value":["Open"],"name":"$workflowstatus"},
-	    {"value":["test-json"],"name":"txtname"},
-	    {"value":["workitem"],"name":"type"}
-	  ]}
-	]}
+	<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+	<data xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns:xs="http://www.w3.org/2001/XMLSchema">
+		<document>
+			<item name="$created">
+				<value xsi:type="xs:dateTime">2020-02-08T15:00:08.798Z</value>
+			</item>
+			<item name="$creator">
+				<value xsi:type="xs:string">admin</value>
+			</item>
+			<item name="$editor">
+				<value xsi:type="xs:string">admin</value>
+			</item>
+			<item name="$modelversion">
+				<value xsi:type="xs:string">1.0</value>
+			</item>
+			<item name="$modified">
+				<value xsi:type="xs:dateTime">2020-02-08T15:00:08.798Z</value>
+			</item>
+			<item name="$taskid">
+				<value xsi:type="xs:int">1100</value>
+			</item>
+			<item name="$uniqueid">
+				<value xsi:type="xs:string">8d5ca28d-e891-465a-a187-ae5f31a5cc26</value>
+			</item>
+			<item name="$workflowgroup">
+				<value xsi:type="xs:string">Ticket</value>
+			</item>
+			<item name="$workflowstatus">
+				<value xsi:type="xs:string">Open</value>
+			</item>
+			<item name="$workflowsummary">
+				<value xsi:type="xs:string">
+				</value>
+			</item>
+			<item name="$workitemid">
+				<value xsi:type="xs:string">3f233e19-5d7a-42bd-a800-aeae7936a56e</value>
+			</item>
+			<item name="$writeaccess">
+				<value xsi:type="xs:string"></value>
+			</item>
+			<item name="_subject">
+				<value xsi:type="xs:string">some data...</value>
+				<value xsi:type="xs:string">more data...</value>
+			</item>
+			<item name="type">
+				<value xsi:type="xs:string">workitem</value>
+			</item>
+		</document>
+	</data>
 
 
 
@@ -155,21 +205,23 @@ There are several Resource URIs to request the state of a process instance. Usin
 curl command: 
 
 	curl --user admin:adminadmin \
-	      -H "Accept: application/json"  \
+	      -H "Accept: application/xml"  \
 	       http://localhost:8080/api/workflow/workitem/[UNIQUEID]
 
 
 
-To change the status of a process instance you simply need to post an updated version of your process instance together with the event to be processed:
+To change the status of a process instance you can post an updated version of your process instance together with the event to be processed:
 
     POST = http://localhost:8080/api/workflow/workitem/[UNIQUEID]
- 
-	 {"item":[
-	     {"name":"$uniqueid","value":{"@type":"xs:string","$":"141cb98aecc-18544f1b"}},
-	     {"name":"$eventid","value":{"@type":"xs:int","$":"1"}}, 
-	     {"name":"_subject","value":{"@type":"xs:string","$":"...some other business data..."}}
-	     {"name":"_customdata","value":{"@type":"xs:string","$":"...some additional data..."}}
-	   ]}  
+ 	   
+	<document xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+		<item name="$eventid">
+		   <value xsi:type="xs:int">10</value>
+		</item>
+		<item name="_subject">
+		  <value xsi:type="xs:string">...some other business data...</value>
+		</item>
+	</document> 	   
 
 You can define any kind of business data to be stored together with the process instance.
 
@@ -189,11 +241,15 @@ Imixs-Workflow provides several additional resources to request the task list fo
 To request the Worklist for the current user 'admin' user you can call:
 
     curl --user admin:adminadmin -H \
-         "Accept: application/json" \
+         "Accept: application/xml" \
          http://localhost:8080/api/workflow/tasklist/creator/admin
 
 Find more details about the Imixs-Rest API [here](http://www.imixs.org/doc/restapi/workflowservice.html). 
 
+
+### Using JSON
+
+Imixs-Workflow supports both data formats - XML and JSON. It is recommended to use XML as this data format allows you to define data types. See the [Imixs-Rest API Service](https://www.imixs.org/doc/restapi/index.html) how to use JSON objects. 
 
 
 # <img src="https://github.com/imixs/imixs-microservice/raw/master/small_h-trans.png">
