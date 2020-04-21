@@ -28,7 +28,6 @@
 
 package org.imixs.microservice.batch;
 
-import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -45,7 +44,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.OptimisticLockException;
 import javax.persistence.PersistenceContext;
 
-import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.imixs.workflow.ItemCollection;
 import org.imixs.workflow.engine.EventLogService;
 import org.imixs.workflow.engine.WorkflowService;
@@ -98,11 +96,6 @@ public class BatchEventService {
 
     public static final String ITEM_BATCH_EVENT_LOCK_DATE = "batch.event.lock.date";
 
-    // deadlock timeout interval in ms
-    @Inject
-    @ConfigProperty(name = BatchEventScheduler.BATCH_PROCESSOR_DEADLOCK, defaultValue = "60000")
-    long deadLockInterval;
-
     @PersistenceContext(unitName = "org.imixs.workflow.jpa")
     private EntityManager manager;
 
@@ -135,7 +128,7 @@ public class BatchEventService {
 
             try {
                 // first try to lock the eventLog entry....
-                lock(eventLogEntry);
+                eventLogService.lock(eventLogEntry);
 
                 // now load the workitem
                 ItemCollection workitem = workflowService.getWorkItem(eventLogEntry.getRef());
@@ -171,78 +164,7 @@ public class BatchEventService {
         }
     }
 
-    /**
-     * This method unlocks eventlog entries which are older than 1 minute. We assume
-     * that these events are deadlocks.
-     */
-    @TransactionAttribute(value = TransactionAttributeType.REQUIRES_NEW)
-    public void releaseDeadLocks() {
-
-        // test if we have dead locks....
-        List<EventLog> events = eventLogService.findEventsByTopic(100, EVENTLOG_TOPIC_BATCH_EVENT_LOCK);
-        Date now = new Date();
-        for (EventLog eventLogEntry : events) {
-
-            // test if batch.event.lock.date is older than 1 minute
-            ItemCollection data = new ItemCollection(eventLogEntry.getData());
-            Date lockDate = data.getItemValueDate(ITEM_BATCH_EVENT_LOCK_DATE);
-            long age = 0;
-            if (lockDate != null) {
-                age = now.getTime() - lockDate.getTime();
-                if (age > deadLockInterval) {
-                    logger.warning("Deadlock detected! - batch.event.id=" + eventLogEntry.getId()
-                            + " will be unlocked! (deadlock since " + age + "ms)");
-                    unlock(eventLogEntry);
-                }
-            } else {
-                logger.warning("Invalid Deadlock state detected, missing lock date! - batch.event.id="
-                        + eventLogEntry.getId() + " will be deleted");
-                eventLogService.removeEvent(eventLogEntry.getId());
-
-            }
-        }
-    }
-
-    /**
-     * This method locks an eventLog entry for processing. The topic will be set to
-     * 'batch.process.lock'. If the lock is successful we can process the eventLog
-     * entry.
-     * <p>
-     * The method also adds a item 'batch.event.lock.date' with a timestamp. This
-     * timestamp is used by the method 'autoUnlock' to release locked entries.
-     * 
-     * @param eventLogEntry
-     * @return
-     */
-    private void lock(EventLog _eventLogEntry) {
-        EventLog eventLog = manager.find(EventLog.class, _eventLogEntry.getId());
-        if (eventLog != null) {
-            eventLog.setTopic(EVENTLOG_TOPIC_BATCH_EVENT_LOCK);
-            ItemCollection data = new ItemCollection(eventLog.getData());
-            data.setItemValue(ITEM_BATCH_EVENT_LOCK_DATE, new Date());
-            manager.merge(eventLog);
-        }
-    }
-
-    /**
-     * This method unlocks an eventLog entry. The topic will be set to
-     * 'batch.process'.
-     * 
-     * @param eventLogEntry
-     * @return
-     */
-    private void unlock(EventLog _eventLogEntry) {
-        EventLog eventLog = _eventLogEntry;
-        if (eventLog != null && !manager.contains(eventLog)) {
-            // entity is not attached - so lookup the entity....
-            eventLog = manager.find(EventLog.class, eventLog.getId());
-        }
-        if (eventLog != null) {
-            eventLog.setTopic(EVENTLOG_TOPIC_BATCH_EVENT);
-            ItemCollection data = new ItemCollection(eventLog.getData());
-            data.removeItem(ITEM_BATCH_EVENT_LOCK_DATE);
-            manager.merge(eventLog);
-        }
-    }
+  
+   
 
 }

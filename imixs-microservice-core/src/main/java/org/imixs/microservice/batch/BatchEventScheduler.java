@@ -40,6 +40,7 @@ import javax.ejb.Startup;
 import javax.enterprise.concurrent.ManagedScheduledExecutorService;
 import javax.inject.Inject;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.imixs.workflow.engine.EventLogService;
 
 /**
  * The BatchEventScheduler starts a ManagedScheduledExecutorService to process
@@ -72,6 +73,7 @@ public class BatchEventScheduler {
     public static final String EVENTLOG_TOPIC_BATCH_EVENT = "batch.event";
     public static final String EVENTLOG_TOPIC_BATCH_EVENT_LOCK = "batch.event.lock";
 
+    
     // enabled
     @Inject
     @ConfigProperty(name = BATCH_PROCESSOR_ENABLED, defaultValue = "false")
@@ -86,6 +88,13 @@ public class BatchEventScheduler {
     @Inject
     @ConfigProperty(name = BATCH_PROCESSOR_INITIALDELAY, defaultValue = "0")
     long initialDelay;
+    
+
+    // deadlock timeout interval in ms
+    @Inject
+    @ConfigProperty(name = BatchEventScheduler.BATCH_PROCESSOR_DEADLOCK, defaultValue = "60000")
+    long deadLockInterval;
+
 
     private static Logger logger = Logger.getLogger(BatchEventScheduler.class.getName());
 
@@ -94,6 +103,10 @@ public class BatchEventScheduler {
 
     @Inject
     BatchEventService batchEventProcessor;
+    
+    @Inject
+    EventLogService eventLogService;
+  
 
     @PostConstruct
     public void init() {
@@ -113,11 +126,8 @@ public class BatchEventScheduler {
      * 
      */
     public void run() {
-        
-        batchEventProcessor.releaseDeadLocks();
-        
+        eventLogService.releaseDeadLocks(deadLockInterval,EVENTLOG_TOPIC_BATCH_EVENT);
         batchEventProcessor.processEventLog();
-
     }
 
 }
