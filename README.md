@@ -441,7 +441,7 @@ To activate this feature in a Imixs-Microservice instance you just have to add t
 
 	IMIXS_REGISTRY_SERVICEENDPOINT: "http://registry:8080/api"
 
-Find details in the [Imixs-Registry](https://github.com/imixs/imixs-microservice/tree/master/imixs-microservice-registry) sub project.
+Find details in the [Imixs-Registry](https://github.com/imixs/imixs-microservice/tree/master/imixs-microservice-registry-app) sub project.
 
 
 # Monitoring
