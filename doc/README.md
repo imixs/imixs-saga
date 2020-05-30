@@ -13,12 +13,6 @@ In this sense a business transaction managed by the Imixs LAMB stack can be cons
  * Durability — The durability of data is handled by local databases within a service.
  
  
- 
- 
- 
-The solution described here relates to business processes in the BMW vehicle environment. 
-
-
 ## Architecture
 
 The LAMB Stack consists of a number of microservices. A single LAMB Service defines a bounded context as a business model. The boundaries are business-oriented and based on the idea of the SAGA pattern. 
