@@ -17,6 +17,8 @@ services:
       POSTGRES_PASSWORD: "adminadmin"
       POSTGRES_DATABASE: "workflow"
       POSTGRES_CONNECTION: "jdbc:postgresql://db/workflow"
+      # Payara-Micor ENV
+      MP_OPENAPI_SERVERS: "http://localhost:8080"
     ports:
       - "8080:8080"
  

@@ -16,6 +16,8 @@ services:
       POSTGRES_USER: "postgres"
       POSTGRES_PASSWORD: "adminadmin"
       POSTGRES_CONNECTION: "jdbc:postgresql://db/workflow"
+      # Payara-Micor ENV
+      MP_OPENAPI_SERVERS: "http://localhost:8080"
     ports:
       - "8080:8080"
       - "9990:9990"
@@ -42,5 +44,5 @@ services:
     ports: 
       - "3000:3000" 
       
-volumes:
-  prometheusdata:      
+  volumes:
+    prometheusdata:      

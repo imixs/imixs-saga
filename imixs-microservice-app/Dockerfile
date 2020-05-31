@@ -1,4 +1,6 @@
-FROM payara/micro:5.194
+#FROM payara/server-full:5.201
+FROM payara/micro:5.201
+#FROM payara/micro:5.194
 
 # Imixs-Microservice Version payara-micro
 MAINTAINER ralph.soika@imixs.com
