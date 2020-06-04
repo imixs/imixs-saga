@@ -4,7 +4,7 @@ The Imixs-Microserivce core is a library providing the core functionallity for a
 
  - **AutoRegister** - registers a Imixs-Microservice at a Imixs-Registry Endpoing
  - **IndexService** - creates eventLog entries for a derived solr index each time a document is saved
- - **Batch-Processing** - allows to process in an asynchronous way
+
  
 The core library can be bundled with a Imixs-Microserice by the following Maven dependency:
 
@@ -42,28 +42,4 @@ The following environment variables are optional:
 	
 
 
-## Asynchronous Batch-Processor
-
-The BatchEventService can be used to process workflow events in an asynchronous batch process. 
-
-A batch event can be defined by the model  workflow result of an event:
-
-	<item name="batch.event.id">[EVENT_ID]</item>
-
-This will create a new eventLog entry with the topic "batch.event". Those eventLog entries are process Asynchronous by the BatchEventService.
-
- 
-### Configuration
-
-The BatchEventService runs on a scheduled base defined by the following environment settings:
-
- - BATCH\_PROCESSOR\_INTERVAL - timeout period in milliseconds
- - BATCH\_PROCESSOR\_INITIALDELAY - To enable the batchPorcessor
- - BATCH\_PROCESSOR\_ENABLED - must be set to true (default=false).
- - BATCH\_PROCESSOR\_DEADLOCK - deadlock in milliseconds (default 1 minute)
-
-To prevent concurrent processes to handle the same workitems the batch process uses a Optimistic lock strategy. The 
-expiration time on the lock can be set by the environment variable BATCH\_PROCESSOR\_DEADLOCK.
- 	
-	
 	

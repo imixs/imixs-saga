@@ -1,4 +1,4 @@
-package org.imixs.microservice.batch;
+package org.imixs.microservice.async;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -29,7 +29,7 @@ import junit.framework.Assert;
  * 
  * @author rsoika
  */
-public class WorkflowBatchProcessingTest {
+public class WorkflowProcessingAsyncEventsTest {
 
 	static String BASE_URL = "http://localhost:8080/api/";
 	static String USERID = "admin";
@@ -40,7 +40,7 @@ public class WorkflowBatchProcessingTest {
 
 	private IntegrationTest integrationTest = new IntegrationTest(BASE_URL);
 
-	private static Logger logger = Logger.getLogger(WorkflowBatchProcessingTest.class.getName());
+	private static Logger logger = Logger.getLogger(WorkflowProcessingAsyncEventsTest.class.getName());
 
 	/**
 	 * The setup method deploys the ticket workflow into the running workflow
