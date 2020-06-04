@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- origin at X=0.0 Y=0.0 -->
-<bpmn2:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:ext="http://org.eclipse.bpmn2/ext" xmlns:imixs="http://www.imixs.org/bpmn2" xmlns:xs="http://www.w3.org/2001/XMLSchema" id="Definitions_1" exporter="org.eclipse.bpmn2.modeler.core" exporterVersion="1.5.1.Final-v20190425-2005-B1" targetNamespace="http://www.imixs.org/bpmn2">
+<bpmn2:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:ext="http://org.eclipse.bpmn2/ext" xmlns:imixs="http://www.imixs.org/bpmn2" xmlns:xs="http://www.w3.org/2001/XMLSchema" id="Definitions_1" exporter="org.eclipse.bpmn2.modeler.core" exporterVersion="1.5.2.SNAPSHOT-v20200526-1743-B1" targetNamespace="http://www.imixs.org/bpmn2">
   <bpmn2:extensionElements>
     <imixs:item name="txtworkflowmodelversion" type="xs:string">
       <imixs:value><![CDATA[order-en-1.0]]></imixs:value>
@@ -48,6 +48,7 @@
         <bpmn2:flowNodeRef>Task_4</bpmn2:flowNodeRef>
         <bpmn2:flowNodeRef>EndEvent_1</bpmn2:flowNodeRef>
         <bpmn2:flowNodeRef>IntermediateCatchEvent_8</bpmn2:flowNodeRef>
+        <bpmn2:flowNodeRef>BoundaryEvent_1</bpmn2:flowNodeRef>
       </bpmn2:lane>
     </bpmn2:laneSet>
     <bpmn2:task id="Task_2" imixs:processid="1100" name="Pending">
@@ -126,6 +127,7 @@
         <imixs:item name="keyrestrictedvisibility" type="xs:string"/>
       </bpmn2:extensionElements>
       <bpmn2:incoming>SequenceFlow_2</bpmn2:incoming>
+      <bpmn2:incoming>SequenceFlow_4</bpmn2:incoming>
       <bpmn2:outgoing>SequenceFlow_5</bpmn2:outgoing>
       <bpmn2:dataOutput id="DataOutput_2" name="Signal_2_Output"/>
       <bpmn2:dataOutputAssociation id="DataOutputAssociation_2">
@@ -243,13 +245,14 @@
     </bpmn2:sequenceFlow>
     <bpmn2:sequenceFlow id="SequenceFlow_23" sourceRef="IntermediateCatchEvent_8" targetRef="Task_2"/>
     <bpmn2:sequenceFlow id="SequenceFlow_24" sourceRef="IntermediateCatchEvent_7" targetRef="Task_3"/>
+    <bpmn2:boundaryEvent id="BoundaryEvent_1" name="" attachedToRef="Task_2">
+      <bpmn2:outgoing>SequenceFlow_4</bpmn2:outgoing>
+      <bpmn2:timerEventDefinition id="TimerEventDefinition_1"/>
+    </bpmn2:boundaryEvent>
+    <bpmn2:sequenceFlow id="SequenceFlow_4" sourceRef="BoundaryEvent_1" targetRef="IntermediateCatchEvent_3"/>
     <bpmn2:textAnnotation id="TextAnnotation_2">
       <bpmn2:text>This model demonstrates the combination of a Signal Adapter with a Batch-Event</bpmn2:text>
     </bpmn2:textAnnotation>
-    <bpmn2:textAnnotation id="TextAnnotation_3">
-      <bpmn2:text>Create a Batch Event</bpmn2:text>
-    </bpmn2:textAnnotation>
-    <bpmn2:association id="Association_3" sourceRef="TextAnnotation_3" targetRef="IntermediateCatchEvent_1"/>
   </bpmn2:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1" name="Default Process Diagram">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_1">
@@ -320,9 +323,9 @@
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_TextAnnotation_1" bpmnElement="TextAnnotation_1">
-        <dc:Bounds height="61.0" width="130.0" x="620.0" y="219.0"/>
+        <dc:Bounds height="61.0" width="130.0" x="744.0" y="390.0"/>
         <bpmndi:BPMNLabel id="BPMNLabel_11">
-          <dc:Bounds height="55.0" width="118.0" x="626.0" y="219.0"/>
+          <dc:Bounds height="55.0" width="118.0" x="750.0" y="390.0"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_CallConversation_1" bpmnElement="CallConversation_1">
@@ -353,11 +356,9 @@
           <dc:Bounds height="85.0" width="195.0" x="166.0" y="167.0"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="BPMNShape_TextAnnotation_3" bpmnElement="TextAnnotation_3">
-        <dc:Bounds height="50.0" width="127.0" x="260.0" y="400.0"/>
-        <bpmndi:BPMNLabel id="BPMNLabel_50">
-          <dc:Bounds height="44.0" width="115.0" x="266.0" y="400.0"/>
-        </bpmndi:BPMNLabel>
+      <bpmndi:BPMNShape id="BPMNShape_BoundaryEvent_1" bpmnElement="BoundaryEvent_1">
+        <dc:Bounds height="36.0" width="36.0" x="590.0" y="296.0"/>
+        <bpmndi:BPMNLabel id="BPMNLabel_9"/>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_1" bpmnElement="SequenceFlow_1" sourceElement="BPMNShape_1" targetElement="BPMNShape_Task_1">
         <di:waypoint xsi:type="dc:Point" x="214.0" y="338.0"/>
@@ -390,10 +391,9 @@
         <bpmndi:BPMNLabel id="BPMNLabel_25"/>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="BPMNEdge_Association_1" bpmnElement="Association_1" sourceElement="BPMNShape_TextAnnotation_1" targetElement="BPMNShape_IntermediateCatchEvent_3">
-        <di:waypoint xsi:type="dc:Point" x="685.0" y="280.0"/>
-        <di:waypoint xsi:type="dc:Point" x="685.0" y="300.0"/>
-        <di:waypoint xsi:type="dc:Point" x="708.0" y="300.0"/>
-        <di:waypoint xsi:type="dc:Point" x="708.0" y="320.0"/>
+        <di:waypoint xsi:type="dc:Point" x="744.0" y="420.0"/>
+        <di:waypoint xsi:type="dc:Point" x="708.0" y="420.0"/>
+        <di:waypoint xsi:type="dc:Point" x="708.0" y="356.0"/>
         <bpmndi:BPMNLabel id="BPMNLabel_16"/>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_2" bpmnElement="SequenceFlow_2" sourceElement="BPMNShape_Task_2" targetElement="BPMNShape_IntermediateCatchEvent_3">
@@ -448,11 +448,12 @@
         <di:waypoint xsi:type="dc:Point" x="950.0" y="338.0"/>
         <bpmndi:BPMNLabel id="BPMNLabel_48"/>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="BPMNEdge_Association_3" bpmnElement="Association_3" sourceElement="BPMNShape_TextAnnotation_3" targetElement="BPMNShape_IntermediateCatchEvent_1">
-        <di:waypoint xsi:type="dc:Point" x="387.0" y="425.0"/>
-        <di:waypoint xsi:type="dc:Point" x="471.0" y="425.0"/>
-        <di:waypoint xsi:type="dc:Point" x="471.0" y="356.0"/>
-        <bpmndi:BPMNLabel id="BPMNLabel_51"/>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_4" bpmnElement="SequenceFlow_4" sourceElement="BPMNShape_BoundaryEvent_1" targetElement="BPMNShape_IntermediateCatchEvent_3">
+        <di:waypoint xsi:type="dc:Point" x="608.0" y="296.0"/>
+        <di:waypoint xsi:type="dc:Point" x="608.0" y="286.0"/>
+        <di:waypoint xsi:type="dc:Point" x="708.0" y="286.0"/>
+        <di:waypoint xsi:type="dc:Point" x="708.0" y="320.0"/>
+        <bpmndi:BPMNLabel id="BPMNLabel_13"/>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
     <bpmndi:BPMNLabelStyle id="BPMNLabelStyle_1">

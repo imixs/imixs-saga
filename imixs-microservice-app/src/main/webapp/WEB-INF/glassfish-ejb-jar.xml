@@ -50,13 +50,7 @@
 			</principal>
 		</ejb>
 		-->
-		
-		<ejb>
-			<ejb-name>BatchEventScheduler</ejb-name>
-			<principal>
-				<name>imixs-workflow-service</name>
-			</principal>
-		</ejb>
+	
 		
 	</enterprise-beans>
 </glassfish-ejb-jar>
