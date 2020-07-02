@@ -55,7 +55,7 @@
 										<exec executable="docker">
 											<arg value="build" />
 											<arg value="-t" />
-											<arg value="imixs/imixs-registry" />
+											<arg value="imixs/imixs-saga-registry" />
 											<arg value="." />
 										</exec>
 									</target>
@@ -113,12 +113,12 @@
 										<exec executable="docker">
 											<arg value="build" />
 											<arg value="-t" />
-											<arg value="imixs/imixs-registry:${project.version}" />
+											<arg value="imixs/imixs-saga-registry:${project.version}" />
 											<arg value="." />
 										</exec>
 										<exec executable="docker">
 											<arg value="push" />
-											<arg value="imixs/imixs-registry:${project.version}" />
+											<arg value="imixs/imixs-saga-registry:${project.version}" />
 										</exec>
 									</target>
 								</configuration>
