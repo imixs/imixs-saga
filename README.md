@@ -1,5 +1,4 @@
-# The Imixs-Microservice
-[![Build Status](https://travis-ci.org/imixs/imixs-microservice.svg?branch=master)](https://travis-ci.org/imixs/imixs-microservice)
+# The Imixs-SAGA
 [![Join the chat at https://gitter.im/imixs/imixs-workflow](https://badges.gitter.im/imixs/imixs-workflow.svg)](https://gitter.im/imixs/imixs-workflow?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![License](https://img.shields.io/badge/license-GPL-blue.svg)](https://github.com/imixs/imixs-microservice/blob/master/LICENSE)
 
