@@ -2,10 +2,10 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.imixs.workflow</groupId>
-		<artifactId>imixs-microservice</artifactId>
+		<artifactId>imixs-saga</artifactId>
 		<version>2.1.0-SNAPSHOT</version>
 	</parent>
-	<artifactId>imixs-microservice-core</artifactId>
+	<artifactId>imixs-saga-core</artifactId>
 
 
 	<dependencies>
@@ -27,15 +27,15 @@
 			<artifactId>imixs-melman</artifactId>
 		</dependency>
 
-		<!-- Imixs-Microservice -->
+		<!-- imixs-saga -->
 		<dependency>
 			<groupId>org.imixs.workflow</groupId>
-			<artifactId>imixs-microservice-util</artifactId>
+			<artifactId>imixs-saga-util</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.imixs.workflow</groupId>
-			<artifactId>imixs-microservice-security</artifactId>
+			<artifactId>imixs-saga-security</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 

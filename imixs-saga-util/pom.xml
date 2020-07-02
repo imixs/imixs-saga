@@ -2,10 +2,10 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.imixs.workflow</groupId>
-    <artifactId>imixs-microservice</artifactId>
+    <artifactId>imixs-saga</artifactId>
     <version>2.1.0-SNAPSHOT</version>
   </parent>
-  <artifactId>imixs-microservice-util</artifactId>
+  <artifactId>imixs-saga-util</artifactId>
 
 
   	<dependencies>

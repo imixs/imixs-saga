@@ -2,10 +2,10 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.imixs.workflow</groupId>
-		<artifactId>imixs-microservice</artifactId>
+		<artifactId>imixs-saga</artifactId>
 		<version>2.1.0-SNAPSHOT</version>
 	</parent>
-	<artifactId>imixs-microservice-app</artifactId>
+	<artifactId>imixs-saga-app</artifactId>
 	<packaging>war</packaging>
 
 
@@ -55,7 +55,7 @@
 										<exec executable="docker">
 											<arg value="build" />
 											<arg value="-t" />
-											<arg value="imixs/imixs-microservice" />
+											<arg value="imixs/imixs-saga" />
 											<arg value="." />
 										</exec>
 									</target>
@@ -113,12 +113,12 @@
 										<exec executable="docker">
 											<arg value="build" />
 											<arg value="-t" />
-											<arg value="imixs/imixs-microservice:${project.version}" />
+											<arg value="imixs/imixs-saga:${project.version}" />
 											<arg value="." />
 										</exec>
 										<exec executable="docker">
 											<arg value="push" />
-											<arg value="imixs/imixs-microservice:${project.version}" />
+											<arg value="imixs/imixs-saga:${project.version}" />
 										</exec>
 									</target>
 								</configuration>
@@ -184,7 +184,7 @@
 											<arg value="-f" />
 											<arg value="Dockerfile-wildfly" />
 											<arg value="-t" />
-											<arg value="imixs/imixs-microservice" />
+											<arg value="imixs/imixs-saga" />
 											<arg value="./" />
 										</exec>
 									</target>
@@ -239,7 +239,7 @@
 			</testResource>
 		</testResources>
 
-		<finalName>imixs-microservice</finalName>
+		<finalName>imixs-saga</finalName>
 	</build>
 
 
@@ -263,15 +263,15 @@
 			<artifactId>imixs-adapters-kafka</artifactId> <version>${org.imixs.adapters.version}</version> 
 			<scope>compile</scope> </dependency> -->
 
-		<!-- Imixs-Microservice -->
+		<!-- imixs-saga -->
 		<dependency>
 			<groupId>org.imixs.workflow</groupId>
-			<artifactId>imixs-microservice-core</artifactId>
+			<artifactId>imixs-saga-core</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.imixs.workflow</groupId>
-			<artifactId>imixs-microservice-security</artifactId>
+			<artifactId>imixs-saga-security</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		
