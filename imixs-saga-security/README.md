@@ -1,13 +1,13 @@
-# Imixs-Microservice - Security
+# Imixs-SAGA - Security
 
-The Imixs-Microserivce security module contains HTTP authenticator classes for the inter service communictaion within the Imixs-Microservice architecture.
+The Imixs-SAGA security module contains HTTP authenticator classes for the internal service communication within the Imixs-Microservice architecture.
  
-The security module can be bundled with a Imixs-Microserice or the Imixs-Registry by the following Maven dependency:
+The security module can be bundled with a Imixs-Microservice or the Imixs-Registry by the following Maven dependency:
 
 	<dependency>
 		<groupId>org.imixs.workflow</groupId>
-		<artifactId>imixs-microservice-security</artifactId>
-		<version>${imixs.microservice.version}</version>
+		<artifactId>imixs-saga-security</artifactId>
+		<version>${imixs.saga.version}</version>
 	</dependency> 
 
 

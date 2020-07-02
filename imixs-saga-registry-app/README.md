@@ -1,6 +1,6 @@
-# Imixs-Registry
+# Imixs-SAGA Registry
 
-The Imixs-Registry is a Service Registry for the [Imixs-Microservice platform](https://github.com/imixs/imixs-microservice). 
+The Imixs-SAGA Registry is a Service Registry for the [Imixs-Microservice platform](https://github.com/imixs/imixs-microservice). 
 The main goal of this service is the registration and discovery of workflow services within a microservice architecture.
 
 In order to start a new business process within the Imixs-Microservice platform, consisting of different business services, a client needs to know the service endpoints of a specific workflow service and the process definition. In a traditional application design, the process definitions can be configured in a static way, e.g. in a configuration file that’s occasionally updated during the deployment process. 

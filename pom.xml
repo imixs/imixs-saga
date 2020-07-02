@@ -1,22 +1,22 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.imixs.workflow</groupId>
-	<artifactId>imixs-microservice</artifactId>
+	<artifactId>imixs-saga</artifactId>
 	<version>2.1.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>Imixs-Workflow Microservice</name>
 
 	<modules>
-		<module>imixs-microservice-app</module>
-		<module>imixs-microservice-core</module>
-		<module>imixs-microservice-security</module>
-		<module>imixs-microservice-registry-app</module>
-		<module>imixs-microservice-registry-core</module>
-		<module>imixs-microservice-util</module>
+		<module>imixs-saga-app</module>
+		<module>imixs-saga-core</module>
+		<module>imixs-saga-security</module>
+		<module>imixs-saga-registry-app</module>
+		<module>imixs-saga-registry-core</module>
+		<module>imixs-saga-util</module>
 	</modules>
 
 	<description>Imixs-Workflow Microservice </description>
-	<url>https://github.com/imixs/imixs-microservice</url>
+	<url>https://github.com/imixs/imixs-saga</url>
 	<organization>
 		<name>Imixs Software Solutions GmbH</name>
 		<url>http://www.imixs.com</url>
@@ -54,15 +54,15 @@
 	</developers>
 
 	<scm>
-		<connection>scm:git:https://github.com/imixs/imixs-microservice.git</connection>
-		<developerConnection>scm:git:https://github.com/imixs/imixs-microservice.git</developerConnection>
-		<url>https://github.com/imixs/imixs-microservice/</url>
-	  <tag>imixs-microservice-2.0.0</tag>
+		<connection>scm:git:https://github.com/imixs/imixs-saga.git</connection>
+		<developerConnection>scm:git:https://github.com/imixs/imixs-saga.git</developerConnection>
+		<url>https://github.com/imixs/imixs-saga/</url>
+	  <tag>imixs-saga-2.0.0</tag>
   </scm>
 
 	<issueManagement>
 		<system>GitHub</system>
-		<url>https://github.com/imixs/imixs-microservice/issues</url>
+		<url>https://github.com/imixs/imixs-saga/issues</url>
 	</issueManagement>
 
 	<properties>
