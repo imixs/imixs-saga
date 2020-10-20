@@ -12,10 +12,9 @@ import org.imixs.melman.WorkflowClient;
 import org.imixs.workflow.ItemCollection;
 import org.imixs.workflow.services.rest.RestClient;
 import org.imixs.workflow.xml.XMLDataCollectionAdapter;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-
-import junit.framework.Assert;
 
 /**
  * This test shows an example how to post a workitem against the registry to

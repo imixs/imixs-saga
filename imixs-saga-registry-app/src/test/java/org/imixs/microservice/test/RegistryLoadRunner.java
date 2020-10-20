@@ -5,10 +5,9 @@ import java.util.Arrays;
 import org.imixs.melman.BasicAuthenticator;
 import org.imixs.melman.WorkflowClient;
 import org.imixs.workflow.ItemCollection;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-
-import junit.framework.Assert;
 
 /**
  * This test simmulates batch processing with high load

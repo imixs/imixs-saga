@@ -19,10 +19,9 @@ import org.imixs.microservice.test.IntegrationTest;
 import org.imixs.workflow.ItemCollection;
 import org.imixs.workflow.exceptions.ModelException;
 import org.imixs.workflow.util.Base64;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-
-import junit.framework.Assert;
 
 /**
  * This test shows an example for batch events.

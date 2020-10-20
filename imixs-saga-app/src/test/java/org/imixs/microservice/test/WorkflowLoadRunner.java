@@ -23,10 +23,9 @@ import org.imixs.workflow.exceptions.ModelException;
 import org.imixs.workflow.services.rest.RestClient;
 import org.imixs.workflow.util.Base64;
 import org.imixs.workflow.xml.XMLDataCollectionAdapter;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-
-import junit.framework.Assert;
 
 /**
  * This test simmulates batch processing with high load
